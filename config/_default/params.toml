@@ -1,0 +1,29 @@
+author      = "你的名字"
+description = "记录技术探索、个人项目与学习历程的个人空间"
+mainSections = ["post"]
+since       = 2026
+
+[hero]
+    greeting    = "你好，我是"
+    name        = "你的名字"
+    englishName = "Your Name"
+    role        = "程序员 / 学习者 / 折腾家"
+    bio         = "在这里记录技术探索的足迹、个人项目的实践心得，以及一路走来的学习历程。"
+    tags        = ["编程", "AI", "个人项目", "学习记录"]
+
+[homepage]
+    recentPosts        = 5
+    recentLearning     = 3
+    maxFeaturedProjects = 6
+
+[footer]
+    license = "本空间内容采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议"
+
+[comments]
+    # 评论功能默认关闭。需要接入 Waline 时，把 enabled 改为 true 并填写 serverURL。
+    enabled  = false
+    provider = "waline"
+
+    [comments.waline]
+        serverURL = ""
+        lang      = "zh-CN"

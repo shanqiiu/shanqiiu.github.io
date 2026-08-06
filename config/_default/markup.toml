@@ -1,0 +1,23 @@
+[goldmark]
+    [goldmark.extensions]
+        [goldmark.extensions.passthrough]
+            enable = true
+
+            [goldmark.extensions.passthrough.delimiters]
+                block  = [["\\[", "\\]"], ["$$", "$$"]]
+                inline = [["\\(", "\\)"]]
+
+    [goldmark.renderer]
+        ## 允许在 Markdown 中直接写 HTML
+        unsafe = true
+
+[tableOfContents]
+    startLevel = 2
+    endLevel   = 4
+    ordered    = false
+
+[highlight]
+    codeFences         = true
+    guessSyntax        = true
+    lineNos            = true
+    noClasses          = false

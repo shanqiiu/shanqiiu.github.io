@@ -1,0 +1,20 @@
+# 部署前把 baseURL 改成你的地址：https://<你的GitHub用户名>.github.io/
+baseURL = "https://example.org/"
+languageCode = "zh-cn"
+title = "个人技术空间"
+defaultContentLanguage = "zh"
+hasCJKLanguage = true
+enableRobotsTXT = true
+
+[permalinks]
+    post = "/p/:slug/"
+    projects = "/projects/:slug/"
+    learning = "/learning/:slug/"
+    page = "/:slug/"
+
+[pagination]
+    pagerSize = 10
+
+[taxonomies]
+    tag = "tags"
+    category = "categories"

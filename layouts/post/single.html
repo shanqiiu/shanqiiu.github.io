@@ -1,0 +1,59 @@
+{{ define "main" }}
+<article class="post container">
+    <header class="post-head">
+        <div class="post-meta">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+            {{ with .Params.categories }}
+                <span class="meta-sep">·</span>
+                {{ range . }}
+                    <a class="cat" href="{{ "categories/" | relURL }}{{ . | urlize }}/">{{ . }}</a>
+                {{ end }}
+            {{ end }}
+            <span class="meta-sep">·</span>
+            <span>{{ .ReadingTime }} 分钟阅读</span>
+        </div>
+        <h1 class="post-title">{{ .Title }}</h1>
+        {{ with .Params.summary }}<p class="post-summary">{{ . }}</p>{{ end }}
+        <div class="post-tags">
+            {{ range .Params.tags }}
+                <a class="tag" href="{{ "tags/" | relURL }}{{ . | urlize }}/">{{ . }}</a>
+            {{ end }}
+        </div>
+    </header>
+
+    {{ if and .Params.toc .TableOfContents }}
+        <aside class="toc">
+            <details open>
+                <summary>目录</summary>
+                {{ .TableOfContents }}
+            </details>
+        </aside>
+    {{ end }}
+
+    <div class="content post-body">{{ .Content }}</div>
+
+    <footer class="post-foot">
+        <div class="post-nav">
+            {{ with .PrevInSection }}
+                <a class="post-nav-prev" href="{{ .RelPermalink }}">← {{ .Title }}</a>
+            {{ end }}
+            {{ with .NextInSection }}
+                <a class="post-nav-next" href="{{ .RelPermalink }}">{{ .Title }} →</a>
+            {{ end }}
+        </div>
+        {{ if site.Params.comments.enabled }}
+            <div id="waline"></div>
+            <script>
+                if (window.Waline) {
+                    new Waline({
+                        el: '#waline',
+                        serverURL: {{ site.Params.comments.waline.serverURL | jsonify }},
+                        lang: {{ site.Params.comments.waline.lang | default "zh-CN" | jsonify }},
+                        dark: 'auto',
+                    });
+                }
+            </script>
+        {{ end }}
+    </footer>
+</article>
+{{ end }}

@@ -1,0 +1,65 @@
+{{ define "main" }}
+<section class="hero">
+    <div class="container hero-inner">
+        <img class="hero-avatar" src="{{ "img/avatar.svg" | relURL }}" alt="头像">
+        <div class="hero-meta">{{ site.Params.hero.greeting }}</div>
+        <h1 class="hero-title">
+            <span class="hero-name">{{ site.Params.hero.name }}</span>
+            <span class="hero-en">{{ site.Params.hero.englishName }}</span>
+        </h1>
+        <p class="hero-role">{{ site.Params.hero.role }}</p>
+        <p class="hero-bio">{{ site.Params.hero.bio }}</p>
+        <div class="hero-tags">
+            {{ range site.Params.hero.tags }}
+                <span class="tag">{{ . }}</span>
+            {{ end }}
+        </div>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="{{ "post/" | relURL }}">阅读文章</a>
+            <a class="btn btn-ghost" href="{{ "projects/" | relURL }}">查看项目</a>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="projects">
+    <div class="container">
+        <h2 class="section-title">精选项目</h2>
+        <p class="section-sub">个人项目的实践记录与当前状态</p>
+        {{ $projects := where site.RegularPages "Section" "projects" }}
+        {{ $featured := where $projects "Params.featured" true }}
+        {{ if $featured }}
+            <div class="grid">
+                {{ range first site.Params.homepage.maxFeaturedProjects $featured }}
+                    {{ partial "project-card.html" . }}
+                {{ end }}
+            </div>
+        {{ else }}
+            <p class="empty-tip">还没有精选项目，去 <a href="{{ "projects/" | relURL }}">项目页</a> 添加吧。</p>
+        {{ end }}
+    </div>
+</section>
+
+<section class="section section-alt" id="recent-posts">
+    <div class="container">
+        <h2 class="section-title">最近文章</h2>
+        <p class="section-sub">知识博客：技术笔记、实践心得与随笔思考</p>
+        {{ $posts := where site.RegularPages "Section" "post" }}
+        {{ range first site.Params.homepage.recentPosts $posts }}
+            {{ partial "post-card.html" . }}
+        {{ end }}
+        <a class="more-link" href="{{ "post/" | relURL }}">全部文章 →</a>
+    </div>
+</section>
+
+<section class="section" id="learning">
+    <div class="container">
+        <h2 class="section-title">学习历程</h2>
+        <p class="section-sub">一步一个脚印，记录正在学习的东西与走过的路</p>
+        {{ $learning := where site.RegularPages "Section" "learning" }}
+        {{ range first site.Params.homepage.recentLearning $learning }}
+            {{ partial "learning-card.html" . }}
+        {{ end }}
+        <a class="more-link" href="{{ "learning/" | relURL }}">全部历程 →</a>
+    </div>
+</section>
+{{ end }}

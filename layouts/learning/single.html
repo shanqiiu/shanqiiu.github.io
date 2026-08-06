@@ -1,0 +1,27 @@
+{{ define "main" }}
+<article class="page container">
+    <header class="page-head">
+        <div class="post-meta">
+            <time>{{ .Date.Format "2006-01-02" }}</time>
+            {{ with .Params.period }}<span class="meta-sep">·</span><span>阶段：{{ . }}</span>{{ end }}
+            {{ with .Params.status }}
+                <span class="meta-sep">·</span>
+                {{ if eq . "in-progress" }}<span class="status status-live">进行中</span>{{ else }}<span class="status status-done">已完成</span>{{ end }}
+            {{ end }}
+        </div>
+        <h1>{{ .Title }}</h1>
+        {{ with .Params.summary }}<p class="page-desc">{{ . }}</p>{{ end }}
+    </header>
+    <div class="content">{{ .Content }}</div>
+    {{ with .Params.milestones }}
+        <div class="milestones">
+            <h2>里程碑</h2>
+            <ul>
+                {{ range . }}
+                    <li>{{ . }}</li>
+                {{ end }}
+            </ul>
+        </div>
+    {{ end }}
+</article>
+{{ end }}

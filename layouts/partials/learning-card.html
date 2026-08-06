@@ -1,0 +1,7 @@
+<a class="learning-card" href="{{ .RelPermalink }}">
+    <time class="learning-time">{{ .Date.Format "2006-01" }}</time>
+    <div class="learning-body">
+        <h3>{{ .Title }}</h3>
+        <p>{{ .Summary | plainify | truncate 100 }}</p>
+    </div>
+</a>

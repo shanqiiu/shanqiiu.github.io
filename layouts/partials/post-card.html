@@ -1,0 +1,12 @@
+<article class="post-card">
+    <a class="post-card-link" href="{{ .RelPermalink }}">
+        <h3 class="post-card-title">{{ .Title }}</h3>
+        <p class="post-card-excerpt">{{ .Summary | plainify | truncate 120 }}</p>
+        <div class="post-card-meta">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+            {{ range .Params.tags }}
+                <span class="tag">{{ . }}</span>
+            {{ end }}
+        </div>
+    </a>
+</article>
