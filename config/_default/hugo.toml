@@ -1,5 +1,4 @@
-# 部署前把 baseURL 改成你的地址：https://<你的GitHub用户名>.github.io/
-baseURL = "https://example.org/"
+baseURL = "https://shanqiiu.github.io/"
 languageCode = "zh-cn"
 title = "个人技术空间"
 defaultContentLanguage = "zh"
