@@ -1,13 +1,14 @@
-author      = "你的名字"
+author      = "山海"
 description = "记录技术探索、个人项目与学习历程的个人空间"
 mainSections = ["post"]
 since       = 2026
 
 [hero]
     greeting    = "你好，我是"
-    name        = "你的名字"
-    englishName = "Your Name"
+    name        = "山海"
+    englishName = "Shan Hai"
     role        = "程序员 / 学习者 / 折腾家"
+    signature   = "知行合一"
     bio         = "在这里记录技术探索的足迹、个人项目的实践心得，以及一路走来的学习历程。"
     tags        = ["编程", "AI", "个人项目", "学习记录"]
 

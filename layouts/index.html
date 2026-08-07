@@ -8,6 +8,9 @@
             <span class="hero-en">{{ site.Params.hero.englishName }}</span>
         </h1>
         <p class="hero-role">{{ site.Params.hero.role }}</p>
+        {{ with site.Params.hero.signature }}
+            <p class="hero-signature">「{{ . }}」</p>
+        {{ end }}
         <p class="hero-bio">{{ site.Params.hero.bio }}</p>
         <div class="hero-tags">
             {{ range site.Params.hero.tags }}
