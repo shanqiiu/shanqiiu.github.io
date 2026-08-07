@@ -114,3 +114,7 @@ tags: [标签]
 ## 许可证
 
 模板代码可自由使用；你发布的内容默认采用 CC BY-NC-SA 4.0（可在 `params.toml` 中修改）。
+
+## 头像来源
+
+`static/img/avatar-lebron.jpg` 来自 Flickr 摄影师 lukeharold 的「LeBron James mural」作品（CC0 公有领域，可自由使用）。想换头像时直接替换该文件、保持同名即可。
