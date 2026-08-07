@@ -41,7 +41,13 @@
     weight     = 1
 
 [[social]]
+    identifier = "qq"
+    name       = "QQ"
+    url        = "https://wpa.qq.com/msgrd?v=3&uin=1955450958&site=qq&menu=yes"
+    weight     = 2
+
+[[social]]
     identifier = "rss"
     name       = "RSS"
     url        = "/index.xml"
-    weight     = 2
+    weight     = 3
