@@ -1780,7 +1780,7 @@ img {
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: 42%;
+    top: 17%;
     transform: translate(-50%, -50%);
     width: 200px;
     pointer-events: none;
