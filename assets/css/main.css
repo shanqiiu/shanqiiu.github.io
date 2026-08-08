@@ -1709,8 +1709,8 @@ img {
     }
 
     .avatar-text-ring text {
-        font-size: 9.8px;
-        letter-spacing: 1.8px;
+        font-size: 8.8px;
+        letter-spacing: 1.2px;
     }
 
     .hero-content {
@@ -1975,11 +1975,12 @@ img {
 
 .avatar-text-ring text {
     font-family: var(--font-mono);
-    font-size: 10.8px;
+    font-size: 9.6px;
     font-weight: 900;
-    letter-spacing: 2.1px;
+    letter-spacing: 1.45px;
     text-transform: uppercase;
     fill: rgba(30, 41, 59, 0.9);
+    dominant-baseline: middle;
     paint-order: stroke;
     stroke: rgba(255, 255, 255, 0.76);
     stroke-width: 1.4px;
