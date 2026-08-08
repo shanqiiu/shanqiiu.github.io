@@ -404,12 +404,16 @@ img {
     font-weight: 500;
     border: 1px solid transparent;
     cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
     transition: all 0.28s ease;
 }
 
 .btn-primary {
-    background: var(--accent);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 92%, white), var(--accent));
     color: #06251f;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        0 14px 28px var(--accent-glow);
 }
 
 [data-theme="light"] .btn-primary {
@@ -418,12 +422,14 @@ img {
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px var(--accent-glow);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.38),
+        0 18px 34px var(--accent-glow);
 }
 
 .btn-ghost {
-    background: transparent;
-    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, 0.055);
+    border-color: rgba(255, 255, 255, 0.14);
     color: var(--text);
 }
 
@@ -1343,7 +1349,8 @@ img {
 /* ---------- Hero 双栏 + 玻璃卡片 ---------- */
 .hero {
     position: relative;
-    padding: 72px 0 40px;
+    min-height: calc(100vh - var(--nav-h));
+    padding: 72px 0 46px;
     overflow: hidden;
 }
 
@@ -1353,17 +1360,45 @@ img {
 }
 
 .hero-inner {
+    isolation: isolate;
+    overflow: visible;
     display: grid;
     grid-template-columns: 160px 1fr;
     gap: 36px;
     align-items: center;
-    background: var(--bg-card);
+    position: relative;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035) 38%, rgba(15, 23, 42, 0.18)),
+        var(--bg-card);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.13),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+        0 24px 80px rgba(2, 6, 23, 0.38),
+        var(--shadow);
     padding: 40px;
+}
+
+.hero-inner::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    border-radius: calc(var(--radius) - 1px);
+    background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.16), transparent 34%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 72px);
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.hero-avatar-wrap,
+.hero-content {
+    position: relative;
+    z-index: 1;
 }
 
 .hero-avatar {
@@ -1371,8 +1406,11 @@ img {
     height: 160px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    border: 3px solid rgba(255, 255, 255, 0.28);
+    box-shadow:
+        0 0 0 8px rgba(255, 255, 255, 0.06),
+        0 0 0 1px rgba(56, 189, 248, 0.26),
+        0 18px 42px rgba(0, 0, 0, 0.34);
     transition: transform 0.35s ease;
 }
 
@@ -1402,6 +1440,7 @@ img {
     font-weight: 700;
     line-height: 1.2;
     margin: 0;
+    text-shadow: 0 12px 28px rgba(2, 6, 23, 0.28);
 }
 
 .hero-name {
@@ -1455,12 +1494,13 @@ img {
 }
 
 .hero-tags .tag {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.06));
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--text-2);
     padding: 5px 12px;
     border-radius: 999px;
     font-size: 0.82rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     transition: all 0.2s ease;
 }
 
@@ -1489,9 +1529,10 @@ img {
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+    border: 1px solid rgba(255, 255, 255, 0.13);
     color: var(--text-2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px rgba(2, 6, 23, 0.18);
     transition: all 0.2s ease;
 }
 
@@ -1533,15 +1574,25 @@ img {
     .hero-inner {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 24px;
+        gap: 26px;
+        padding: 32px 22px 30px;
     }
 
     .hero-avatar {
         margin: 0 auto;
+        width: 136px;
+        height: 136px;
     }
 
     .hero-avatar-wrap {
         margin: 0 auto;
+        width: 136px;
+        height: 136px;
+    }
+
+    .avatar-smoke {
+        top: -14px;
+        width: 184px;
     }
 
     .hero-content {
@@ -1780,12 +1831,25 @@ img {
     justify-content: center;
 }
 
+.hero-avatar-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    z-index: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+        inset 0 0 0 1px rgba(56, 189, 248, 0.12),
+        0 18px 46px rgba(2, 6, 23, 0.22);
+    pointer-events: none;
+}
+
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: 17%;
+    top: -18px;
     transform: translate(-50%, -50%);
-    width: 200px;
+    width: 214px;
     pointer-events: none;
     z-index: 0;
 }
@@ -1795,14 +1859,17 @@ img {
     width: 100%;
     height: auto;
     opacity: 0.82;
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, .25));
+    filter:
+        drop-shadow(0 0 10px rgba(255, 255, 255, 0.26))
+        drop-shadow(0 18px 18px rgba(56, 189, 248, 0.1));
     animation: smoke-float 5s ease-in-out infinite;
+    transform-origin: 50% 78%;
 }
 
 /* 雾气位于头像背后（层级更低），从头像后方向上升腾 */
 @keyframes smoke-float {
-    0%, 100% { transform: translate(-50%, -50%) translateY(0) scale(1); opacity: .78; }
-    50% { transform: translate(-50%, -50%) translateY(-14px) scale(1.04); opacity: 1; }
+    0%, 100% { transform: translateY(0) scale(1); opacity: .72; }
+    50% { transform: translateY(-12px) scale(1.035); opacity: .96; }
 }
 
 /* 头像层级高于雾气，始终清晰显示在前景 */
