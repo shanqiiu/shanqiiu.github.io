@@ -2225,17 +2225,8 @@ img {
 }
 
 /* ---------- Home navigation refinement ---------- */
-#home-bento .bento-col:nth-child(2) > .info-card:nth-of-type(2),
-#home-bento .bento-col:nth-child(2) > .info-card:nth-of-type(3) {
-    display: none;
-}
-
 #home-bento .bento-grid {
     align-items: stretch;
-}
-
-#home-bento .bento-col:first-child > .info-card:first-of-type {
-    display: none;
 }
 
 #home-bento .bento-col:first-child {
@@ -2249,7 +2240,7 @@ img {
 #home-bento .nav-cards {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
     padding: 56px 10px 10px;
     border-radius: var(--radius);
@@ -2302,46 +2293,6 @@ img {
 
 #home-bento .nav-card-desc {
     color: var(--text-2);
-}
-
-#home-bento .nav-card-title,
-#home-bento .nav-card-desc {
-    font-size: 0;
-}
-
-#home-bento .nav-card-title::after,
-#home-bento .nav-card-desc::after {
-    display: inline;
-}
-
-#home-bento .nav-card:nth-child(1) .nav-card-title::after {
-    content: "作品集";
-    font-size: 0.95rem;
-}
-
-#home-bento .nav-card:nth-child(1) .nav-card-desc::after {
-    content: "记录前端作品";
-    font-size: 0.78rem;
-}
-
-#home-bento .nav-card:nth-child(2) .nav-card-title::after {
-    content: "文章";
-    font-size: 0.95rem;
-}
-
-#home-bento .nav-card:nth-child(2) .nav-card-desc::after {
-    content: "记录前端知识";
-    font-size: 0.78rem;
-}
-
-#home-bento .nav-card:nth-child(3) .nav-card-title::after {
-    content: "友链";
-    font-size: 0.95rem;
-}
-
-#home-bento .nav-card:nth-child(3) .nav-card-desc::after {
-    content: "友链共享";
-    font-size: 0.78rem;
 }
 
 #home-bento .nav-card-icon {
