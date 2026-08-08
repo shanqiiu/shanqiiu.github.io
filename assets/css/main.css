@@ -2229,6 +2229,150 @@ img {
     }
 }
 
+/* ---------- Home navigation refinement ---------- */
+#home-bento .bento-col:nth-child(2) > .info-card:nth-of-type(2),
+#home-bento .bento-col:nth-child(2) > .info-card:nth-of-type(3) {
+    display: none;
+}
+
+#home-bento .nav-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px;
+    border-radius: var(--radius);
+    background: rgba(15, 23, 42, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+#home-bento .nav-card {
+    min-height: 76px;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.52);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+    box-shadow: none;
+}
+
+#home-bento .nav-card:hover {
+    transform: translateY(-2px);
+    background: rgba(15, 23, 42, 0.68);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+#home-bento .nav-card-body {
+    gap: 7px;
+}
+
+#home-bento .nav-card-title {
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+#home-bento .nav-card-desc {
+    color: rgba(248, 250, 252, 0.82);
+}
+
+#home-bento .nav-card-title,
+#home-bento .nav-card-desc {
+    font-size: 0;
+}
+
+#home-bento .nav-card-title::after,
+#home-bento .nav-card-desc::after {
+    display: inline;
+}
+
+#home-bento .nav-card:nth-child(1) .nav-card-title::after {
+    content: "作品集";
+    font-size: 0.95rem;
+}
+
+#home-bento .nav-card:nth-child(1) .nav-card-desc::after {
+    content: "记录前端作品";
+    font-size: 0.78rem;
+}
+
+#home-bento .nav-card:nth-child(2) .nav-card-title::after {
+    content: "文章";
+    font-size: 0.95rem;
+}
+
+#home-bento .nav-card:nth-child(2) .nav-card-desc::after {
+    content: "记录前端知识";
+    font-size: 0.78rem;
+}
+
+#home-bento .nav-card:nth-child(3) .nav-card-title::after {
+    content: "友链";
+    font-size: 0.95rem;
+}
+
+#home-bento .nav-card:nth-child(3) .nav-card-desc::after {
+    content: "友链共享";
+    font-size: 0.78rem;
+}
+
+#home-bento .nav-card-icon {
+    order: 2;
+    margin-left: auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+#home-bento .nav-card-arrow {
+    display: none;
+}
+
+.friend-link-fab {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: rgba(15, 23, 42, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.74);
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.friend-link-fab .svg-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.friend-link-fab:hover {
+    transform: translateY(-2px);
+    color: var(--accent);
+}
+
+@media (max-width: 900px) {
+    #home-bento .nav-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .friend-link-fab {
+        right: 12px;
+        bottom: 12px;
+    }
+}
+
 /* ---------- SVG 图标系统（来自 template-web static/svg） ---------- */
 .svg-icon {
     width: 1em;
