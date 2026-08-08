@@ -1624,6 +1624,7 @@ img {
 }
 
 #home-bento .container {
+    max-width: 980px;
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
