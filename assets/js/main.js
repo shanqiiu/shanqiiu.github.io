@@ -65,10 +65,13 @@
   }
 
   // 3) GitHub 贡献热力图
-  function renderHeatmap(username, containerId) {
+  function renderHeatmap(username, containerId, year) {
     var container = document.getElementById(containerId);
     if (!container || !username) return;
-    var year = new Date().getFullYear();
+    var currentYear = new Date().getFullYear();
+    year = Number(year) || Number(container.getAttribute('data-year')) || currentYear;
+    year = Math.min(currentYear, Math.max(2008, year));
+    container.classList.add('hm-loading');
     var api = 'https://github-contributions-api.jogruber.de/v4/' +
               encodeURIComponent(username) + '?y=' + year;
     fetch(api)
@@ -81,9 +84,13 @@
         }, 0);
         container.setAttribute('data-total', String(total));
         container.setAttribute('data-year', String(year));
-        container.innerHTML = buildHeatmap(contribs);
+        container.innerHTML = buildHeatmap(contribs, year, currentYear);
+        container.classList.remove('hm-loading');
       })
-      .catch(function () { container.style.display = 'none'; });
+      .catch(function () {
+        container.classList.remove('hm-loading');
+        container.style.display = 'none';
+      });
   }
 
   // 把每日贡献按「周(列) x 星期(行)」分组并渲染为方块网格
@@ -91,7 +98,7 @@
                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var HM_PITCH = 12; // 9px cell + 3px gap
 
-  function buildHeatmap(contribs) {
+  function buildHeatmap(contribs, year, currentYear) {
     var weeks = [];
     var week = null;
     var started = false;
@@ -137,7 +144,13 @@
       }
     });
 
-    return '<div class="hm-scroll">' +
+    var nextDisabled = year >= currentYear ? ' disabled aria-disabled="true"' : '';
+    return '<div class="hm-year-controls" aria-label="Contribution year">' +
+             '<button class="hm-year-btn" type="button" data-year="' + (year - 1) + '" aria-label="Previous year">‹</button>' +
+             '<span class="hm-year-current">' + year + '</span>' +
+             '<button class="hm-year-btn" type="button" data-year="' + (year + 1) + '" aria-label="Next year"' + nextDisabled + '>›</button>' +
+           '</div>' +
+           '<div class="hm-scroll">' +
              '<div class="hm-months">' + monthLabels + '</div>' +
              '<div class="hm-grid" role="img" aria-label="GitHub 贡献热力图">' + cells + '</div>' +
            '</div>' +
@@ -195,6 +208,11 @@
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';
       renderHeatmap(user, 'github-heatmap');
+      hm.addEventListener('click', function (event) {
+        var btn = event.target.closest('.hm-year-btn');
+        if (!btn || btn.disabled) return;
+        renderHeatmap(user, 'github-heatmap', btn.getAttribute('data-year'));
+      });
     }
   }
 
