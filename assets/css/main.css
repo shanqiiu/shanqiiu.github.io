@@ -1243,11 +1243,27 @@ img {
 }
 
 /* ---------- GitHub 贡献热力图 ---------- */
+.hm-scroll {
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+}
+.hm-months {
+    position: relative;
+    height: 15px;
+    margin-bottom: 3px;
+}
+.hm-month {
+    position: absolute;
+    top: 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1;
+    color: var(--text-3);
+    white-space: nowrap;
+}
 .hm-grid {
     display: flex;
     gap: 3px;
-    overflow-x: auto;
-    padding: 4px 2px 8px;
 }
 .hm-col {
     display: flex;
@@ -1524,6 +1540,10 @@ img {
         margin: 0 auto;
     }
 
+    .hero-avatar-wrap {
+        margin: 0 auto;
+    }
+
     .hero-content {
         align-items: center;
     }
@@ -1746,4 +1766,65 @@ img {
 
 .more-link:hover {
     color: var(--accent);
+}
+
+/* ---------- 头像蒸汽 / 雾气动画（纯 CSS，参考 template-web） ---------- */
+.hero-avatar-wrap {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+    margin: 0 auto;
+}
+
+.avatar-smoke {
+    position: absolute;
+    left: 50%;
+    top: -10px;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 120px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.avatar-smoke span {
+    position: absolute;
+    bottom: 6px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(255, 255, 255, 0.35) 42%,
+        rgba(255, 255, 255, 0) 70%);
+    filter: blur(7px);
+    opacity: 0;
+    transform: translateX(-50%);
+    animation: smoke-rise 5s ease-in infinite;
+}
+
+.avatar-smoke span:nth-child(1) { left: 24%; animation-delay: 0s; }
+.avatar-smoke span:nth-child(2) { left: 44%; width: 52px; height: 52px; animation-delay: 1.4s; }
+.avatar-smoke span:nth-child(3) { left: 60%; width: 72px; height: 72px; animation-delay: 2.6s; }
+.avatar-smoke span:nth-child(4) { left: 38%; width: 46px; height: 46px; animation-delay: 3.7s; }
+
+@keyframes smoke-rise {
+    0%   { transform: translateX(-50%) translateY(8px) scale(0.5); opacity: 0; }
+    15%  { opacity: 0.6; }
+    60%  { opacity: 0.4; }
+    100% { transform: translateX(-50%) translateY(-82px) scale(1.4); opacity: 0; }
+}
+
+/* 亮色主题下雾气改为烟灰色，保证可见 */
+[data-theme="light"] .avatar-smoke span {
+    background: radial-gradient(circle,
+        rgba(100, 116, 139, 0.6) 0%,
+        rgba(100, 116, 139, 0.28) 42%,
+        rgba(100, 116, 139, 0) 70%);
+}
+
+/* 尊重「减少动态效果」偏好 */
+@media (prefers-reduced-motion: reduce) {
+    .avatar-smoke span { animation: none; opacity: 0; }
 }

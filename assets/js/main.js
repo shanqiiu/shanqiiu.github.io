@@ -50,6 +50,10 @@
   }
 
   // 把每日贡献按「周(列) x 星期(行)」分组并渲染为方块网格
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var HM_PITCH = 14; // 单元格 11px + 间隔 3px
+
   function buildHeatmap(contribs) {
     var weeks = [];
     var week = null;
@@ -59,15 +63,15 @@
       var dow = d.getDay(); // 0=周日
       if (!started) {
         started = true;
-        week = new Array(7).fill(null);
-        week[dow] = c;
+        week = { days: new Array(7).fill(null), first: d };
+        week.days[dow] = c;
         weeks.push(week);
       } else if (dow === 0) {
-        week = new Array(7).fill(null);
-        week[0] = c;
+        week = { days: new Array(7).fill(null), first: d };
+        week.days[0] = c;
         weeks.push(week);
       } else {
-        week[dow] = c;
+        week.days[dow] = c;
       }
     });
 
@@ -75,7 +79,7 @@
     weeks.forEach(function (w) {
       cells += '<div class="hm-col">';
       for (var i = 0; i < 7; i++) {
-        var c = w[i];
+        var c = w.days[i];
         if (!c) { cells += '<span class="hm-cell hm-empty"></span>'; continue; }
         var lvl = c.level || 0;
         var tip = c.date + '：' + c.count + ' 次贡献';
@@ -84,7 +88,22 @@
       cells += '</div>';
     });
 
-    return '<div class="hm-grid" role="img" aria-label="GitHub 贡献热力图">' + cells + '</div>' +
+    // 月份横轴标签：当某列首日是新月份时标注（首项固定标注）
+    var monthLabels = '';
+    var lastMonth = -1;
+    weeks.forEach(function (w, idx) {
+      var m = w.first.getMonth();
+      if (m !== lastMonth) {
+        monthLabels += '<span class="hm-month" style="left:' + (idx * HM_PITCH) +
+                       'px">' + MONTHS[m] + '</span>';
+        lastMonth = m;
+      }
+    });
+
+    return '<div class="hm-scroll">' +
+             '<div class="hm-months">' + monthLabels + '</div>' +
+             '<div class="hm-grid" role="img" aria-label="GitHub 贡献热力图">' + cells + '</div>' +
+           '</div>' +
            '<div class="hm-legend"><span>少</span>' +
            '<span class="hm-cell lvl-0"></span><span class="hm-cell lvl-1"></span>' +
            '<span class="hm-cell lvl-2"></span><span class="hm-cell lvl-3"></span>' +

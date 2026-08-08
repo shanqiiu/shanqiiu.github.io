@@ -1,7 +1,12 @@
 {{ define "main" }}
 <section class="hero">
     <div class="container hero-inner">
-        <img class="hero-avatar" src="{{ "img/avatar-lebron.jpg" | relURL }}" alt="头像">
+        <div class="hero-avatar-wrap">
+            <div class="avatar-smoke" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <img class="hero-avatar" src="{{ "img/avatar-lebron.jpg" | relURL }}" alt="头像">
+        </div>
         <div class="hero-content">
             <div class="hero-meta">{{ site.Params.hero.greeting }}</div>
             <h1 class="hero-title" data-typing>
