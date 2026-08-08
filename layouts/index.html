@@ -2,75 +2,169 @@
 <section class="hero">
     <div class="container hero-inner">
         <img class="hero-avatar" src="{{ "img/avatar-lebron.jpg" | relURL }}" alt="头像">
-        <div class="hero-meta">{{ site.Params.hero.greeting }}</div>
-        <h1 class="hero-title">
-            <span class="hero-name">{{ site.Params.hero.name }}</span>
-            <span class="hero-en">{{ site.Params.hero.englishName }}</span>
-        </h1>
-        <p class="hero-role">{{ site.Params.hero.role }}</p>
-        {{ with site.Params.hero.signature }}
-            <p class="hero-signature">「{{ . }}」</p>
-        {{ end }}
-        <p class="hero-bio">{{ site.Params.hero.bio }}</p>
-        <div class="hero-tags">
-            {{ range site.Params.hero.tags }}
-                <span class="tag">{{ . }}</span>
+        <div class="hero-content">
+            <div class="hero-meta">{{ site.Params.hero.greeting }}</div>
+            <h1 class="hero-title" data-typing>
+                <span class="hero-name">{{ site.Params.hero.name }}</span>
+                <span class="hero-en">{{ site.Params.hero.englishName }}</span>
+                <span class="typing-cursor"></span>
+            </h1>
+            <p class="hero-role">{{ site.Params.hero.role }}</p>
+            {{ with site.Params.hero.signature }}
+                <p class="hero-signature">「{{ . }}」</p>
             {{ end }}
-        </div>
-        <div class="hero-actions">
-            <a class="btn btn-primary" href="{{ "post/" | relURL }}">阅读文章</a>
-            <a class="btn btn-ghost" href="{{ "projects/" | relURL }}">查看项目</a>
-        </div>
-    </div>
-</section>
-
-<section class="section" id="github">
-    <div class="container">
-        <h2 class="section-title">GitHub 活跃度</h2>
-        <p class="section-sub">过去一年的代码贡献轨迹</p>
-        <div id="github-heatmap" data-user="shanqiiu"></div>
-    </div>
-</section>
-
-<section class="section" id="projects">
-    <div class="container">
-        <h2 class="section-title">精选项目</h2>
-        <p class="section-sub">个人项目的实践记录与当前状态</p>
-        {{ $projects := where site.RegularPages "Section" "projects" }}
-        {{ $featured := where $projects "Params.featured" true }}
-        {{ if $featured }}
-            <div class="grid">
-                {{ range first site.Params.homepage.maxFeaturedProjects $featured }}
-                    {{ partial "project-card.html" . }}
+            <p class="hero-bio">{{ site.Params.hero.bio }}</p>
+            <div class="hero-tags">
+                {{ range site.Params.hero.tags }}
+                    <span class="tag">{{ . }}</span>
                 {{ end }}
             </div>
-        {{ else }}
-            <p class="empty-tip">还没有精选项目，去 <a href="{{ "projects/" | relURL }}">项目页</a> 添加吧。</p>
-        {{ end }}
+            <div class="hero-socials">
+                {{ with site.Params.hero.socials.github }}
+                <a href="{{ . }}" target="_blank" rel="noopener" aria-label="GitHub">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                </a>
+                {{ end }}
+                {{ with site.Params.hero.socials.qq }}
+                <a href="{{ . }}" aria-label="QQ">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.003 2c-2.265 0-6.29 1.364-6.29 7.325v1.195S3.55 14.96 3.55 17.474c0 .665.17 1.025.28 1.025.115 0 .902-.484 1.748-2.072 0 0-.18 2.197 1.904 3.967 0 0-1.77.495-1.77 1.182 0 .686 4.078.43 6.29.43 2.213 0 6.29.257 6.29-.43 0-.687-1.77-1.182-1.77-1.182 2.085-1.77 1.904-3.967 1.904-3.967.846 1.588 1.634 2.072 1.748 2.072.11 0 .28-.36.28-1.025 0-2.514-2.164-6.954-2.164-6.954V9.325C18.29 3.364 14.268 2 12.003 2z"/></svg>
+                </a>
+                {{ end }}
+            </div>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="{{ "post/" | relURL }}">阅读文章</a>
+                <a class="btn btn-ghost" href="{{ "projects/" | relURL }}">查看项目</a>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="section section-alt" id="recent-posts">
+<section class="section" id="home-bento">
     <div class="container">
-        <h2 class="section-title">最近文章</h2>
-        <p class="section-sub">知识博客：技术笔记、实践心得与随笔思考</p>
-        {{ $posts := where site.RegularPages "Section" "post" }}
-        {{ range first site.Params.homepage.recentPosts $posts }}
-            {{ partial "post-card.html" . }}
-        {{ end }}
-        <a class="more-link" href="{{ "post/" | relURL }}">全部文章 →</a>
-    </div>
-</section>
+        <div class="bento-grid">
+            <!-- 左侧栏 -->
+            <div class="bento-col">
+                <!-- 个人信息 -->
+                <div class="info-card">
+                    <div class="info-title">ABOUT</div>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span>{{ site.Params.hero.location | default "地球" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            <span>{{ site.Params.hero.hometown | default "故乡" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                            <span>{{ site.Params.hero.workStatus | default "在职" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>{{ site.Params.hero.experience | default "1" }} 年经验</span>
+                        </div>
+                    </div>
+                </div>
 
-<section class="section" id="learning">
-    <div class="container">
-        <h2 class="section-title">学习历程</h2>
-        <p class="section-sub">一步一个脚印，记录正在学习的东西与走过的路</p>
-        {{ $learning := where site.RegularPages "Section" "learning" }}
-        {{ range first site.Params.homepage.recentLearning $learning }}
-            {{ partial "learning-card.html" . }}
-        {{ end }}
-        <a class="more-link" href="{{ "learning/" | relURL }}">全部历程 →</a>
+                <!-- 标签云 -->
+                <div class="info-card">
+                    <div class="info-title">TAGS</div>
+                    <div class="tag-cloud">
+                        {{ range site.Params.hero.tags }}
+                            <span class="tag">{{ . }}</span>
+                        {{ end }}
+                    </div>
+                </div>
+
+                <!-- 经历时间线 -->
+                {{ if site.Params.hero.timeline }}
+                <div class="info-card timeline-card">
+                    <div class="info-title">EXPERIENCE</div>
+                    <div class="timeline-list">
+                        {{ range site.Params.hero.timeline }}
+                        <div class="timeline-item">
+                            <div class="timeline-title">{{ .title }}</div>
+                            <div class="timeline-date">{{ .date }}</div>
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+                {{ end }}
+            </div>
+
+            <!-- 右侧栏 -->
+            <div class="bento-col">
+                <!-- GitHub 热力图 -->
+                <div class="info-card">
+                    <div class="info-title">
+                        <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;display:inline-block;vertical-align:-2px;margin-right:6px;"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                        GitHub 活跃度
+                    </div>
+                    <div id="github-heatmap" data-user="shanqiiu"></div>
+                </div>
+
+                <!-- 精选项目 -->
+                <div class="info-card">
+                    <div class="info-title">PROJECTS</div>
+                    {{ $projects := where site.RegularPages "Section" "projects" }}
+                    {{ $featured := where $projects "Params.featured" true }}
+                    {{ if $featured }}
+                        <div class="grid" style="gap:16px;">
+                            {{ range first site.Params.homepage.maxFeaturedProjects $featured }}
+                                {{ partial "project-card.html" . }}
+                            {{ end }}
+                        </div>
+                    {{ else }}
+                        <p class="empty-tip">还没有精选项目，去 <a href="{{ "projects/" | relURL }}">项目页</a> 添加吧。</p>
+                    {{ end }}
+                </div>
+
+                <!-- 最近文章 -->
+                <div class="info-card">
+                    <div class="info-title">ARTICLES</div>
+                    {{ $posts := where site.RegularPages "Section" "post" }}
+                    {{ range first site.Params.homepage.recentPosts $posts }}
+                        {{ partial "post-card.html" . }}
+                    {{ end }}
+                    <a class="more-link" href="{{ "post/" | relURL }}">全部文章 →</a>
+                </div>
+
+                <!-- 导航卡片 -->
+                <div class="nav-cards">
+                    <a class="nav-card" href="{{ "projects/" | relURL }}">
+                        <div class="nav-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                        </div>
+                        <div class="nav-card-body">
+                            <span class="nav-card-title">作品集</span>
+                            <span class="nav-card-desc">记录个人项目</span>
+                        </div>
+                        <span class="nav-card-arrow">→</span>
+                    </a>
+                    <a class="nav-card" href="{{ "post/" | relURL }}">
+                        <div class="nav-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </div>
+                        <div class="nav-card-body">
+                            <span class="nav-card-title">文章</span>
+                            <span class="nav-card-desc">记录技术知识</span>
+                        </div>
+                        <span class="nav-card-arrow">→</span>
+                    </a>
+                    <a class="nav-card" href="{{ "about/" | relURL }}">
+                        <div class="nav-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        </div>
+                        <div class="nav-card-body">
+                            <span class="nav-card-title">关于</span>
+                            <span class="nav-card-desc">了解更多</span>
+                        </div>
+                        <span class="nav-card-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 {{ end }}

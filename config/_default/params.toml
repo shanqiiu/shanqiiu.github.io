@@ -12,6 +12,24 @@ since       = 2026
     bio         = "在这里记录技术探索的足迹、个人项目的实践心得，以及一路走来的学习历程。"
     tags        = ["编程", "AI", "个人项目", "学习记录"]
 
+    # 以下字段为 template-web 风格首页可选数据,未填写则使用默认值或不显示
+    age         = "26"
+    experience  = "1"
+    location    = "深圳"
+    hometown    = "广西"
+    workStatus  = "在职"
+
+    [hero.socials]
+        github  = "https://github.com/shanqiiu"
+        qq      = "tencent://message/?uin=1955450958"
+
+    [[hero.timeline]]
+        title = "硕士在读"
+        date  = "2022-2025"
+    [[hero.timeline]]
+        title = "AI 算法工程师"
+        date  = "2025-至今"
+
 [homepage]
     recentPosts        = 5
     recentLearning     = 3

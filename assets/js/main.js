@@ -91,9 +91,50 @@
            '<span class="hm-cell lvl-4"></span><span>多</span></div>';
   }
 
+  // 4) Hero 打字机效果
+  function initTyping() {
+    var el = document.querySelector('[data-typing]');
+    if (!el) return;
+    var nameSpan = el.querySelector('.hero-name');
+    var enSpan = el.querySelector('.hero-en');
+    var cursor = el.querySelector('.typing-cursor');
+    if (!nameSpan || !enSpan || !cursor) return;
+
+    var finalName = nameSpan.textContent || '';
+    var finalEn = enSpan.textContent || '';
+    var fullText = finalName + (finalEn ? ' ' + finalEn : '');
+
+    // 清空内容，只保留光标
+    nameSpan.textContent = '';
+    enSpan.textContent = '';
+    el.insertBefore(nameSpan, cursor);
+    el.insertBefore(enSpan, cursor);
+
+    var i = 0;
+    var speed = 90;
+    function type() {
+      if (i <= fullText.length) {
+        var current = fullText.slice(0, i);
+        var nameEnd = finalName.length;
+        if (i <= nameEnd) {
+          nameSpan.textContent = current;
+          enSpan.textContent = '';
+        } else {
+          nameSpan.textContent = finalName;
+          enSpan.textContent = current.slice(nameEnd + 1); // 跳过中间空格
+        }
+        i++;
+        setTimeout(type, speed + Math.random() * 40);
+      }
+    }
+    // 等 loader 淡出后再开始打字，避免被遮挡
+    setTimeout(type, 700);
+  }
+
   // 启动入口
   function boot() {
     initZoom();
+    initTyping();
     var hm = document.getElementById('github-heatmap');
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';
