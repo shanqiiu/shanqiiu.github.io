@@ -397,7 +397,7 @@ img {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 26px;
+    padding: 9px 22px;
     border-radius: 12px;
     font-size: 0.95rem;
     font-weight: 500;
@@ -1451,8 +1451,8 @@ img {
     isolation: isolate;
     overflow: visible;
     display: grid;
-    grid-template-columns: 148px 1fr;
-    gap: 28px;
+    grid-template-columns: 118px 1fr;
+    gap: 22px;
     align-items: center;
     position: relative;
     background:
@@ -1466,7 +1466,7 @@ img {
         inset 0 1px 0 rgba(255, 255, 255, 0.88),
         inset 0 -1px 0 rgba(15, 23, 42, 0.05),
         0 18px 48px rgba(15, 23, 42, 0.2);
-    padding: 20px 28px;
+    padding: 14px 22px;
 }
 
 .hero-inner::before {
@@ -1489,8 +1489,8 @@ img {
 }
 
 .hero-avatar {
-    width: 148px;
-    height: 148px;
+    width: 118px;
+    height: 118px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(255, 255, 255, 0.28);
@@ -1508,7 +1508,7 @@ img {
 .hero-content {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 7px;
     width: 100%;
 }
 
@@ -1524,9 +1524,9 @@ img {
 
 .hero-title {
     font-family: var(--font-sans);
-    font-size: clamp(2rem, 3.6vw, 2.6rem);
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.08;
     margin: 0;
     text-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
@@ -1555,7 +1555,7 @@ img {
 }
 
 .hero-role {
-    font-size: 0.98rem;
+    font-size: 0.9rem;
     color: rgba(30, 41, 59, 0.76);
     margin: 0;
 }
@@ -1567,7 +1567,7 @@ img {
     color: rgba(30, 41, 59, 0.58);
     font-size: 0.95rem;
     margin: 0;
-    padding: 6px 16px;
+    padding: 4px 14px;
     border: 1px solid rgba(14, 165, 233, 0.82);
     border-radius: 999px;
     background: rgba(14, 165, 233, 0.08);
@@ -1578,23 +1578,24 @@ img {
     color: rgba(30, 41, 59, 0.72);
     max-width: 760px;
     margin: 0;
-    line-height: 1.55;
+    line-height: 1.42;
+    font-size: 0.88rem;
 }
 
 .hero-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 4px;
+    gap: 6px;
+    margin-top: 2px;
 }
 
 .hero-tags .tag {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(226, 232, 240, 0.34));
     border: 1px solid rgba(100, 116, 139, 0.24);
     color: rgba(30, 41, 59, 0.72);
-    padding: 5px 12px;
+    padding: 4px 10px;
     border-radius: 999px;
-    font-size: 0.82rem;
+    font-size: 0.76rem;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     transition: all 0.2s ease;
 }
@@ -1623,16 +1624,16 @@ img {
 
 .hero-socials {
     display: flex;
-    gap: 10px;
-    margin-top: 6px;
+    gap: 8px;
+    margin-top: 3px;
 }
 
 .hero-socials a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     border-radius: 10px;
     background: rgba(30, 41, 59, 0.54);
     border: 1px solid rgba(255, 255, 255, 0.34);
@@ -1692,25 +1693,25 @@ img {
     .hero-inner {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 26px;
-        padding: 32px 22px 30px;
+        gap: 16px;
+        padding: 22px 18px 20px;
     }
 
     .hero-avatar {
         margin: 0 auto;
-        width: 136px;
-        height: 136px;
+        width: 112px;
+        height: 112px;
     }
 
     .hero-avatar-wrap {
         margin: 0 auto;
-        width: 136px;
-        height: 136px;
+        width: 112px;
+        height: 112px;
     }
 
     .avatar-smoke {
-        top: -14px;
-        width: 184px;
+        top: -9px;
+        width: 146px;
     }
 
     .hero-content {
@@ -1940,10 +1941,10 @@ img {
 /* ---------- 头像蒸汽（template-web smoke.png） ---------- */
 .hero-avatar-wrap {
     position: relative;
-    width: 148px;
-    height: 148px;
+    width: 118px;
+    height: 118px;
     flex-shrink: 0;
-    margin: 0 auto 44px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1952,7 +1953,7 @@ img {
 .hero-avatar-wrap::before {
     content: "";
     position: absolute;
-    inset: -12px;
+    inset: -9px;
     z-index: 1;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1965,9 +1966,9 @@ img {
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: -16px;
+    top: -10px;
     transform: translate(-50%, -50%);
-    width: 198px;
+    width: 154px;
     pointer-events: none;
     z-index: 0;
 }
