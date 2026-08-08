@@ -1780,10 +1780,9 @@ img {
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: 100%;
-    margin-top: 10px;
-    transform: translateX(-50%);
-    width: 185px;
+    top: 42%;
+    transform: translate(-50%, -50%);
+    width: 200px;
     pointer-events: none;
     z-index: 0;
 }
@@ -1792,18 +1791,18 @@ img {
     display: block;
     width: 100%;
     height: auto;
-    opacity: 0.85;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, .22));
+    opacity: 0.82;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, .25));
     animation: smoke-float 5s ease-in-out infinite;
 }
 
-/* 烟雾位于头像下方，向下轻飘扩散，绝不遮挡面部 */
+/* 雾气位于头像背后（层级更低），从头像后方向上升腾 */
 @keyframes smoke-float {
-    0%, 100% { transform: translateY(0) scale(1); opacity: .78; }
-    50% { transform: translateY(14px) scale(1.04); opacity: 1; }
+    0%, 100% { transform: translate(-50%, -50%) translateY(0) scale(1); opacity: .78; }
+    50% { transform: translate(-50%, -50%) translateY(-14px) scale(1.04); opacity: 1; }
 }
 
-/* 头像层级高于雾气，避免被遮挡 */
+/* 头像层级高于雾气，始终清晰显示在前景 */
 .hero-avatar-wrap > .hero-avatar {
     position: relative;
     z-index: 2;
