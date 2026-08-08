@@ -1456,8 +1456,8 @@ img {
     align-items: center;
     position: relative;
     background:
-        linear-gradient(115deg, rgba(255, 255, 255, 0.18), rgba(241, 245, 249, 0.11) 48%, rgba(226, 232, 240, 0.07)),
-        rgba(248, 250, 252, 0.05);
+        linear-gradient(115deg, rgba(255, 255, 255, 0.1), rgba(241, 245, 249, 0.06) 48%, rgba(226, 232, 240, 0.04)),
+        rgba(248, 250, 252, 0.025);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid rgba(255, 255, 255, 0.82);
@@ -1470,14 +1470,7 @@ img {
 }
 
 .hero-inner::before {
-    content: "";
-    position: absolute;
-    inset: 1px;
-    z-index: 0;
-    border-radius: calc(var(--radius) - 1px);
-    background: repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.026) 0 1px, transparent 1px 72px);
-    opacity: 0.28;
-    pointer-events: none;
+    display: none;
 }
 
 .hero-avatar-wrap,
