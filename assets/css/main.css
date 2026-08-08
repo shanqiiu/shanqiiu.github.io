@@ -2230,6 +2230,22 @@ img {
     display: none;
 }
 
+#home-bento .bento-grid {
+    align-items: stretch;
+}
+
+#home-bento .bento-col:first-child > .info-card:first-of-type {
+    display: none;
+}
+
+#home-bento .bento-col:first-child {
+    height: 100%;
+}
+
+#home-bento .bento-col:first-child > .info-card {
+    flex: 1 1 0;
+}
+
 #home-bento .nav-cards {
     position: relative;
     display: grid;
@@ -2411,6 +2427,14 @@ img {
 @media (max-width: 900px) {
     #home-bento .nav-cards {
         grid-template-columns: 1fr;
+    }
+
+    #home-bento .bento-col:first-child {
+        height: auto;
+    }
+
+    #home-bento .bento-col:first-child > .info-card {
+        flex: 0 1 auto;
     }
 
     .page-nav-fab {
