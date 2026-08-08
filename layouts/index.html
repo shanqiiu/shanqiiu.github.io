@@ -30,6 +30,13 @@
                 <span class="hero-en">{{ site.Params.hero.englishName }}</span>
                 <span class="typing-cursor"></span>
             </h1>
+            <div class="hero-info-grid" aria-label="Profile summary">
+                <span class="hero-info-item hero-info-wide">{{ site.Params.hero.role }}</span>
+                <span class="hero-info-item">{{ site.Params.hero.age | default "26" }} years old</span>
+                <span class="hero-info-item">{{ site.Params.hero.location | default "Guangzhou" }}</span>
+                <span class="hero-info-item">{{ site.Params.hero.experience | default "1" }} years experience</span>
+                <span class="hero-info-item">{{ site.Params.hero.workStatus | default "Available" }}</span>
+            </div>
             <p class="hero-role">{{ site.Params.hero.role }}</p>
             {{ with site.Params.hero.signature }}
                 <p class="hero-signature">「{{ . }}」</p>

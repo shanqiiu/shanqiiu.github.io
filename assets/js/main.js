@@ -2,6 +2,38 @@
 (function () {
   'use strict';
 
+  function initTheme() {
+    var root = document.documentElement;
+    var toggle = document.getElementById('theme-toggle');
+    var stored = null;
+    try {
+      stored = localStorage.getItem('theme');
+    } catch (e) { /* ignore */ }
+    if (stored === 'light' || stored === 'dark') {
+      root.setAttribute('data-theme', stored);
+    }
+
+    function syncToggle() {
+      if (!toggle) return;
+      var isDark = root.getAttribute('data-theme') === 'dark';
+      toggle.setAttribute('aria-pressed', String(isDark));
+      toggle.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+
+    syncToggle();
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) { /* ignore */ }
+        syncToggle();
+      });
+    }
+  }
+  initTheme();
+
   // 1) 首屏加载动画：资源就绪后移除 loader
   function hideLoader() {
     var loader = document.getElementById('page-loader');
