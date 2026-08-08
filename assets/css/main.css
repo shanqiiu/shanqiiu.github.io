@@ -1053,47 +1053,36 @@ img {
 
 /* ---------- Footer ---------- */
 .site-footer {
-    border-top: 1px solid var(--border);
-    padding: 36px 0 44px;
-    background: var(--bg-soft);
-}
-
-.footer-inner {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 0 22px;
+    background: transparent;
+    border: 0;
 }
 
-.footer-copy p {
-    color: var(--text-3);
-    font-size: 0.84rem;
-    margin-bottom: 4px;
-}
-
-.footer-copy a {
-    color: var(--text-2);
-    border-bottom: 1px dashed var(--border-strong);
-}
-
-.footer-copy a:hover {
-    color: var(--accent);
-}
-
-.footer-social {
+.footer-simple {
     display: flex;
-    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 34px;
+    color: rgba(30, 41, 59, 0.68);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
-.footer-social a {
-    color: var(--text-2);
-    font-size: 0.85rem;
-    transition: color 0.2s ease;
+[data-theme="dark"] .footer-simple {
+    color: rgba(241, 245, 249, 0.66);
+    text-shadow: 0 1px 0 rgba(15, 23, 42, 0.32);
 }
 
-.footer-social a:hover {
-    color: var(--accent);
+@media (max-width: 640px) {
+    .footer-simple {
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        padding: 0 18px;
+    }
 }
 
 /* ---------- Pagination ---------- */

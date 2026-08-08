@@ -1,19 +1,9 @@
-<footer class="site-footer">
-    <div class="container footer-inner">
-        <div class="footer-copy">
-            <p>
-                © {{ site.Params.since }}{{ if lt site.Params.since now.Year }}–{{ now.Year }}{{ end }}
-                {{ site.Params.author }}
-                · Powered by <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a> + <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
-            </p>
-            {{ with site.Params.footer.license }}
-                <p class="footer-license">{{ . | markdownify }}</p>
-            {{ end }}
-        </div>
-        <div class="footer-social">
-            {{ range site.Menus.social }}
-                <a href="{{ .URL }}" target="_blank" rel="noopener">{{ .Name }}</a>
-            {{ end }}
-        </div>
+{{- if .IsHome -}}
+<footer class="site-footer" aria-label="Site stats">
+    <div class="footer-simple">
+        <span>今日访客 7</span>
+        <span>总访客 3784</span>
+        <span>建站日期 2025-7-10</span>
     </div>
 </footer>
+{{- end -}}
