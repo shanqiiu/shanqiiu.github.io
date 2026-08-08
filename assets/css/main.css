@@ -1678,8 +1678,8 @@ img {
     }
 
     .avatar-badge-text text {
-        font-size: 7.8px;
-        letter-spacing: 0.9px;
+        font-size: 8.6px;
+        letter-spacing: 1px;
     }
 
     .hero-content {
@@ -1953,14 +1953,14 @@ img {
 
 .avatar-badge-text text {
     font-family: var(--font-mono);
-    font-size: 8.2px;
+    font-size: 9.4px;
     font-weight: 900;
-    letter-spacing: 0.95px;
+    letter-spacing: 1.05px;
     fill: rgba(30, 41, 59, 0.95);
     dominant-baseline: middle;
     paint-order: stroke;
     stroke: rgba(255, 255, 255, 0.88);
-    stroke-width: 1.6px;
+    stroke-width: 1.8px;
 }
 
 @keyframes avatar-ring-spin {
@@ -2012,8 +2012,8 @@ img {
     }
 
     .avatar-badge-text text {
-        font-size: 7.8px;
-        letter-spacing: 0.9px;
+        font-size: 8.6px;
+        letter-spacing: 1px;
     }
 }
 
