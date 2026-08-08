@@ -1,9 +1,10 @@
 {{- if .IsHome -}}
 <footer class="site-footer" aria-label="Site stats">
     <div class="footer-simple">
-        <span>今日访客 7</span>
-        <span>总访客 3784</span>
+        <span>今日访客 <span id="today-visitor-count">--</span></span>
+        <span>总访客 <span id="busuanzi_value_site_uv">--</span></span>
         <span>建站日期 2025-7-10</span>
     </div>
 </footer>
+<script defer src="https://vercount.one/js"></script>
 {{- end -}}

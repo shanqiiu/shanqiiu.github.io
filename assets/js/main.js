@@ -34,6 +34,29 @@
   }
   initTheme();
 
+  function initVisitorStats() {
+    var el = document.getElementById('today-visitor-count');
+    if (!el) return;
+    var now = new Date();
+    var dateKey = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0');
+    var countKey = 'shanqiiu:visitors:today:' + dateKey;
+    var seenKey = countKey + ':seen';
+    var count = 1;
+    try {
+      count = Number(localStorage.getItem(countKey) || '0');
+      if (!localStorage.getItem(seenKey)) {
+        count += 1;
+        localStorage.setItem(countKey, String(count));
+        localStorage.setItem(seenKey, '1');
+      }
+    } catch (e) {
+      count = 1;
+    }
+    el.textContent = String(Math.max(1, count));
+  }
+
   // 1) 首屏加载动画：资源就绪后移除 loader
   function hideLoader() {
     var loader = document.getElementById('page-loader');
@@ -204,6 +227,7 @@
   function boot() {
     initZoom();
     initTyping();
+    initVisitorStats();
     var hm = document.getElementById('github-heatmap');
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';
