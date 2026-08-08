@@ -1175,3 +1175,96 @@ img {
         max-width: 100%;
     }
 }
+
+/* ---------- 首屏加载动画 ---------- */
+.page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.page-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.page-loader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--accent);
+}
+.page-loader-spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid var(--accent-dim);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: pl-spin 0.8s linear infinite;
+}
+.page-loader-text {
+    font-size: 0.82rem;
+    letter-spacing: 0.2em;
+    color: var(--text-2);
+}
+@keyframes pl-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- GitHub 贡献热力图 ---------- */
+.hm-grid {
+    display: flex;
+    gap: 3px;
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+}
+.hm-col {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.hm-cell {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    background: #ebedf0;
+    flex: 0 0 auto;
+}
+.hm-cell.hm-empty {
+    background: transparent;
+}
+.hm-cell.lvl-0 { background: #ebedf0; }
+.hm-cell.lvl-1 { background: #9be9a8; }
+.hm-cell.lvl-2 { background: #40c463; }
+.hm-cell.lvl-3 { background: #30a14e; }
+.hm-cell.lvl-4 { background: #216e39; }
+[data-theme="light"] .hm-cell.lvl-0 { background: #ebedf0; }
+[data-theme="light"] .hm-cell.lvl-1 { background: #9be9a8; }
+[data-theme="light"] .hm-cell.lvl-2 { background: #40c463; }
+[data-theme="light"] .hm-cell.lvl-3 { background: #30a14e; }
+[data-theme="light"] .hm-cell.lvl-4 { background: #216e39; }
+[data-theme="dark"] .hm-cell.lvl-0 { background: #161b22; }
+[data-theme="dark"] .hm-cell.lvl-1 { background: #0e4429; }
+[data-theme="dark"] .hm-cell.lvl-2 { background: #006d32; }
+[data-theme="dark"] .hm-cell.lvl-3 { background: #26a641; }
+[data-theme="dark"] .hm-cell.lvl-4 { background: #39d353; }
+.hm-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--text-3);
+}
+
+/* ---------- 灯箱（medium-zoom 增强） ---------- */
+.content img,
+.post-card img,
+.project-card img {
+    cursor: zoom-in;
+}

@@ -4,6 +4,12 @@
     {{ partial "head.html" . }}
 </head>
 <body>
+    <div id="page-loader" class="page-loader" aria-hidden="true">
+        <div class="page-loader-inner">
+            <span class="page-loader-spinner"></span>
+            <span class="page-loader-text">加载中</span>
+        </div>
+    </div>
     {{ partial "header.html" . }}
 
     <main class="main">
@@ -11,6 +17,8 @@
     </main>
 
     {{ partial "footer.html" . }}
-    <script src="{{ "js/main.js" | relURL }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" defer></script>
+    {{ $js := resources.Get "js/main.js" | fingerprint }}
+    <script src="{{ $js.RelPermalink }}" defer></script>
 </body>
 </html>
