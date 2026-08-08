@@ -1532,10 +1532,14 @@ img {
 }
 
 .hero-name {
+    display: inline;
     color: #263241;
 }
 
 .hero-en {
+    display: inline;
+    margin-top: 0;
+    margin-left: 10px;
     color: var(--accent);
 }
 
