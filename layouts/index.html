@@ -5,17 +5,23 @@
             <div class="avatar-smoke" aria-hidden="true">
                 <img class="avatar-smoke-img" src="{{ "img/smoke.png" | relURL }}" alt="">
             </div>
-            <svg class="avatar-text-ring" viewBox="0 0 160 160" aria-hidden="true">
+            <svg class="avatar-badge" viewBox="0 0 176 176" role="img" aria-label="Stay gold, Pony boy!">
                 <defs>
-                    <path id="avatar-ring-path" d="M80 80 m -75 0 a 75 75 0 1 1 150 0 a 75 75 0 1 1 -150 0"></path>
+                    <clipPath id="avatar-image-clip">
+                        <circle cx="88" cy="88" r="82"></circle>
+                    </clipPath>
+                    <path id="avatar-ring-path" d="M88 88 m -82 0 a 82 82 0 1 1 164 0 a 82 82 0 1 1 -164 0"></path>
                 </defs>
-                <text>
-                    <textPath href="#avatar-ring-path" startOffset="1%">
-                        Stay gold, Pony boy! * Stay gold, Pony boy! * Stay gold, Pony boy! *
-                    </textPath>
-                </text>
+                <image class="avatar-badge-image" href="{{ "img/avatar-sakuragi-tight.jpg" | relURL }}" x="6" y="6" width="164" height="164" preserveAspectRatio="xMidYMid slice" clip-path="url(#avatar-image-clip)"></image>
+                <circle class="avatar-badge-border" cx="88" cy="88" r="82"></circle>
+                <g class="avatar-badge-text">
+                    <text>
+                        <textPath href="#avatar-ring-path" startOffset="1%">
+                            Stay gold, Pony boy! * Stay gold, Pony boy! * Stay gold, Pony boy! *
+                        </textPath>
+                    </text>
+                </g>
             </svg>
-            <img class="hero-avatar" src="{{ "img/avatar-sakuragi-tight.jpg" | relURL }}" alt="头像">
         </div>
         <div class="hero-content">
             <div class="hero-meta">{{ site.Params.hero.greeting }}</div>
