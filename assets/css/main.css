@@ -1774,32 +1774,39 @@ img {
     width: 160px;
     height: 160px;
     flex-shrink: 0;
-    margin: 0 auto;
+    margin: 0 auto 44px;
 }
 
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: -130px;
+    top: 100%;
+    margin-top: -22px;
     transform: translateX(-50%);
-    width: 180px;
-    height: 180px;
+    width: 185px;
     pointer-events: none;
-    z-index: 2;
+    z-index: 1;
 }
 
 .avatar-smoke-img {
     display: block;
     width: 100%;
     height: auto;
-    opacity: 0.92;
+    opacity: 0.85;
     filter: drop-shadow(0 0 10px rgba(255, 255, 255, .22));
     animation: smoke-float 5s ease-in-out infinite;
 }
 
+/* 烟雾位于头像下方，向下轻飘扩散，绝不遮挡面部 */
 @keyframes smoke-float {
-    0%, 100% { transform: translateY(0) scale(1); opacity: .9; }
-    50% { transform: translateY(-12px) scale(1.03); opacity: 1; }
+    0%, 100% { transform: translateY(0) scale(1); opacity: .78; }
+    50% { transform: translateY(14px) scale(1.04); opacity: 1; }
+}
+
+/* 头像层级高于雾气，避免被遮挡 */
+.hero-avatar-wrap > .hero-avatar {
+    position: relative;
+    z-index: 2;
 }
 
 /* 亮色主题下白烟不可见，直接隐藏 */
