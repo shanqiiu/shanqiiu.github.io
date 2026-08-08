@@ -1480,8 +1480,8 @@ img {
 }
 
 .hero-avatar {
-    width: 140px;
-    height: 140px;
+    width: 156px;
+    height: 156px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(255, 255, 255, 0.58);
@@ -1693,8 +1693,8 @@ img {
 
     .hero-avatar {
         margin: 0 auto;
-        width: 124px;
-        height: 124px;
+        width: 136px;
+        height: 136px;
     }
 
     .hero-avatar-wrap {
@@ -1709,8 +1709,8 @@ img {
     }
 
     .avatar-text-ring text {
-        font-size: 8.8px;
-        letter-spacing: 1.2px;
+        font-size: 8.4px;
+        letter-spacing: 1px;
     }
 
     .hero-content {
@@ -1952,14 +1952,14 @@ img {
 .hero-avatar-wrap::before {
     content: "";
     position: absolute;
-    inset: 7px;
+    inset: 5px;
     z-index: 1;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.58);
     box-shadow:
-        inset 0 0 0 1px rgba(56, 189, 248, 0.14),
-        0 14px 34px rgba(2, 6, 23, 0.18);
+        inset 0 0 0 1px rgba(56, 189, 248, 0.1),
+        0 12px 30px rgba(2, 6, 23, 0.16);
     pointer-events: none;
 }
 
@@ -1975,9 +1975,9 @@ img {
 
 .avatar-text-ring text {
     font-family: var(--font-mono);
-    font-size: 9.6px;
+    font-size: 9.2px;
     font-weight: 900;
-    letter-spacing: 1.45px;
+    letter-spacing: 1.25px;
     text-transform: uppercase;
     fill: rgba(30, 41, 59, 0.9);
     dominant-baseline: middle;
