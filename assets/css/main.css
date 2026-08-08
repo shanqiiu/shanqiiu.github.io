@@ -1480,15 +1480,16 @@ img {
 }
 
 .hero-avatar {
-    width: 132px;
-    height: 132px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid rgba(255, 255, 255, 0.28);
+    border: 3px solid rgba(255, 255, 255, 0.58);
     box-shadow:
-        0 0 0 8px rgba(255, 255, 255, 0.06),
-        0 0 0 1px rgba(56, 189, 248, 0.26),
-        0 18px 42px rgba(0, 0, 0, 0.34);
+        0 0 0 7px rgba(255, 255, 255, 0.18),
+        0 0 0 10px rgba(15, 23, 42, 0.08),
+        0 0 0 1px rgba(56, 189, 248, 0.36),
+        0 18px 42px rgba(0, 0, 0, 0.3);
     transition: transform 0.35s ease;
 }
 
@@ -1694,8 +1695,8 @@ img {
 
     .hero-avatar {
         margin: 0 auto;
-        width: 116px;
-        height: 116px;
+        width: 124px;
+        height: 124px;
     }
 
     .hero-avatar-wrap {
@@ -1710,8 +1711,8 @@ img {
     }
 
     .avatar-text-ring text {
-        font-size: 10px;
-        letter-spacing: 2px;
+        font-size: 10.5px;
+        letter-spacing: 1.9px;
     }
 
     .hero-content {
@@ -1953,13 +1954,13 @@ img {
 .hero-avatar-wrap::before {
     content: "";
     position: absolute;
-    inset: 17px;
+    inset: 11px;
     z-index: 1;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.42);
     box-shadow:
-        inset 0 0 0 1px rgba(56, 189, 248, 0.12),
-        0 18px 46px rgba(2, 6, 23, 0.22);
+        inset 0 0 0 1px rgba(56, 189, 248, 0.18),
+        0 16px 38px rgba(2, 6, 23, 0.2);
     pointer-events: none;
 }
 
@@ -1975,14 +1976,14 @@ img {
 
 .avatar-text-ring text {
     font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2.4px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2.2px;
     text-transform: uppercase;
-    fill: rgba(38, 50, 65, 0.72);
+    fill: rgba(30, 41, 59, 0.9);
     paint-order: stroke;
-    stroke: rgba(255, 255, 255, 0.58);
-    stroke-width: 1.2px;
+    stroke: rgba(255, 255, 255, 0.76);
+    stroke-width: 1.4px;
 }
 
 @keyframes avatar-ring-spin {
@@ -1993,7 +1994,7 @@ img {
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: 6px;
+    top: 0;
     transform: translate(-50%, -50%);
     width: 176px;
     pointer-events: none;
@@ -2004,7 +2005,7 @@ img {
     display: block;
     width: 100%;
     height: auto;
-    opacity: 0.82;
+    opacity: 0.58;
     filter:
         drop-shadow(0 0 10px rgba(255, 255, 255, 0.26))
         drop-shadow(0 18px 18px rgba(56, 189, 248, 0.1));
@@ -2014,8 +2015,8 @@ img {
 
 /* 雾气位于头像背后（层级更低），从头像后方向上升腾 */
 @keyframes smoke-float {
-    0%, 100% { transform: translateY(0) scale(1); opacity: .72; }
-    50% { transform: translateY(-12px) scale(1.035); opacity: .96; }
+    0%, 100% { transform: translateY(0) scale(1); opacity: .48; }
+    50% { transform: translateY(-12px) scale(1.035); opacity: .7; }
 }
 
 /* 头像层级高于雾气，始终清晰显示在前景 */
