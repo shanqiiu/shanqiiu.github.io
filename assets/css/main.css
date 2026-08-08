@@ -1055,9 +1055,15 @@ img {
 .site-footer {
     display: flex;
     justify-content: center;
-    padding: 8px 0 22px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    z-index: 40;
+    padding: 0;
     background: transparent;
     border: 0;
+    pointer-events: none;
 }
 
 .footer-simple {
