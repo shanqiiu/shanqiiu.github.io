@@ -1,15 +1,24 @@
-{{ $label := "未知" }}
-{{ if eq .Params.status "live" }}{{ $label = "进行中" }}{{ else if eq .Params.status "planned" }}{{ $label = "规划中" }}{{ else if eq .Params.status "done" }}{{ $label = "已完成" }}{{ end }}
-<a class="project-card"
+{{ $label := "项目" }}
+{{ $grad := "neutral" }}
+{{ if eq .Params.status "live" }}{{ $label = "进行中" }}{{ $grad = "live" }}
+{{ else if eq .Params.status "planned" }}{{ $label = "规划中" }}{{ $grad = "planned" }}
+{{ else if eq .Params.status "done" }}{{ $label = "已完成" }}{{ $grad = "done" }}
+{{ end }}
+<a class="project-card project-card--{{ $grad }}"
    href="{{ with .Params.link }}{{ . }}{{ else }}{{ .RelPermalink }}{{ end }}"
    {{ with .Params.link }}target="_blank" rel="noopener"{{ end }}>
-    <div class="project-card-head">
-        <span class="project-emoji">{{ with .Params.emoji }}{{ . }}{{ else }}📦{{ end }}</span>
-        {{ with .Params.status }}<span class="status status-{{ . }}">{{ $label }}</span>{{ end }}
+    <div class="project-card-cover">
+        {{ with .Params.cover }}<img class="project-card-img" src="{{ . }}" alt="{{ $.Title }}">{{ else }}<span class="project-emoji">{{ with .Params.emoji }}{{ . }}{{ else }}📦{{ end }}</span>{{ end }}
+        {{ with .Params.status }}<span class="status status-{{ . }} project-card-badge">{{ $label }}</span>{{ end }}
     </div>
-    <h3 class="project-card-title">{{ .Title }}</h3>
-    <p class="project-card-desc">{{ .Description | default (.Summary | plainify | truncate 100) }}</p>
-    <div class="project-card-meta">
-        {{ range .Params.tags }}<span class="tag">{{ . }}</span>{{ end }}
+    <div class="project-card-body">
+        <h3 class="project-card-title">{{ .Title }}</h3>
+        <p class="project-card-desc">{{ .Description | default (.Summary | plainify | truncate 100) }}</p>
+        <div class="project-card-foot">
+            <div class="project-card-meta">
+                {{ range .Params.tags }}<span class="tag">{{ . }}</span>{{ end }}
+            </div>
+            <span class="project-card-cta">{{ if .Params.link }}访问 ↗{{ else }}查看 →{{ end }}</span>
+        </div>
     </div>
 </a>
