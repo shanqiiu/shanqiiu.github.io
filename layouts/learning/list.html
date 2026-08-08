@@ -1,21 +1,130 @@
 {{ define "main" }}
-<section class="section container">
-    <header class="list-head">
-        <h1>{{ .Title }}</h1>
-        {{ with .Description }}<p class="list-desc">{{ . }}</p>{{ end }}
+{{ $items := slice
+    (dict "title" "任务栏闪烁" "cat" "electron" "desc" "通过使用 mainWindow.flashFrame() 来控制任务栏图标的闪烁状态。")
+    (dict "title" "结合后端实现自动更新" "cat" "electron" "desc" "通过 electron-builder 和 electron-updater，结合后端接口实现应用自动更新。")
+    (dict "title" "调试鸿蒙" "cat" "uniapp" "desc" "记录 uniapp 调试鸿蒙环境时的配置和常见问题。")
+    (dict "title" "应用签名防止杀毒软件误报" "cat" "electron" "desc" "通过签名工具降低安装时被安全软件误报的概率。")
+    (dict "title" "nest 配置" "cat" "nest" "desc" "Nest 项目中的模块、环境变量和启动配置记录。")
+    (dict "title" "vue3 响应式更新" "cat" "vue3" "desc" "记录 Vue3 响应式系统、ref、reactive 和更新时机。")
+    (dict "title" "托盘闪烁" "cat" "electron" "desc" "通过切换托盘图标实现状态提醒和消息闪烁。")
+    (dict "title" "node 配置" "cat" "node" "desc" "Node 运行环境、脚本命令和常用配置记录。")
+    (dict "title" "工程化配置" "cat" "工程化" "desc" "项目工程化、打包、格式化和规范配置记录。")
+    (dict "title" "结合 GitHub 实现自动更新" "cat" "electron" "desc" "通过 GitHub Release 承载安装包和更新元数据。")
+    (dict "title" "类型体操" "cat" "typescript" "desc" "TypeScript 类型推导、泛型约束和工具类型练习。")
+    (dict "title" "检测更新" "cat" "微信小程序" "desc" "小程序版本更新检测、提示和重启流程记录。")
+    (dict "title" "vercel 部署" "cat" "部署" "desc" "Vercel 部署流程、环境变量和构建问题记录。")
+}}
+{{ $cats := slice "全部" "electron" "nest" "node" "typescript" "uniapp" "vue3" "工程化" "微信小程序" "部署" }}
+
+<section class="resource-page">
+    <header class="resource-hero">
+        <h1>前端知识库 <span aria-hidden="true"></span></h1>
+        <label class="resource-search">
+            {{ partial "svg-icon.html" "search" }}
+            <input id="resource-search" type="search" placeholder="搜索文章标题、内容或标签..." autocomplete="off">
+        </label>
     </header>
-    <div class="timeline">
-        {{ range .Pages.ByDate.Reverse }}
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-body">
-                    <time class="timeline-time">{{ .Date.Format "2006-01" }}</time>
-                    {{ with .Params.period }}<span class="period">{{ . }}</span>{{ end }}
-                    <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-                    <p>{{ .Summary | plainify | truncate 140 }}</p>
-                </div>
+
+    <div class="resource-layout">
+        <aside class="resource-sidebar resource-panel">
+            <div class="resource-panel-title">
+                {{ partial "svg-icon.html" "tag" }}
+                <span>文章分类</span>
             </div>
-        {{ end }}
+            <div class="resource-category-list" id="resource-categories">
+                {{ range $cats }}
+                    {{ $count := 0 }}
+                    {{ if eq . "全部" }}
+                        {{ $count = len $items }}
+                    {{ else }}
+                        {{ $cat := . }}
+                        {{ range $items }}
+                            {{ if eq .cat $cat }}{{ $count = add $count 1 }}{{ end }}
+                        {{ end }}
+                    {{ end }}
+                    <button type="button" class="resource-category{{ if eq . "全部" }} is-active{{ end }}" data-category="{{ . }}">
+                        <span>{{ . }}</span>
+                        <b>{{ $count }}</b>
+                    </button>
+                {{ end }}
+            </div>
+        </aside>
+
+        <main class="resource-feed" aria-label="Knowledge cards">
+            <div class="resource-card-grid" id="resource-card-grid">
+                {{ range $items }}
+                <article class="resource-card" data-category="{{ .cat }}" data-search="{{ lower (printf "%s %s %s" .title .cat .desc) }}">
+                    <h2>{{ .title }}</h2>
+                    <p>{{ .desc }}</p>
+                    <span class="resource-tag">{{ .cat }}</span>
+                    <div class="resource-meta">
+                        <span>观看 0</span>
+                        <span>点赞 0</span>
+                        <span>评论 0</span>
+                    </div>
+                    <div class="resource-date">
+                        <time>2026-08-08</time>
+                        <span>5 分钟阅读</span>
+                    </div>
+                </article>
+                {{ end }}
+            </div>
+        </main>
+
+        <aside class="resource-insights">
+            <section class="resource-panel">
+                <div class="resource-panel-title">
+                    {{ partial "svg-icon.html" "count" }}
+                    <span>博客统计</span>
+                </div>
+                <div class="resource-stat-box">
+                    <span>总文章数</span>
+                    <strong>{{ len $items }} 篇</strong>
+                </div>
+                <div class="resource-stat-row">
+                    <span>总目录数</span>
+                    <strong>{{ sub (len $cats) 1 }} 个</strong>
+                </div>
+                <div class="resource-stat-row">
+                    <span>总文件数</span>
+                    <strong>22 个</strong>
+                </div>
+            </section>
+
+            <section class="resource-panel">
+                <div class="resource-panel-title">
+                    {{ partial "svg-icon.html" "count1" }}
+                    <span>分类统计</span>
+                </div>
+                <div class="resource-meter-list">
+                    {{ range after 1 $cats }}
+                        {{ $cat := . }}
+                        {{ $count := 0 }}
+                        {{ range $items }}
+                            {{ if eq .cat $cat }}{{ $count = add $count 1 }}{{ end }}
+                        {{ end }}
+                        <div class="resource-meter">
+                            <span>{{ $cat }}</span>
+                            <i><em style="width: {{ mul $count 18 }}%;"></em></i>
+                            <b>{{ $count }}</b>
+                        </div>
+                    {{ end }}
+                </div>
+            </section>
+
+            <section class="resource-panel">
+                <div class="resource-panel-title">
+                    {{ partial "svg-icon.html" "docs" }}
+                    <span>目录结构</span>
+                </div>
+                <div class="resource-tree">
+                    {{ range after 1 (first 6 $cats) }}
+                        <div><span>›</span>{{ partial "svg-icon.html" "docs" }}<b>{{ . }}</b></div>
+                    {{ end }}
+                </div>
+                <p class="resource-updated">最后更新: 2026/8/9 12:01:59</p>
+            </section>
+        </aside>
     </div>
 </section>
 {{ end }}

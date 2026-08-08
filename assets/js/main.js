@@ -57,6 +57,41 @@
     el.textContent = String(Math.max(1, count));
   }
 
+  function initResourceFilters() {
+    var grid = document.getElementById('resource-card-grid');
+    if (!grid) return;
+    var search = document.getElementById('resource-search');
+    var categories = document.getElementById('resource-categories');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
+    var activeCategory = '全部';
+
+    function applyFilters() {
+      var query = search ? String(search.value || '').trim().toLowerCase() : '';
+      cards.forEach(function (card) {
+        var category = card.getAttribute('data-category') || '';
+        var haystack = card.getAttribute('data-search') || '';
+        var matchesCategory = activeCategory === '全部' || category === activeCategory;
+        var matchesQuery = !query || haystack.indexOf(query) !== -1;
+        card.classList.toggle('is-hidden', !(matchesCategory && matchesQuery));
+      });
+    }
+
+    if (search) {
+      search.addEventListener('input', applyFilters);
+    }
+    if (categories) {
+      categories.addEventListener('click', function (event) {
+        var btn = event.target.closest('.resource-category');
+        if (!btn) return;
+        activeCategory = btn.getAttribute('data-category') || '全部';
+        categories.querySelectorAll('.resource-category').forEach(function (item) {
+          item.classList.toggle('is-active', item === btn);
+        });
+        applyFilters();
+      });
+    }
+  }
+
   // 1) 首屏加载动画：资源就绪后移除 loader
   function hideLoader() {
     var loader = document.getElementById('page-loader');
@@ -228,6 +263,7 @@
     initZoom();
     initTyping();
     initVisitorStats();
+    initResourceFilters();
     var hm = document.getElementById('github-heatmap');
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';
