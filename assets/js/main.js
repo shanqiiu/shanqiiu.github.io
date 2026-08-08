@@ -57,7 +57,7 @@
   // 把每日贡献按「周(列) x 星期(行)」分组并渲染为方块网格
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var HM_PITCH = 13; // 10px cell + 3px gap
+  var HM_PITCH = 12; // 9px cell + 3px gap
 
   function buildHeatmap(contribs) {
     var weeks = [];
