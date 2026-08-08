@@ -1768,7 +1768,7 @@ img {
     color: var(--accent);
 }
 
-/* ---------- 头像蒸汽 / 雾气动画（纯 CSS，参考 template-web） ---------- */
+/* ---------- 头像蒸汽（template-web smoke.png） ---------- */
 .hero-avatar-wrap {
     position: relative;
     width: 160px;
@@ -1780,51 +1780,66 @@ img {
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: -10px;
+    top: -130px;
     transform: translateX(-50%);
-    width: 160px;
-    height: 120px;
+    width: 180px;
+    height: 180px;
     pointer-events: none;
     z-index: 2;
 }
 
-.avatar-smoke span {
-    position: absolute;
-    bottom: 6px;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: radial-gradient(circle,
-        rgba(255, 255, 255, 0.9) 0%,
-        rgba(255, 255, 255, 0.35) 42%,
-        rgba(255, 255, 255, 0) 70%);
-    filter: blur(7px);
-    opacity: 0;
-    transform: translateX(-50%);
-    animation: smoke-rise 5s ease-in infinite;
+.avatar-smoke-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0.92;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, .22));
+    animation: smoke-float 5s ease-in-out infinite;
 }
 
-.avatar-smoke span:nth-child(1) { left: 24%; animation-delay: 0s; }
-.avatar-smoke span:nth-child(2) { left: 44%; width: 52px; height: 52px; animation-delay: 1.4s; }
-.avatar-smoke span:nth-child(3) { left: 60%; width: 72px; height: 72px; animation-delay: 2.6s; }
-.avatar-smoke span:nth-child(4) { left: 38%; width: 46px; height: 46px; animation-delay: 3.7s; }
-
-@keyframes smoke-rise {
-    0%   { transform: translateX(-50%) translateY(8px) scale(0.5); opacity: 0; }
-    15%  { opacity: 0.6; }
-    60%  { opacity: 0.4; }
-    100% { transform: translateX(-50%) translateY(-82px) scale(1.4); opacity: 0; }
+@keyframes smoke-float {
+    0%, 100% { transform: translateY(0) scale(1); opacity: .9; }
+    50% { transform: translateY(-12px) scale(1.03); opacity: 1; }
 }
 
-/* 亮色主题下雾气改为烟灰色，保证可见 */
-[data-theme="light"] .avatar-smoke span {
-    background: radial-gradient(circle,
-        rgba(100, 116, 139, 0.6) 0%,
-        rgba(100, 116, 139, 0.28) 42%,
-        rgba(100, 116, 139, 0) 70%);
-}
+/* 亮色主题下白烟不可见，直接隐藏 */
+[data-theme="light"] .avatar-smoke { display: none; }
 
 /* 尊重「减少动态效果」偏好 */
 @media (prefers-reduced-motion: reduce) {
-    .avatar-smoke span { animation: none; opacity: 0; }
+    .avatar-smoke-img { animation: none; }
+}
+
+/* ---------- SVG 图标系统（来自 template-web static/svg） ---------- */
+.svg-icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    color: inherit;
+}
+
+.info-item .svg-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+}
+
+.info-title .svg-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: -2px;
+    margin-right: 6px;
+}
+
+.hero-socials .svg-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.nav-card-icon .svg-icon {
+    width: 22px;
+    height: 22px;
 }
