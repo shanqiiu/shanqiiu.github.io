@@ -2225,6 +2225,25 @@ img {
 }
 
 /* ---------- Home navigation refinement ---------- */
+body:has(#home-bento) .main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 42px 0 52px;
+}
+
+body:has(#home-bento) .hero {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+body:has(#home-bento) #home-bento {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 #home-bento .bento-grid {
     align-items: stretch;
 }
