@@ -1475,10 +1475,8 @@ img {
     inset: 1px;
     z-index: 0;
     border-radius: calc(var(--radius) - 1px);
-    background:
-        linear-gradient(120deg, rgba(255, 255, 255, 0.62), transparent 34%),
-        repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.026) 0 1px, transparent 1px 72px);
-    opacity: 0.78;
+    background: repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.026) 0 1px, transparent 1px 72px);
+    opacity: 0.28;
     pointer-events: none;
 }
 
