@@ -2378,6 +2378,8 @@ img {
     font-size: 0.78rem;
     font-weight: 800;
     line-height: 1;
+    font-family: inherit;
+    cursor: pointer;
 }
 
 .page-nav-main .svg-icon,

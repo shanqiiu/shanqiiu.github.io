@@ -1,14 +1,35 @@
-<header class="site-header" aria-label="Theme">
+{{- $currentLabel := "首页" -}}
+{{- $currentIcon := "home" -}}
+{{- if eq .Section "projects" -}}
+    {{- $currentLabel = "作品集" -}}
+    {{- $currentIcon = "zuopin" -}}
+{{- else if eq .Section "post" -}}
+    {{- $currentLabel = "文章" -}}
+    {{- $currentIcon = "docs" -}}
+{{- else if eq .Section "learning" -}}
+    {{- $currentLabel = "资源" -}}
+    {{- $currentIcon = "tag" -}}
+{{- else if eq .Section "archives" -}}
+    {{- $currentLabel = "归档" -}}
+    {{- $currentIcon = "docs" -}}
+{{- else if or (eq .Section "about") (eq .Type "about") -}}
+    {{- $currentLabel = "关于" -}}
+    {{- $currentIcon = "site" -}}
+{{- end -}}
+
+<header class="site-header" aria-label="Site controls">
     <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme"></button>
     <nav class="page-nav-fab" aria-label="Quick navigation">
-        <a class="page-nav-main" href="{{ site.Home.RelPermalink }}">
-            {{ partial "svg-icon.html" "home" }}
-            <span>首页</span>
-        </a>
+        <button class="page-nav-main" type="button" aria-label="当前页面：{{ $currentLabel }}">
+            {{ partial "svg-icon.html" $currentIcon }}
+            <span>{{ $currentLabel }}</span>
+        </button>
         <div class="page-nav-menu">
+            <a href="{{ site.Home.RelPermalink }}">{{ partial "svg-icon.html" "home" }}<span>首页</span></a>
             <a href="{{ "projects/" | relURL }}">{{ partial "svg-icon.html" "zuopin" }}<span>作品集</span></a>
             <a href="{{ "post/" | relURL }}">{{ partial "svg-icon.html" "docs" }}<span>文章</span></a>
             <a href="{{ "learning/" | relURL }}">{{ partial "svg-icon.html" "tag" }}<span>资源</span></a>
+            <a href="{{ "archives/" | relURL }}">{{ partial "svg-icon.html" "docs" }}<span>归档</span></a>
             <a href="{{ "about/" | relURL }}">{{ partial "svg-icon.html" "site" }}<span>关于</span></a>
         </div>
     </nav>
