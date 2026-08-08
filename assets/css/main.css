@@ -1451,7 +1451,7 @@ img {
     isolation: isolate;
     overflow: visible;
     display: grid;
-    grid-template-columns: 118px 1fr;
+    grid-template-columns: 168px 1fr;
     gap: 22px;
     align-items: center;
     position: relative;
@@ -1480,8 +1480,8 @@ img {
 }
 
 .hero-avatar {
-    width: 118px;
-    height: 118px;
+    width: 132px;
+    height: 132px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(255, 255, 255, 0.28);
@@ -1694,19 +1694,24 @@ img {
 
     .hero-avatar {
         margin: 0 auto;
-        width: 112px;
-        height: 112px;
+        width: 116px;
+        height: 116px;
     }
 
     .hero-avatar-wrap {
         margin: 0 auto;
-        width: 112px;
-        height: 112px;
+        width: 148px;
+        height: 148px;
     }
 
     .avatar-smoke {
-        top: -9px;
-        width: 146px;
+        top: 5px;
+        width: 154px;
+    }
+
+    .avatar-text-ring text {
+        font-size: 10px;
+        letter-spacing: 2px;
     }
 
     .hero-content {
@@ -1936,8 +1941,8 @@ img {
 /* ---------- 头像蒸汽（template-web smoke.png） ---------- */
 .hero-avatar-wrap {
     position: relative;
-    width: 118px;
-    height: 118px;
+    width: 168px;
+    height: 168px;
     flex-shrink: 0;
     margin: 0 auto;
     display: flex;
@@ -1948,7 +1953,7 @@ img {
 .hero-avatar-wrap::before {
     content: "";
     position: absolute;
-    inset: -9px;
+    inset: 17px;
     z-index: 1;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1958,12 +1963,39 @@ img {
     pointer-events: none;
 }
 
+.avatar-text-ring {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    animation: avatar-ring-spin 18s linear infinite;
+}
+
+.avatar-text-ring text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    fill: rgba(38, 50, 65, 0.72);
+    paint-order: stroke;
+    stroke: rgba(255, 255, 255, 0.58);
+    stroke-width: 1.2px;
+}
+
+@keyframes avatar-ring-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: -10px;
+    top: 6px;
     transform: translate(-50%, -50%);
-    width: 154px;
+    width: 176px;
     pointer-events: none;
     z-index: 0;
 }
@@ -1997,7 +2029,8 @@ img {
 
 /* 尊重「减少动态效果」偏好 */
 @media (prefers-reduced-motion: reduce) {
-    .avatar-smoke-img { animation: none; }
+    .avatar-smoke-img,
+    .avatar-text-ring { animation: none; }
 }
 
 /* ---------- SVG 图标系统（来自 template-web static/svg） ---------- */
