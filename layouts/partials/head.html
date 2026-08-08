@@ -8,6 +8,6 @@
 {{ range .AlternativeOutputFormats -}}
     {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
 {{ end -}}
-<link rel="icon" href="{{ "img/avatar-sakuragi.jpg" | relURL }}">
+<link rel="icon" href="{{ "img/avatar-sakuragi-crop.jpg" | relURL }}">
 {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
