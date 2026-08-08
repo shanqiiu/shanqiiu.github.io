@@ -44,6 +44,11 @@
       .then(function (data) {
         var contribs = (data && data.contributions) || [];
         if (!contribs.length) { container.style.display = 'none'; return; }
+        var total = contribs.reduce(function (sum, c) {
+          return sum + (Number(c.count) || 0);
+        }, 0);
+        container.setAttribute('data-total', String(total));
+        container.setAttribute('data-year', String(year));
         container.innerHTML = buildHeatmap(contribs);
       })
       .catch(function () { container.style.display = 'none'; });
@@ -52,7 +57,7 @@
   // 把每日贡献按「周(列) x 星期(行)」分组并渲染为方块网格
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var HM_PITCH = 14; // 单元格 11px + 间隔 3px
+  var HM_PITCH = 13; // 10px cell + 3px gap
 
   function buildHeatmap(contribs) {
     var weeks = [];
