@@ -2841,3 +2841,51 @@ body:has(#home-bento) .hero-inner,
         columns: 1;
     }
 }
+
+/* ---------- Dark mode readability overrides ---------- */
+[data-theme="dark"] .hero-meta,
+[data-theme="dark"] .hero-name,
+[data-theme="dark"] .hero-role,
+[data-theme="dark"] .hero-signature,
+[data-theme="dark"] .hero-bio,
+[data-theme="dark"] .hero-info-item,
+[data-theme="dark"] .tag-cloud .tag,
+[data-theme="dark"] .hero-tags .tag,
+[data-theme="dark"] .info-title,
+[data-theme="dark"] .timeline-title,
+[data-theme="dark"] .nav-card-title,
+[data-theme="dark"] .resource-hero h1,
+[data-theme="dark"] .resource-panel-title,
+[data-theme="dark"] .resource-category,
+[data-theme="dark"] .resource-stat-box strong,
+[data-theme="dark"] .resource-stat-row strong,
+[data-theme="dark"] .resource-meter,
+[data-theme="dark"] .resource-tree div,
+[data-theme="dark"] .page-nav-main,
+[data-theme="dark"] .page-nav-menu a {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .hero-info-wide,
+[data-theme="dark"] .hero-en,
+[data-theme="dark"] .resource-tag {
+    color: #7dd3fc;
+}
+
+[data-theme="dark"] .hero-info-grid,
+[data-theme="dark"] .timeline-date,
+[data-theme="dark"] .nav-card-desc,
+[data-theme="dark"] .resource-card p,
+[data-theme="dark"] .resource-meta,
+[data-theme="dark"] .resource-date,
+[data-theme="dark"] .resource-stat-box span,
+[data-theme="dark"] .resource-stat-row span,
+[data-theme="dark"] .resource-updated {
+    color: rgba(241, 245, 249, 0.78);
+}
+
+[data-theme="dark"] .hero-title,
+[data-theme="dark"] .hero-info-item,
+[data-theme="dark"] .resource-card {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38);
+}
