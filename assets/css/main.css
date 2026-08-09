@@ -2286,6 +2286,8 @@ body:has(#home-bento) .hero-inner,
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.08),
         0 14px 34px rgba(15, 23, 42, 0.14);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 #home-bento .nav-cards {
