@@ -231,7 +231,7 @@ img {
     display: flex;
     align-items: center;
     padding: calc(var(--nav-h) + 48px) 0 72px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .hero::before,
@@ -1479,7 +1479,7 @@ img {
     position: relative;
     min-height: auto;
     padding: 18px 0 8px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .hero::before,
@@ -2030,14 +2030,14 @@ img {
     transform: translate(-50%, -50%);
     width: 176px;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 
 .avatar-smoke-img {
     display: block;
     width: 100%;
     height: auto;
-    opacity: 0.58;
+    opacity: 0.64;
     filter:
         drop-shadow(0 0 10px rgba(255, 255, 255, 0.26))
         drop-shadow(0 18px 18px rgba(56, 189, 248, 0.1));
@@ -2051,8 +2051,13 @@ img {
     50% { transform: translateY(-12px) scale(1.035); opacity: .7; }
 }
 
-/* 亮色主题下白烟不可见，直接隐藏 */
-[data-theme="light"] .avatar-smoke { display: none; }
+/* 亮色主题下保留烟雾，用阴影提高浅背景可见度 */
+[data-theme="light"] .avatar-smoke-img {
+    opacity: 0.78;
+    filter:
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.42))
+        drop-shadow(0 14px 18px rgba(15, 23, 42, 0.18));
+}
 
 /* 尊重「减少动态效果」偏好 */
 @media (prefers-reduced-motion: reduce) {
