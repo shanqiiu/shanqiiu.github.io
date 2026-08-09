@@ -1,20 +1,24 @@
 {{ define "main" }}
 <section class="section container">
     <header class="list-head">
-        <h1>归档</h1>
+        <h1>{{ .Title }}</h1>
         <p class="list-desc">按年份汇总所有文章、项目与学习记录</p>
     </header>
     {{ $pages := where site.RegularPages "Section" "in" (slice "post" "learning" "projects") }}
-    {{ range $pages.GroupByDate "2006" }}
-        <h2 class="year">{{ .Key }}</h2>
-        <div class="list">
-            {{ range .Pages }}
-                <a class="list-item" href="{{ .RelPermalink }}">
-                    <time>{{ .Date.Format "2006-01-02" }}</time>
-                    <span>{{ .Title }}</span>
-                </a>
-            {{ end }}
-        </div>
+    {{ if $pages }}
+        {{ range $pages.GroupByDate "2006" }}
+            <h2 class="year">{{ .Key }}</h2>
+            <div class="list">
+                {{ range .Pages.ByDate.Reverse }}
+                    <a class="list-item" href="{{ .RelPermalink }}">
+                        <time>{{ .Date.Format "2006-01-02" }}</time>
+                        <span>{{ .Title }}</span>
+                    </a>
+                {{ end }}
+            </div>
+        {{ end }}
+    {{ else }}
+        <p class="empty-tip">暂无归档内容。</p>
     {{ end }}
 </section>
 {{ end }}
