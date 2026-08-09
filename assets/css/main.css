@@ -2889,3 +2889,10 @@ body:has(#home-bento) .hero-inner,
 [data-theme="dark"] .resource-card {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38);
 }
+
+[data-theme="dark"] .hero .hero-meta,
+[data-theme="dark"] .hero .hero-name,
+[data-theme="dark"] .hero .hero-info-item {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+}
