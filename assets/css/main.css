@@ -2318,36 +2318,24 @@ body:has(#home-bento) .hero-inner,
         0 14px 34px rgba(15, 23, 42, 0.14);
 }
 
-#home-bento .nav-cards::before {
-    content: "导航";
+#home-bento .nav-cards-title {
     position: absolute;
-    top: 16px;
-    left: 48px;
-    white-space: normal;
-    font-family: var(--font-sans);
+    top: 14px;
+    left: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    font-family: inherit;
     font-weight: 800;
     font-size: 1rem;
     line-height: 1.2;
-    color: var(--text);
 }
 
-#home-bento .nav-cards::after {
-    content: "";
-    position: absolute;
-    top: 11px;
-    left: 14px;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background:
-        linear-gradient(90deg, transparent 45%, rgba(127, 29, 29, 0.72) 46%, rgba(127, 29, 29, 0.72) 54%, transparent 55%),
-        linear-gradient(18deg, transparent 45%, rgba(127, 29, 29, 0.62) 46%, rgba(127, 29, 29, 0.62) 54%, transparent 55%),
-        radial-gradient(circle at 34% 28%, #fed7aa 0 11%, transparent 12%),
-        linear-gradient(145deg, #fb923c, #ef4444);
-    border: 1px solid rgba(255, 255, 255, 0.46);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.36),
-        0 8px 18px rgba(239, 68, 68, 0.22);
+#home-bento .nav-cards-title .svg-icon {
+    width: 22px;
+    height: 22px;
+    color: var(--accent);
 }
 
 #home-bento .nav-card {
