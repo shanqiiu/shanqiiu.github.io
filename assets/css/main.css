@@ -1690,6 +1690,8 @@ img {
 }
 
 #home-bento .container {
+    --home-top-panel-h: 246px;
+    --home-bottom-panel-h: 176px;
     max-width: 980px;
     background: transparent;
     backdrop-filter: none;
@@ -2347,12 +2349,30 @@ body:has(#home-bento) #home-bento {
     align-items: stretch;
 }
 
-#home-bento .bento-col:first-child {
-    height: 100%;
+#home-bento .bento-col {
+    display: grid;
+    grid-template-rows: var(--home-top-panel-h) var(--home-bottom-panel-h);
+    gap: 10px;
 }
 
-#home-bento .bento-col:first-child > .info-card {
-    flex: 0 0 auto;
+#home-bento .left-top-panels {
+    display: grid;
+    grid-template-rows: 74px minmax(0, 1fr);
+    gap: 10px;
+    min-height: 0;
+}
+
+#home-bento .github-card,
+#home-bento .timeline-card,
+#home-bento .nav-cards {
+    height: 100%;
+    min-height: 0;
+}
+
+#home-bento .tag-card,
+#home-bento .timeline-card,
+#home-bento .github-card {
+    overflow: hidden;
 }
 
 body:has(#home-bento) .hero-inner,
@@ -2543,12 +2563,14 @@ body:has(#home-bento) .hero-inner,
         grid-template-columns: 1fr;
     }
 
-    #home-bento .bento-col:first-child {
-        height: auto;
+    #home-bento .bento-col {
+        display: flex;
+        flex-direction: column;
     }
 
-    #home-bento .bento-col:first-child > .info-card {
-        flex: 0 1 auto;
+    #home-bento .left-top-panels {
+        display: flex;
+        flex-direction: column;
     }
 
     .page-nav-fab {

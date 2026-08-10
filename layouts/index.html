@@ -56,33 +56,35 @@
 <section class="section" id="home-bento">
     <div class="container">
         <div class="bento-grid">
-            <div class="bento-col">
-                {{ if site.Params.hero.techStack }}
-                <div class="info-card tech-card" aria-label="技术栈">
-                    <div class="tech-marquee">
-                        <div class="tech-track">
-                            {{ range site.Params.hero.techStack }}
-                                <span class="tech-logo">
-                                    <b>{{ .mark }}</b>
-                                    <em>{{ .name }}</em>
-                                </span>
-                            {{ end }}
-                            {{ range site.Params.hero.techStack }}
-                                <span class="tech-logo" aria-hidden="true">
-                                    <b>{{ .mark }}</b>
-                                    <em>{{ .name }}</em>
-                                </span>
-                            {{ end }}
+            <div class="bento-col bento-col-profile">
+                <div class="left-top-panels">
+                    {{ if site.Params.hero.techStack }}
+                    <div class="info-card tech-card" aria-label="技术栈">
+                        <div class="tech-marquee">
+                            <div class="tech-track">
+                                {{ range site.Params.hero.techStack }}
+                                    <span class="tech-logo">
+                                        <b>{{ .mark }}</b>
+                                        <em>{{ .name }}</em>
+                                    </span>
+                                {{ end }}
+                                {{ range site.Params.hero.techStack }}
+                                    <span class="tech-logo" aria-hidden="true">
+                                        <b>{{ .mark }}</b>
+                                        <em>{{ .name }}</em>
+                                    </span>
+                                {{ end }}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {{ end }}
+                    {{ end }}
 
-                <div class="info-card tag-card" aria-label="标签">
-                    <div class="tag-cloud">
-                        {{ range site.Params.hero.tags }}
-                            <span class="tag">{{ . }}</span>
-                        {{ end }}
+                    <div class="info-card tag-card" aria-label="标签">
+                        <div class="tag-cloud">
+                            {{ range site.Params.hero.tags }}
+                                <span class="tag">{{ . }}</span>
+                            {{ end }}
+                        </div>
                     </div>
                 </div>
 
@@ -103,8 +105,8 @@
                 {{ end }}
             </div>
 
-            <div class="bento-col">
-                <div class="info-card">
+            <div class="bento-col bento-col-main">
+                <div class="info-card github-card">
                     <div class="info-title">
                         {{ partial "svg-icon.html" "github" }}
                         GitHub 活跃度
