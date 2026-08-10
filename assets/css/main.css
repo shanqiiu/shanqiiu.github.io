@@ -2417,8 +2417,10 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .nav-cards-title span {
-    display: grid;
-    gap: 2px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    white-space: nowrap;
 }
 
 #home-bento .nav-cards-title strong,
@@ -2437,6 +2439,31 @@ body:has(#home-bento) .hero-inner,
 #home-bento .nav-cards-title em {
     font-size: 0.78rem;
     font-weight: 800;
+}
+
+#home-bento .timeline-card {
+    padding: 12px 14px;
+}
+
+#home-bento .timeline-list {
+    gap: 8px;
+}
+
+#home-bento .timeline-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 10px;
+    align-items: baseline;
+}
+
+#home-bento .timeline-date {
+    white-space: nowrap;
+}
+
+#home-bento .timeline-desc {
+    grid-column: 1 / -1;
+    margin-top: 0;
+    line-height: 1.25;
 }
 
 #home-bento .nav-cards-title .svg-icon {
