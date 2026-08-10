@@ -22,8 +22,7 @@
     --glass-blur: blur(18px) saturate(150%);
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
         "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-    --font-serif: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN",
-        "Songti SC", SimSun, serif;
+    --font-serif: var(--font-sans);
     --font-mono: "JetBrains Mono", "Fira Code", Consolas, "Courier New", monospace;
 }
 
@@ -309,20 +308,21 @@ img {
 
 .hero-name {
     display: block;
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: clamp(2.6rem, 6vw, 4.4rem);
-    font-weight: 700;
+    font-weight: 900;
     line-height: 1.12;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
 }
 
 .hero-en {
     display: block;
     margin-top: 8px;
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: clamp(1rem, 2vw, 1.4rem);
-    font-weight: 300;
-    font-style: italic;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0;
     color: var(--accent);
 }
 
@@ -336,10 +336,10 @@ img {
     display: inline-block;
     margin-bottom: 14px;
     padding: 4px 16px;
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.05rem;
-    font-style: italic;
-    letter-spacing: 0.18em;
+    font-style: normal;
+    letter-spacing: 0;
     color: var(--accent);
     border: 1px solid var(--accent);
     border-radius: 100px;
@@ -2211,8 +2211,8 @@ img {
     gap: 4px 18px;
     align-items: center;
     color: rgba(30, 41, 59, 0.82);
-    font-family: var(--font-mono);
-    font-size: 0.86rem;
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
     line-height: 1.35;
 }
 
@@ -2319,12 +2319,12 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .nav-cards::before {
-    content: "◉  Navigation\A导航";
+    content: "导航";
     position: absolute;
     top: 14px;
     left: 14px;
-    white-space: pre-line;
-    font-family: var(--font-mono);
+    white-space: normal;
+    font-family: var(--font-sans);
     font-weight: 800;
     font-size: 1rem;
     line-height: 1.2;

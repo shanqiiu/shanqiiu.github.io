@@ -32,9 +32,9 @@
             </h1>
             <div class="hero-info-grid" aria-label="Profile summary">
                 <span class="hero-info-item hero-info-wide">{{ site.Params.hero.role }}</span>
-                <span class="hero-info-item">{{ site.Params.hero.age | default "26" }} years old</span>
+                <span class="hero-info-item">{{ site.Params.hero.age | default "26" }} 岁</span>
                 <span class="hero-info-item">{{ site.Params.hero.location | default "北京" }}</span>
-                <span class="hero-info-item">{{ site.Params.hero.experience | default "1" }} years experience</span>
+                <span class="hero-info-item">{{ site.Params.hero.experience | default "1" }} 年经验</span>
                 <span class="hero-info-item">{{ site.Params.hero.workStatus | default "在职" }}</span>
             </div>
             <div class="hero-socials">
@@ -58,7 +58,7 @@
         <div class="bento-grid">
             <div class="bento-col">
                 <div class="info-card">
-                    <div class="info-title">TAGS</div>
+                    <div class="info-title">标签</div>
                     <div class="tag-cloud">
                         {{ range site.Params.hero.tags }}
                             <span class="tag">{{ . }}</span>
@@ -68,7 +68,7 @@
 
                 {{ if site.Params.hero.timeline }}
                 <div class="info-card timeline-card">
-                    <div class="info-title">EXPERIENCE</div>
+                    <div class="info-title">经历</div>
                     <div class="timeline-list">
                         {{ range site.Params.hero.timeline }}
                         <div class="timeline-item">

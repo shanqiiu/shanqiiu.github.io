@@ -7,7 +7,7 @@ since       = 2026
     greeting    = "你好，我是"
     name        = "山海"
     englishName = "Shan Hai"
-    role        = "AI算法工程师 / 摄影初学者"
+    role        = "AI 算法工程师 / 摄影初学者"
     signature   = "知行合一"
     bio         = "在这里记录技术探索的足迹、个人项目的实践心得，以及一路走来的学习历程。"
     tags        = ["编程", "AI", "个人项目", "学习记录"]
@@ -25,10 +25,10 @@ since       = 2026
 
     [[hero.timeline]]
         title = "硕士在读"
-        date  = "2022-2025"
+        date  = "2022 至 2025"
     [[hero.timeline]]
         title = "AI 算法工程师"
-        date  = "2025-至今"
+        date  = "2025 至今"
 
 [homepage]
     recentPosts        = 5
