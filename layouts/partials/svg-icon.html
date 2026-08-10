@@ -4,5 +4,6 @@
 {{- $svg = replaceRE "width=\"[0-9.]*\"" "" $svg -}}
 {{- $svg = replaceRE "height=\"[0-9.]*\"" "" $svg -}}
 {{- $svg = replace $svg "#333333" "currentColor" -}}
+{{- $svg = replace $svg "#000000" "currentColor" -}}
 {{- $svg = replace $svg "<svg" "<svg class=\"svg-icon\"" -}}
 {{- $svg | safeHTML -}}
