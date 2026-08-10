@@ -2410,10 +2410,13 @@ body:has(#home-bento) .hero-inner,
     top: 10px;
     left: 14px;
     display: inline-flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 7px;
-    color: var(--text);
+    color: var(--text-3);
     font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
 }
 
 #home-bento .nav-cards-title span {
@@ -2427,18 +2430,9 @@ body:has(#home-bento) .hero-inner,
 #home-bento .nav-cards-title em {
     display: block;
     font-style: normal;
-    line-height: 1.05;
-}
-
-#home-bento .nav-cards-title strong {
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: 900;
-}
-
-#home-bento .nav-cards-title em {
-    font-size: 0.78rem;
-    font-weight: 800;
+    line-height: 1;
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 #home-bento .timeline-card {
@@ -2467,10 +2461,9 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .nav-cards-title .svg-icon {
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    color: var(--text);
+    width: 16px;
+    height: 16px;
+    color: currentColor;
     filter: drop-shadow(0 2px 6px rgba(15, 23, 42, 0.24));
 }
 
