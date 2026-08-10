@@ -15,8 +15,8 @@
     --purple: #c084fc;
     --red: #f87171;
     --green: #4ade80;
-    --radius: 18px;
-    --radius-sm: 10px;
+    --radius: 8px;
+    --radius-sm: 6px;
     --nav-h: 64px;
     --shadow: 0 8px 32px rgba(2, 6, 23, 0.35);
     --glass-blur: blur(18px) saturate(150%);
@@ -1818,9 +1818,69 @@ img {
     border: 1px solid var(--border);
     color: var(--text-2);
     padding: 5px 10px;
-    border-radius: 999px;
+    border-radius: 5px;
     font-size: 0.78rem;
     transition: all 0.2s ease;
+}
+
+.tech-card {
+    overflow: hidden;
+    padding: 10px 0;
+}
+
+.tech-marquee {
+    overflow: hidden;
+    width: 100%;
+}
+
+.tech-track {
+    display: flex;
+    width: max-content;
+    gap: 8px;
+    padding: 0 10px;
+    animation: tech-stack-scroll 24s linear infinite;
+}
+
+.tech-card:hover .tech-track {
+    animation-play-state: paused;
+}
+
+.tech-logo {
+    display: grid;
+    place-items: center;
+    gap: 4px;
+    min-width: 58px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.tech-logo b {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 900;
+}
+
+.tech-logo em {
+    font-style: normal;
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text-2);
+}
+
+@keyframes tech-stack-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
 }
 
 .tag-cloud .tag:hover {
@@ -1873,6 +1933,13 @@ img {
 .timeline-date {
     font-size: 0.74rem;
     color: var(--text-3);
+}
+
+.timeline-desc {
+    margin-top: 2px;
+    font-size: 0.76rem;
+    line-height: 1.35;
+    color: var(--text-2);
 }
 
 /* ---------- 导航卡片 ---------- */
@@ -2285,7 +2352,7 @@ body:has(#home-bento) #home-bento {
 }
 
 #home-bento .bento-col:first-child > .info-card {
-    flex: 1 1 0;
+    flex: 0 0 auto;
 }
 
 body:has(#home-bento) .hero-inner,

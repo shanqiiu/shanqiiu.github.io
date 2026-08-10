@@ -57,8 +57,28 @@
     <div class="container">
         <div class="bento-grid">
             <div class="bento-col">
-                <div class="info-card">
-                    <div class="info-title">标签</div>
+                {{ if site.Params.hero.techStack }}
+                <div class="info-card tech-card" aria-label="技术栈">
+                    <div class="tech-marquee">
+                        <div class="tech-track">
+                            {{ range site.Params.hero.techStack }}
+                                <span class="tech-logo">
+                                    <b>{{ .mark }}</b>
+                                    <em>{{ .name }}</em>
+                                </span>
+                            {{ end }}
+                            {{ range site.Params.hero.techStack }}
+                                <span class="tech-logo" aria-hidden="true">
+                                    <b>{{ .mark }}</b>
+                                    <em>{{ .name }}</em>
+                                </span>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
+                {{ end }}
+
+                <div class="info-card tag-card" aria-label="标签">
                     <div class="tag-cloud">
                         {{ range site.Params.hero.tags }}
                             <span class="tag">{{ . }}</span>
@@ -67,13 +87,15 @@
                 </div>
 
                 {{ if site.Params.hero.timeline }}
-                <div class="info-card timeline-card">
-                    <div class="info-title">经历</div>
+                <div class="info-card timeline-card" aria-label="经历">
                     <div class="timeline-list">
                         {{ range site.Params.hero.timeline }}
                         <div class="timeline-item">
                             <div class="timeline-title">{{ .title }}</div>
                             <div class="timeline-date">{{ .date }}</div>
+                            {{ with .desc }}
+                            <div class="timeline-desc">{{ . }}</div>
+                            {{ end }}
                         </div>
                         {{ end }}
                     </div>

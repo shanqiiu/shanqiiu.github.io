@@ -23,12 +23,43 @@ since       = 2026
         github  = "https://github.com/shanqiiu"
         qq      = "tencent://message/?uin=1955450958"
 
+    [[hero.techStack]]
+        name = "Git"
+        mark = "Git"
+    [[hero.techStack]]
+        name = "Python"
+        mark = "Py"
+    [[hero.techStack]]
+        name = "PyTorch"
+        mark = "PT"
+    [[hero.techStack]]
+        name = "OpenCV"
+        mark = "CV"
+    [[hero.techStack]]
+        name = "FastAPI"
+        mark = "API"
+    [[hero.techStack]]
+        name = "Docker"
+        mark = "D"
+    [[hero.techStack]]
+        name = "Nginx"
+        mark = "N"
+    [[hero.techStack]]
+        name = "Hugo"
+        mark = "H"
+
     [[hero.timeline]]
-        title = "硕士在读"
-        date  = "2022 至 2025"
+        title = "本科"
+        date  = "2018-2022"
+        desc  = "计算机科学与技术"
     [[hero.timeline]]
-        title = "AI 算法工程师"
-        date  = "2025 至今"
+        title = "研究生"
+        date  = "2022-2025"
+        desc  = "人工智能"
+    [[hero.timeline]]
+        title = "在职"
+        date  = "2025-至今"
+        desc  = "各种技术有限公司"
 
 [homepage]
     recentPosts        = 5
