@@ -2436,11 +2436,11 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .timeline-card {
-    padding: 12px 14px;
+    padding: 10px 12px;
 }
 
 #home-bento .timeline-list {
-    gap: 8px;
+    gap: 5px;
 }
 
 #home-bento .timeline-item {
@@ -2451,13 +2451,15 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .timeline-date {
+    font-size: 0.68rem;
     white-space: nowrap;
 }
 
 #home-bento .timeline-desc {
     grid-column: 1 / -1;
     margin-top: 0;
-    line-height: 1.25;
+    font-size: 0.7rem;
+    line-height: 1.15;
 }
 
 #home-bento .nav-cards-title .svg-icon {
