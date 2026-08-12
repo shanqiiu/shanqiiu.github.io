@@ -1290,7 +1290,7 @@ img {
     margin-bottom: 8px;
     color: var(--text);
     font-family: var(--font-mono);
-    font-size: 0.95rem;
+    font-size: 1rem;
     letter-spacing: 0;
 }
 
@@ -2362,6 +2362,11 @@ body:has(#home-bento) #home-bento {
     min-height: 0;
 }
 
+#home-bento .info-card {
+    padding: 10px;
+    border-radius: 5px;
+}
+
 #home-bento .github-card,
 #home-bento .timeline-card,
 #home-bento .nav-cards {
@@ -2395,7 +2400,7 @@ body:has(#home-bento) .hero-inner,
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
     padding: 56px 10px 10px;
-    border-radius: var(--radius);
+    border-radius: 5px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
         var(--bg-card);
@@ -2411,12 +2416,12 @@ body:has(#home-bento) .hero-inner,
     left: 14px;
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    color: var(--text-3);
-    font-family: inherit;
-    font-size: 0.82rem;
+    gap: 6px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    letter-spacing: 0;
 }
 
 #home-bento .nav-cards-title span {
@@ -2436,37 +2441,78 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .timeline-card {
-    padding: 10px 12px;
+    padding: 10px;
 }
 
 #home-bento .timeline-list {
-    gap: 5px;
+    gap: 3px;
 }
 
 #home-bento .timeline-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 10px;
-    align-items: baseline;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
 }
 
-#home-bento .timeline-date {
-    font-size: 0.68rem;
-    white-space: nowrap;
+#home-bento .timeline-head {
+    font-size: 0.875rem;
+    line-height: 1.25;
+    color: var(--text);
+}
+
+#home-bento .timeline-title {
+    font-weight: 700;
 }
 
 #home-bento .timeline-desc {
-    grid-column: 1 / -1;
-    margin-top: 0;
-    font-size: 0.7rem;
-    line-height: 1.15;
+    font-weight: 400;
+    color: var(--text-2);
+}
+
+#home-bento .timeline-date {
+    font-size: 0.75rem;
+    color: var(--text-3);
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+#home-bento .timeline-item::before {
+    top: 5px;
+}
+
+#home-bento .tag-card {
+    padding: 10px;
+}
+
+#home-bento .tag-cloud {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    width: 100%;
+}
+
+#home-bento .tag-cloud .tag {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+#home-bento .tag-cloud .tag:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 #home-bento .nav-cards-title .svg-icon {
     width: 16px;
     height: 16px;
     color: currentColor;
-    filter: drop-shadow(0 2px 6px rgba(15, 23, 42, 0.24));
 }
 
 #home-bento .nav-card {
@@ -2493,11 +2539,12 @@ body:has(#home-bento) .hero-inner,
 
 #home-bento .nav-card-title {
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.875rem;
 }
 
 #home-bento .nav-card-desc {
     color: var(--text-2);
+    font-size: 0.75rem;
 }
 
 #home-bento .nav-card-icon {
@@ -2599,6 +2646,297 @@ body:has(#home-bento) .hero-inner,
         right: 12px;
         bottom: 12px;
     }
+
+    .music-player {
+        right: 12px;
+        bottom: 72px;
+        width: 200px;
+    }
+}
+
+/* ---------- 右下角背景音乐播放器 ---------- */
+.music-player {
+    position: fixed;
+    right: 18px;
+    bottom: 76px;
+    z-index: 1001;
+    width: 220px;
+    font-family: var(--font-sans);
+    color: var(--text);
+    pointer-events: auto;
+}
+
+/* 折叠时仅把卡片主体移出屏幕，统一控制按钮留在右缘作为入口 */
+.music-player.is-collapsed {
+    pointer-events: none;
+}
+
+.music-player.is-collapsed .music-body {
+    transform: translateX(calc(100% + 18px));
+    pointer-events: none;
+}
+
+.music-body {
+    position: relative;
+    padding: 10px;
+    border-radius: 12px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
+        var(--bg-card);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    opacity: 1;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+
+.music-toggle {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--text-2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 2;
+    transition: color 0.2s ease, transform 0.2s ease, left 0.35s cubic-bezier(0.22, 1, 0.36, 1), top 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.music-toggle:hover {
+    color: var(--accent);
+    transform: scale(1.08);
+}
+
+.music-toggle .icon-collapse,
+.music-toggle .icon-expand {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    transition: opacity 0.2s ease;
+}
+
+.music-toggle .icon-expand {
+    opacity: 0;
+}
+
+.music-player.is-collapsed .music-toggle {
+    left: auto;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: auto;
+    opacity: 1;
+    box-shadow: -4px 8px 24px rgba(15, 23, 42, 0.18);
+}
+
+.music-player.is-collapsed .music-toggle .icon-collapse {
+    opacity: 0;
+}
+
+.music-player.is-collapsed .music-toggle .icon-expand {
+    opacity: 1;
+}
+
+.music-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.music-note {
+    width: 22px;
+    height: 22px;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.music-note svg {
+    width: 100%;
+    height: 100%;
+}
+
+.music-meta {
+    min-width: 0;
+    flex: 1;
+}
+
+.music-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-artist {
+    font-size: 0.66rem;
+    color: var(--text-3);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-time {
+    font-size: 0.6rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.music-cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    background: var(--bg-soft);
+    box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.music-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.music-play {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(15, 23, 42, 0.55);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.music-play:hover {
+    transform: scale(1.06);
+    background: rgba(15, 23, 42, 0.7);
+}
+
+.music-play svg {
+    width: 22px;
+    height: 22px;
+    margin-left: 3px;
+}
+
+.music-play.is-playing svg {
+    margin-left: 0;
+}
+
+.music-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.music-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.music-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
+}
+
+.music-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.music-progress-wrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.music-progress-wrap input[type="range"] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.music-progress-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+    transition: transform 0.15s ease;
+}
+
+.music-progress-wrap input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.music-progress-wrap input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+}
+
+.music-progress-wrap input[type="range"]::-moz-range-progress {
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+[data-theme="light"] .music-body {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.45)),
+        var(--bg-card);
+}
+
+[data-theme="light"] .music-toggle {
+    background: var(--bg-elevated);
 }
 
 /* ---------- SVG 图标系统（来自 template-web static/svg） ---------- */
