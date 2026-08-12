@@ -1,0 +1,90 @@
+{{ define "main" }}
+<section class="chat-app" id="chat-app" aria-label="聊天室">
+    <div class="chat-layout">
+
+        <aside class="chat-sidebar" id="chat-sidebar">
+            <div class="chat-sidebar-header">
+                <h1 class="chat-sidebar-title">聊天室</h1>
+                <div class="chat-sidebar-controls">
+                    <span class="chat-conn-dot" id="chat-conn-dot" title="连接状态"></span>
+                    <button class="chat-sidebar-close" id="chat-sidebar-close" type="button" aria-label="关闭侧边栏">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <p class="chat-sidebar-welcome">欢迎, <span id="chat-user-name">访客</span></p>
+            <div class="chat-room-list" id="chat-room-list">
+                <div class="chat-skeleton-list">
+                    <div class="chat-skeleton-room"></div>
+                    <div class="chat-skeleton-room"></div>
+                    <div class="chat-skeleton-room"></div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="chat-mobile-overlay" id="chat-mobile-overlay"></div>
+
+        <main class="chat-main" id="chat-main">
+            <header class="chat-main-header">
+                <button class="chat-menu-btn" id="chat-menu-btn" type="button" aria-label="打开房间列表">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                </button>
+                <div class="chat-room-info">
+                    <h2 class="chat-room-name" id="chat-room-name">选择一个聊天室</h2>
+                    <p class="chat-room-desc" id="chat-room-desc"></p>
+                </div>
+                <div class="chat-online-count">
+                    <span class="chat-online-dot"></span>
+                    <span id="chat-online-text">0</span>
+                </div>
+            </header>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-skeleton-msgs">
+                    <div class="chat-skeleton-msg"></div>
+                    <div class="chat-skeleton-msg right"></div>
+                    <div class="chat-skeleton-msg"></div>
+                    <div class="chat-skeleton-msg right"></div>
+                    <div class="chat-skeleton-msg"></div>
+                </div>
+            </div>
+
+            <footer class="chat-input-area">
+                <div class="chat-error" id="chat-error"></div>
+                <div class="chat-input-row">
+                    <textarea
+                        class="chat-input"
+                        id="chat-input"
+                        placeholder="输入消息..."
+                        rows="1"
+                        maxlength="500"
+                        aria-label="消息输入"
+                    ></textarea>
+                    <button class="chat-send-btn" id="chat-send-btn" type="button" aria-label="发送消息">
+                        <span class="chat-send-text">发送</span>
+                        <svg class="chat-send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                </div>
+            </footer>
+        </main>
+
+    </div>
+</section>
+
+<div class="chat-nickname-modal" id="chat-nickname-modal" role="dialog" aria-modal="true" aria-labelledby="chat-nickname-title">
+    <div class="chat-nickname-card">
+        <h2 class="chat-nickname-title" id="chat-nickname-title">请输入您的聊天昵称</h2>
+        <input
+            type="text"
+            class="chat-nickname-input"
+            id="chat-nickname-input"
+            placeholder="请输入昵称"
+            maxlength="20"
+            autocomplete="off"
+            aria-label="昵称"
+        >
+        <p class="chat-nickname-error" id="chat-nickname-error"></p>
+        <button class="chat-nickname-btn" id="chat-nickname-btn" type="button">进入聊天室</button>
+    </div>
+</div>
+{{ end }}

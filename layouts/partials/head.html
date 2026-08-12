@@ -11,3 +11,7 @@
 <link rel="icon" href="{{ "img/avatar-sakuragi-tight.jpg" | relURL }}">
 {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+{{ if eq .Section "chat" -}}
+{{ $chatJs := resources.Get "js/chat.js" | fingerprint }}
+<script src="{{ $chatJs.RelPermalink }}" defer></script>
+{{ end -}}
