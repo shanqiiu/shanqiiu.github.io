@@ -15,6 +15,7 @@
     --purple: #c084fc;
     --red: #f87171;
     --green: #4ade80;
+    --rose: #f43f5e;
     --radius: 8px;
     --radius-sm: 6px;
     --nav-h: 64px;
@@ -539,7 +540,7 @@ img {
 }
 
 .project-card--collected .project-card-cover {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(56, 189, 248, 0.08));
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.22), rgba(244, 63, 94, 0.08));
 }
 
 .project-card-img {
@@ -631,9 +632,19 @@ img {
 }
 
 .status-collected {
-    color: var(--accent);
-    border-color: rgba(56, 189, 248, 0.4);
-    background: rgba(56, 189, 248, 0.1);
+    color: var(--rose);
+    border-color: rgba(244, 63, 94, 0.4);
+    background: rgba(244, 63, 94, 0.12);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.status-collected::before {
+    content: "\2605";
+    margin-right: 3px;
+    font-size: 0.7em;
+    vertical-align: 0.08em;
 }
 
 .project-card-title,
