@@ -361,6 +361,104 @@
     updateTime();
   }
 
+  // 6) 返回顶部按钮
+  function initScrollTop() {
+    var btn = document.createElement('button');
+    btn.className = 'scroll-top';
+    btn.setAttribute('type', 'button');
+    btn.setAttribute('aria-label', '返回顶部');
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>';
+    document.body.appendChild(btn);
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var scrolled = window.pageYOffset || document.documentElement.scrollTop;
+        btn.classList.toggle('is-visible', scrolled > 400);
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    onScroll();
+  }
+
+  // 7) page-nav-fab 当前页面高亮
+  function initNavHighlight() {
+    var menuLinks = document.querySelectorAll('.page-nav-menu a');
+    if (!menuLinks.length) return;
+    var currentPath = window.location.pathname.replace(/\/+$/, '');
+    if (currentPath === '') currentPath = '/';
+
+    menuLinks.forEach(function (link) {
+      var href = link.getAttribute('href') || '';
+      var linkPath = href.replace(/\/+$/, '');
+      if (linkPath === '') linkPath = '/';
+
+      var isMatch = currentPath === linkPath ||
+                     (linkPath !== '/' && currentPath.indexOf(linkPath + '/') === 0);
+      if (isMatch) {
+        link.classList.add('is-current');
+        link.setAttribute('aria-current', 'page');
+      }
+    });
+  }
+
+  // 8) 滚动揭示动画
+  function initScrollReveal() {
+    if (!('IntersectionObserver' in window)) return;
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    var revealTargets = document.querySelectorAll(
+      '.project-card, .post-card, .nav-card, .resource-card, .learning-card, .list-item, .timeline-item'
+    );
+    revealTargets.forEach(function (el) {
+      el.classList.add('reveal');
+    });
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.08,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealTargets.forEach(function (el) {
+      observer.observe(el);
+    });
+  }
+
+  // 9) 音乐播放器 aria-expanded 同步
+  function initMusicAriaSync() {
+    var player = document.getElementById('music-player');
+    var toggle = document.getElementById('music-toggle');
+    if (!player || !toggle) return;
+
+    function syncAria() {
+      var collapsed = player.classList.contains('is-collapsed');
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+    }
+
+    syncAria();
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        if (m.attributeName === 'class') syncAria();
+      });
+    });
+    observer.observe(player, { attributes: true });
+  }
+
   // 启动入口
   function boot() {
     initZoom();
@@ -368,6 +466,10 @@
     initVisitorStats();
     initResourceFilters();
     initMusicPlayer();
+    initScrollTop();
+    initNavHighlight();
+    initScrollReveal();
+    initMusicAriaSync();
     var hm = document.getElementById('github-heatmap');
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';
