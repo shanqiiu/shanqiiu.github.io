@@ -538,6 +538,10 @@ img {
     background: linear-gradient(135deg, rgba(167, 139, 250, 0.26), rgba(167, 139, 250, 0.06));
 }
 
+.project-card--collected .project-card-cover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(56, 189, 248, 0.08));
+}
+
 .project-card-img {
     width: 100%;
     height: 100%;
@@ -624,6 +628,12 @@ img {
     color: var(--purple);
     border-color: rgba(167, 139, 250, 0.4);
     background: rgba(167, 139, 250, 0.1);
+}
+
+.status-collected {
+    color: var(--accent);
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.1);
 }
 
 .project-card-title,

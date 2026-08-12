@@ -3,6 +3,7 @@
 {{ if eq .Params.status "live" }}{{ $label = "进行中" }}{{ $grad = "live" }}
 {{ else if eq .Params.status "planned" }}{{ $label = "规划中" }}{{ $grad = "planned" }}
 {{ else if eq .Params.status "done" }}{{ $label = "已完成" }}{{ $grad = "done" }}
+{{ else if eq .Params.status "collected" }}{{ $label = "收藏项目" }}{{ $grad = "collected" }}
 {{ end }}
 <a class="project-card project-card--{{ $grad }}"
    href="{{ with .Params.link }}{{ . }}{{ else }}{{ .RelPermalink }}{{ end }}"

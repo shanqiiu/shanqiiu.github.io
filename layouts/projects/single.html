@@ -1,6 +1,6 @@
 {{ define "main" }}
 {{ $label := "未知" }}
-{{ if eq .Params.status "live" }}{{ $label = "进行中" }}{{ else if eq .Params.status "planned" }}{{ $label = "规划中" }}{{ else if eq .Params.status "done" }}{{ $label = "已完成" }}{{ end }}
+{{ if eq .Params.status "live" }}{{ $label = "进行中" }}{{ else if eq .Params.status "planned" }}{{ $label = "规划中" }}{{ else if eq .Params.status "done" }}{{ $label = "已完成" }}{{ else if eq .Params.status "collected" }}{{ $label = "收藏项目" }}{{ end }}
 <article class="page container">
     <header class="page-head">
         <div class="post-meta">
