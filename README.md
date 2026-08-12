@@ -53,18 +53,40 @@ hugo server -D
 3. 进入仓库 **Settings → Pages**，把 Source 选为 **GitHub Actions**；
 4. 推送 `master` 分支后，Actions 会自动构建部署，稍等一两分钟访问 `https://<你的用户名>.github.io/`。
 
+### 2b. 部署到 Vercel（推荐，零后端）
+
+Vercel 原生支持 Hugo，且本项目已内置 `vercel.json`（指定 `framework=hugo`、`buildCommand=hugo --minify`、输出目录 `public`、Hugo 版本 `0.164.0`）。两种方式任选其一：
+
+**方式 A：Dashboard 一键导入（最省事）**
+1. 登录 [vercel.com](https://vercel.com)，点击 **Add New → Project**；
+2. Import 你的 GitHub 仓库（即本仓库）；
+3. Framework 会自动识别为 **Hugo**，构建命令 `hugo --minify`、输出目录 `public` 已预填；
+4. 点 **Deploy**，一两分钟后拿到 `https://<project>.vercel.app`。
+
+**方式 B：CLI 部署**
+```powershell
+npm i -g vercel
+vercel login        # 浏览器授权
+vercel              # 首次关联并部署
+vercel --prod       # 部署到生产
+```
+
+**自定义域名**：在 Vercel 项目 **Settings → Domains** 添加域名，按提示加 DNS 记录即可。因为 `baseURL` 已设为 `/`，相对链接在 Vercel 的预览 / 生产 / 自定义域名下都能正常工作，无需改配置。
+
+**与 GitHub Pages 共存**：`.github/workflows/deploy.yml` 仍会把站点同步部署到 `github.io`；两套互不影响，可保留做备份，或删掉该 workflow 只走 Vercel。
+
 ### 3. 个性化配置
 
 打开 `config/_default/` 修改：
 
 | 文件 | 改什么 |
 | --- | --- |
-| `hugo.toml` | `baseURL`（必须改成你的域名）、`title` |
+| `hugo.toml` | `baseURL`（已设为 `/` 以兼容多平台；要绝对链接可改成你的域名）、`title` |
 | `menu.toml` | 导航菜单、GitHub 等社交链接 |
 | `params.toml` | 昵称、签名、头像文案、首页展示数量、页脚版权 |
 | `static/img/avatar.svg` | 替换成你自己的头像 |
 
-> `baseURL` 没改之前，RSS 里的链接会指向 example.org，部署前务必修改。
+> 本项目 `baseURL` 已设为 `/`，生成相对链接，GitHub Pages / Vercel / 自定义域名通用。若需要 RSS、sitemap 输出绝对地址，可把它改成你的正式域名（如 `https://example.com`）。
 
 ## 写内容
 
