@@ -2300,6 +2300,47 @@ img {
     margin-top: 8px;
 }
 
+.hero-quote {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 260px;
+    padding-right: 14px;
+    text-align: right;
+    font-family: "KaiTi", "STKaiti", "楷体", "BiauKai", serif;
+    color: rgba(30, 41, 59, 0.72);
+    pointer-events: none;
+    user-select: none;
+}
+
+.hero-quote::before {
+    content: """;
+    position: absolute;
+    right: 0;
+    top: -6px;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.35;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.hero-quote-text {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    letter-spacing: 0.04em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.hero-quote-source {
+    margin: 8px 0 0;
+    font-size: 0.72rem;
+    color: rgba(30, 41, 59, 0.52);
+    font-family: var(--font-sans);
+}
+
 @media (max-width: 900px) {
     .site-header {
         top: 10px;
@@ -2322,6 +2363,10 @@ img {
         justify-items: center;
         gap: 3px;
         font-size: 0.82rem;
+    }
+
+    .hero-quote {
+        display: none;
     }
 }
 
@@ -3348,6 +3393,14 @@ body:has(#home-bento) .hero-inner,
 [data-theme="dark"] .hero-en,
 [data-theme="dark"] .resource-tag {
     color: #7dd3fc;
+}
+
+[data-theme="dark"] .hero-quote {
+    color: rgba(241, 245, 249, 0.78);
+}
+
+[data-theme="dark"] .hero-quote-source {
+    color: rgba(241, 245, 249, 0.55);
 }
 
 [data-theme="dark"] .hero-info-grid,
