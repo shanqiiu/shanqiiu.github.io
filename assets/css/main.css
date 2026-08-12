@@ -2305,7 +2305,7 @@ img {
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    max-width: 260px;
+    max-width: 360px;
     padding-right: 14px;
     text-align: right;
     font-family: "KaiTi", "STKaiti", "楷体", "BiauKai", serif;
@@ -2328,9 +2328,11 @@ img {
 
 .hero-quote-text {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.65;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
+    word-break: keep-all;
+    white-space: nowrap;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
