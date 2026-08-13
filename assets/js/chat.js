@@ -8,13 +8,15 @@
 
   // ---------- 运行时配置 ----------
   var SUPABASE_CONFIG = window.SUPABASE_CONFIG || null;
-  var HAS_SUPABASE = !!(
-    SUPABASE_CONFIG &&
-    SUPABASE_CONFIG.url &&
-    SUPABASE_CONFIG.anonKey &&
-    window.supabase &&
-    typeof window.supabase.createClient === 'function'
-  );
+  function hasSupabase() {
+    return !!(
+      SUPABASE_CONFIG &&
+      SUPABASE_CONFIG.url &&
+      SUPABASE_CONFIG.anonKey &&
+      window.supabase &&
+      typeof window.supabase.createClient === 'function'
+    );
+  }
 
   // ---------- 本地存储 key（回退模式用） ----------
   var STORAGE_KEY = 'chat:messages';
@@ -97,7 +99,7 @@
   // ChatApp
   // ============================================================
   function ChatApp() {
-    this.mode = HAS_SUPABASE ? 'supabase' : 'local';
+    this.mode = 'local'; // 先以本地模式秒开；supabase 就绪后升级
     this.supabase = null;
     this.rooms = DEFAULT_ROOMS.slice();
     this.currentRoom = null;
@@ -109,6 +111,7 @@
     this.realtimeChannel = null; // supabase 消息订阅
     this.presenceChannel = null; // supabase 在线人数
     this.els = {};
+    this.localOnlyMessages = []; // 本地模式期间产生的消息，升级云端时补发
     this._init = false;
   }
 
@@ -142,7 +145,7 @@
     e.shareBtn = document.getElementById('chat-share-btn');
 
     this.initUser();
-    this.initBackend();
+    this.initBackendProgressive();
     this.bindEvents();
     this.renderRooms();
     this.selectRoom(this.rooms[0]);
@@ -192,22 +195,68 @@
     }
   };
 
-  // ---------- 后端初始化（supabase 或 local） ----------
-  ChatApp.prototype.initBackend = function () {
+  // ---------- 后端初始化（渐进增强） ----------
+  // 先以本地模式秒开、可聊天；后台探测 supabase 脚本就绪后升级为云端实时
+  ChatApp.prototype.initBackendProgressive = function () {
     var self = this;
-    if (this.mode === 'supabase') {
-      try {
-        this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-        this.els.connDot.classList.add('is-connected');
-        this.els.connDot.title = '已连接（云端实时）';
-      } catch (err) {
-        // 客户端创建失败则回退本地模式
-        this.mode = 'local';
-        this.initBroadcast();
+    this.mode = 'local';
+    this.initBroadcast();
+    if (this.els.onlineText) this.els.onlineText.textContent = '1';
+
+    if (!SUPABASE_CONFIG) return; // 未配置 supabase，保持本地模式
+    var waited = 0;
+    var timer = setInterval(function () {
+      if (self.mode === 'supabase') { clearInterval(timer); return; }
+      if (hasSupabase()) {
+        clearInterval(timer);
+        self.upgradeToSupabase();
+        return;
       }
-    } else {
-      this.initBroadcast();
+      waited += 250;
+      if (waited >= 8000) {
+        clearInterval(timer);
+        if (self.els.connDot) self.els.connDot.title = '本地模式（云端未就绪）';
+      }
+    }, 250);
+  };
+
+  // 升级到云端实时模式：补发本地消息 + 拉取云端历史 + 订阅实时/在线
+  ChatApp.prototype.upgradeToSupabase = function () {
+    var self = this;
+    if (this.mode === 'supabase') return;
+    try {
+      this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    } catch (err) {
+      return; // 创建失败，保持本地模式
     }
+    this.mode = 'supabase';
+    if (this.els.connDot) {
+      this.els.connDot.classList.add('is-connected');
+      this.els.connDot.title = '已连接（云端实时）';
+    }
+    var pending = this.localOnlyMessages.slice();
+    this.localOnlyMessages = [];
+    var afterSync = function () {
+      if (!self.currentRoom) return;
+      self.loadRoomMessages(self.currentRoom.id, function (msgs) {
+        self.messages = msgs;
+        self.renderMessages();
+        self.scrollToBottom();
+        self.subscribeRoom(self.currentRoom.id);
+        self.initPresence(self.currentRoom.id);
+      });
+    };
+    if (!pending.length) { afterSync(); return; }
+    var done = 0;
+    var finish = function () { done++; if (done >= pending.length) afterSync(); };
+    pending.forEach(function (item) {
+      self.supabase.from('messages').insert({
+        room_id: item.roomId,
+        user_id: item.msg.userId,
+        user_name: item.msg.userName,
+        content: item.msg.content
+      }).then(finish, finish);
+    });
   };
 
   ChatApp.prototype.initBroadcast = function () {
@@ -286,6 +335,7 @@
         .catch(function (err) { cb(err); });
     } else {
       addMessageToRoom(roomId, msg);
+      if (this.mode === 'local') this.localOnlyMessages.push({ roomId: roomId, msg: msg });
       cb(null);
     }
   };
