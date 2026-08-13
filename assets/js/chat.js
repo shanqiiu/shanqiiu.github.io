@@ -217,9 +217,13 @@
         return;
       }
       waited += 250;
-      if (waited >= 8000) {
+      if (waited >= 30000) {
         clearInterval(timer);
-        self.setConnStatus('本地模式（云端未就绪）', false);
+        if (!window.supabase) {
+          self.setConnStatus('云端库未加载（检查网络/脚本）', false);
+        } else {
+          self.setConnStatus('本地模式（云端初始化失败）', false);
+        }
       }
     }, 250);
   };
@@ -231,6 +235,8 @@
     try {
       this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
     } catch (err) {
+      console.error('[chat] Supabase createClient 失败：', err);
+      this.setConnStatus('云端初始化失败（' + (err && err.message ? err.message : '未知错误') + '）', false);
       return; // 创建失败，保持本地模式
     }
     this.mode = 'supabase';
