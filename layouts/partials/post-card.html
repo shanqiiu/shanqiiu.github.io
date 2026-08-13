@@ -2,6 +2,9 @@
     <a class="post-card-link" href="{{ .RelPermalink }}">
         <h3 class="post-card-title">{{ .Title }}</h3>
         <p class="post-card-excerpt">{{ .Summary | plainify | truncate 120 }}</p>
+        {{ with .Params.categories }}
+            <div class="post-card-category-path">{{ delimit . " / " }}</div>
+        {{ end }}
         <div class="post-card-meta">
             <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
             {{ range .Params.tags }}

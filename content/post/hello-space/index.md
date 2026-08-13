@@ -1,8 +1,8 @@
 ---
 title: "你好，我的个人空间"
 date: 2026-08-06T10:00:00+08:00
-categories: ["随笔"]
-tags: ["开始", "Hugo"]
+categories: ["工具教程", "环境搭建", "Hugo"]
+tags: ["开始", "Hugo", "知识库"]
 summary: "第一篇示例文章，介绍这个空间的定位、内容分类与写作方式。"
 toc: true
 ---
@@ -21,8 +21,8 @@ toc: true
 ---
 title: "文章标题"
 date: 2026-08-06T10:00:00+08:00
-categories: ["技术"]
-tags: ["Hugo"]
+categories: ["工具教程", "环境搭建", "Hugo"]
+tags: ["Hugo", "写作规范"]
 summary: "一句话摘要"
 toc: true
 ---

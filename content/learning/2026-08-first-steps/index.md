@@ -3,6 +3,8 @@ title: "从搭建个人空间开始"
 date: 2026-08-06
 period: "2026-08"
 status: "in-progress"
+categories: ["技术文章", "工程实践", "自动化"]
+tags: ["Hugo", "GitHub Pages", "知识库", "实践记录"]
 summary: "学习历程的第一站：把知识沉淀下来，形成自己的输出习惯。"
 milestones:
   - "搭建 Hugo + GitHub Pages 个人空间"

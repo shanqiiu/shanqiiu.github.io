@@ -1,0 +1,126 @@
+principles:
+  - "一级分类保持稳定，负责知识库的书架结构。"
+  - "二级分类负责领域，三级分类负责具体主题。"
+  - "tags 用于技术栈、工具名、人物、内容形态，不承担层级职责。"
+
+top_levels:
+  - name: "其他图书"
+    description: "读书笔记、摘录、书评和主题整理。"
+    children:
+      - name: "政治"
+        children: ["政治制度", "国际关系", "意识形态"]
+      - name: "经济"
+        children: ["宏观经济", "金融市场", "商业模式", "产业研究"]
+      - name: "历史"
+        children: ["中国史", "世界史", "制度史"]
+      - name: "哲学"
+        children: ["伦理学", "认识论", "现代思想"]
+      - name: "社会"
+        children: ["社会观察", "城市研究", "公共议题"]
+      - name: "诗词"
+        children: ["唐诗", "宋词", "现代诗", "古文赏析"]
+      - name: "文学"
+        children: ["小说", "散文", "文学评论"]
+      - name: "传记"
+        children: ["企业家", "科学家", "历史人物"]
+      - name: "心理"
+        children: ["认知心理", "行为决策", "情绪管理"]
+      - name: "科学"
+        children: ["科普", "复杂系统", "自然科学"]
+
+  - name: "技术文章"
+    description: "工程知识、技术笔记、架构理解和实践复盘。"
+    children:
+      - name: "前端"
+        children: ["HTML-CSS", "JavaScript", "TypeScript", "React", "Vue", "Next.js", "UI-UX", "性能优化", "工程化"]
+      - name: "后端"
+        children: ["API设计", "数据库", "缓存", "消息队列", "鉴权安全", "分布式系统", "DevOps", "服务部署"]
+      - name: "AI"
+        children: ["Agent", "LLM", "Infra", "RAG", "Prompt", "多模态", "评测", "应用实践"]
+      - name: "工程实践"
+        children: ["架构设计", "调试排障", "代码质量", "自动化", "Git"]
+      - name: "计算机基础"
+        children: ["网络", "操作系统", "数据结构", "编译原理"]
+
+  - name: "工具教程"
+    description: "工具使用、软件配置、经验贴和流程记录。"
+    children:
+      - name: "工具使用"
+        children: ["Clash for Windows", "GitHub", "Notion", "VS Code"]
+      - name: "软件配置"
+        children: ["Windows", "浏览器", "开发环境", "同步备份"]
+      - name: "拍摄剪辑"
+        children: ["影视飓风课程", "相机基础", "灯光", "剪辑流程"]
+      - name: "效率工作流"
+        children: ["自动化脚本", "信息管理", "文件同步"]
+      - name: "环境搭建"
+        children: ["Node.js", "Hugo", "Docker"]
+      - name: "问题排查"
+        children: ["网络问题", "构建问题", "系统问题"]
+
+recommended_tags:
+  technical: ["React", "Vue", "TypeScript", "Node.js", "NestJS", "Electron", "LLM", "Agent", "RAG", "DevOps"]
+  format: ["读书笔记", "实践记录", "经验记录", "教程", "问题排查", "源码阅读"]
+  tool: ["Clash for Windows", "VS Code", "GitHub", "Vercel", "Hugo", "Notion"]
+
+resources:
+  - title: "Vue3 响应式更新"
+    path: ["技术文章", "前端", "Vue"]
+    description: "记录 Vue3 响应式系统、ref、reactive 和更新时机。"
+    link: "https://vuejs.org/api/reactivity-core"
+    tags: ["Vue", "前端", "响应式"]
+  - title: "TypeScript 类型体操"
+    path: ["技术文章", "前端", "TypeScript"]
+    description: "TypeScript 类型推导、泛型约束和工具类型练习。"
+    link: "https://www.typescriptlang.org/docs/handbook/utility-types.html"
+    tags: ["TypeScript", "前端工程"]
+  - title: "Electron 任务栏闪烁"
+    path: ["技术文章", "前端", "Electron"]
+    description: "通过 mainWindow.flashFrame() 控制任务栏图标闪烁状态。"
+    link: "https://www.electronjs.org/docs/api/browser-window#winflashframeflag"
+    tags: ["Electron", "桌面端"]
+  - title: "Nest 配置"
+    path: ["技术文章", "后端", "API设计"]
+    description: "Nest 项目中的模块、环境变量和启动配置记录。"
+    link: "https://docs.nestjs.com/fundamentals/modules"
+    tags: ["NestJS", "Node.js", "后端"]
+  - title: "Vercel 部署"
+    path: ["技术文章", "后端", "服务部署"]
+    description: "Vercel 部署流程、环境变量和构建问题记录。"
+    link: "https://vercel.com/docs/deployments"
+    tags: ["Vercel", "部署"]
+  - title: "Agent 工具调用机制整理"
+    path: ["技术文章", "AI", "Agent"]
+    description: "整理 Agent 如何规划任务、调用工具、处理观察结果和继续执行。"
+    link: "https://platform.openai.com/docs/guides/tools"
+    tags: ["Agent", "Tool Calling", "LLM"]
+  - title: "LLM 基础概念"
+    path: ["技术文章", "AI", "LLM"]
+    description: "整理 token、上下文窗口、采样参数、结构化输出等基础概念。"
+    link: "https://platform.openai.com/docs"
+    tags: ["LLM", "基础概念"]
+  - title: "AI Infra 笔记"
+    path: ["技术文章", "AI", "Infra"]
+    description: "记录推理服务、向量数据库、评测流水线和部署链路。"
+    link: "https://github.com/openai/evals"
+    tags: ["Infra", "评测", "部署"]
+  - title: "Clash for Windows 使用方法"
+    path: ["工具教程", "工具使用", "Clash for Windows"]
+    description: "记录订阅导入、规则模式、系统代理和常见网络问题排查。"
+    link: "https://github.com/Fndroid/clash_for_windows_pkg"
+    tags: ["代理工具", "Windows", "经验记录"]
+  - title: "影视飓风拍摄课程笔记"
+    path: ["工具教程", "拍摄剪辑", "影视飓风课程"]
+    description: "整理相机参数、构图、收音、灯光和剪辑流程中的实用经验。"
+    link: "https://www.ysjf.com"
+    tags: ["拍摄", "剪辑", "课程笔记"]
+  - title: "《置身事内》读书笔记"
+    path: ["其他图书", "经济", "宏观经济"]
+    description: "围绕地方政府、财政、土地和产业政策整理核心观点。"
+    link: "https://book.douban.com"
+    tags: ["读书笔记", "中国经济", "财政"]
+  - title: "唐诗摘录与赏析"
+    path: ["其他图书", "诗词", "唐诗"]
+    description: "按诗人、主题和意象整理唐诗摘录、注释和个人理解。"
+    link: "https://ctext.org"
+    tags: ["诗词", "读书笔记", "摘录"]

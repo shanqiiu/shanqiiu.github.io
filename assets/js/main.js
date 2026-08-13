@@ -63,14 +63,14 @@
     var search = document.getElementById('resource-search');
     var categories = document.getElementById('resource-categories');
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
-    var activeCategory = '全部';
+    var activePath = 'ALL';
 
     function applyFilters() {
       var query = search ? String(search.value || '').trim().toLowerCase() : '';
       cards.forEach(function (card) {
-        var category = card.getAttribute('data-category') || '';
+        var path = card.getAttribute('data-path') || '';
         var haystack = card.getAttribute('data-search') || '';
-        var matchesCategory = activeCategory === '全部' || category === activeCategory;
+        var matchesCategory = activePath === 'ALL' || path === activePath || path.indexOf(activePath + ' / ') === 0;
         var matchesQuery = !query || haystack.indexOf(query) !== -1;
         card.classList.toggle('is-hidden', !(matchesCategory && matchesQuery));
       });
@@ -83,7 +83,7 @@
       categories.addEventListener('click', function (event) {
         var btn = event.target.closest('.resource-category');
         if (!btn) return;
-        activeCategory = btn.getAttribute('data-category') || '全部';
+        activePath = btn.getAttribute('data-path') || 'ALL';
         categories.querySelectorAll('.resource-category').forEach(function (item) {
           item.classList.toggle('is-active', item === btn);
         });

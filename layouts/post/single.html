@@ -5,9 +5,12 @@
             <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
             {{ with .Params.categories }}
                 <span class="meta-sep">·</span>
-                {{ range . }}
-                    <a class="cat" href="{{ "categories/" | relURL }}{{ . | urlize }}/">{{ . }}</a>
+                <span class="post-category-path">
+                {{ range $index, $cat := . }}
+                    {{ if $index }}<span class="post-category-sep">/</span>{{ end }}
+                    <a class="cat" href="{{ "categories/" | relURL }}{{ $cat | urlize }}/">{{ $cat }}</a>
                 {{ end }}
+                </span>
             {{ end }}
             <span class="meta-sep">·</span>
             <span>{{ .ReadingTime }} 分钟阅读</span>

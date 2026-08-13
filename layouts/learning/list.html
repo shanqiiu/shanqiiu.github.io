@@ -1,27 +1,14 @@
 {{ define "main" }}
-{{ $items := slice
-    (dict "title" "任务栏闪烁" "cat" "electron" "desc" "通过使用 mainWindow.flashFrame() 来控制任务栏图标的闪烁状态。" "link" "https://www.electronjs.org/docs/api/browser-window#winflashframeflag")
-    (dict "title" "结合后端实现自动更新" "cat" "electron" "desc" "通过 electron-builder 和 electron-updater，结合后端接口实现应用自动更新。" "link" "https://www.electronjs.org/docs/tutorial/automatic-updates")
-    (dict "title" "调试鸿蒙" "cat" "uniapp" "desc" "记录 uniapp 调试鸿蒙环境时的配置和常见问题。" "link" "https://uniapp.dcloud.net.cn/tutorial/harmony-os.html")
-    (dict "title" "应用签名防止杀毒软件误报" "cat" "electron" "desc" "通过签名工具降低安装时被安全软件误报的概率。" "link" "https://www.electron.build/code-signing")
-    (dict "title" "nest 配置" "cat" "nest" "desc" "Nest 项目中的模块、环境变量和启动配置记录。" "link" "https://docs.nestjs.com/fundamentals/modules")
-    (dict "title" "vue3 响应式更新" "cat" "vue3" "desc" "记录 Vue3 响应式系统、ref、reactive 和更新时机。" "link" "https://vuejs.org/api/reactivity-core")
-    (dict "title" "托盘闪烁" "cat" "electron" "desc" "通过切换托盘图标实现状态提醒和消息闪烁。" "link" "https://www.electronjs.org/docs/api/tray")
-    (dict "title" "node 配置" "cat" "node" "desc" "Node 运行环境、脚本命令和常用配置记录。" "link" "https://nodejs.org/api/cli.html")
-    (dict "title" "工程化配置" "cat" "工程化" "desc" "项目工程化、打包、格式化和规范配置记录。" "link" "https://webpack.js.org/configuration/")
-    (dict "title" "结合 GitHub 实现自动更新" "cat" "electron" "desc" "通过 GitHub Release 承载安装包和更新元数据。" "link" "https://www.electron.build/auto-updates")
-    (dict "title" "类型体操" "cat" "typescript" "desc" "TypeScript 类型推导、泛型约束和工具类型练习。" "link" "https://www.typescriptlang.org/docs/handbook/utility-types.html")
-    (dict "title" "检测更新" "cat" "微信小程序" "desc" "小程序版本更新检测、提示和重启流程记录。" "link" "https://developers.weixin.qq.com/miniprogram/dev/framework/update.html")
-    (dict "title" "vercel 部署" "cat" "部署" "desc" "Vercel 部署流程、环境变量和构建问题记录。" "link" "https://vercel.com/docs/deployments")
-}}
-{{ $cats := slice "全部" "electron" "nest" "node" "typescript" "uniapp" "vue3" "工程化" "微信小程序" "部署" }}
+{{ $taxonomy := hugo.Data.knowledge_taxonomy }}
+{{ $items := $taxonomy.resources | default slice }}
+{{ $topLevels := $taxonomy.top_levels | default slice }}
 
 <section class="resource-page">
     <header class="resource-hero">
-        <h1>知识库 <span aria-hidden="true"></span></h1>
+        <h1>知识库<span aria-hidden="true"></span></h1>
         <label class="resource-search">
             {{ partial "svg-icon.html" "search" }}
-            <input id="resource-search" type="search" placeholder="搜索文章标题、内容或标签..." autocomplete="off">
+            <input id="resource-search" type="search" placeholder="搜索标题、内容、分类或标签..." autocomplete="off">
         </label>
     </header>
 
@@ -29,23 +16,36 @@
         <aside class="resource-sidebar resource-panel">
             <div class="resource-panel-title">
                 {{ partial "svg-icon.html" "tag" }}
-                <span>文章分类</span>
+                <span>多级分类</span>
             </div>
             <div class="resource-category-list" id="resource-categories">
-                {{ range $cats }}
-                    {{ $count := 0 }}
-                    {{ if eq . "全部" }}
-                        {{ $count = len $items }}
-                    {{ else }}
-                        {{ $cat := . }}
-                        {{ range $items }}
-                            {{ if eq .cat $cat }}{{ $count = add $count 1 }}{{ end }}
-                        {{ end }}
+                <button type="button" class="resource-category is-active" data-category="全部" data-path="ALL">
+                    <span>全部</span>
+                    <b>{{ len $items }}</b>
+                </button>
+                {{ range $topLevels }}
+                    {{ $top := .name }}
+                    {{ $topCount := 0 }}
+                    {{ range $items }}
+                        {{ if eq (index .path 0) $top }}{{ $topCount = add $topCount 1 }}{{ end }}
                     {{ end }}
-                    <button type="button" class="resource-category{{ if eq . "全部" }} is-active{{ end }}" data-category="{{ . }}">
-                        <span>{{ . }}</span>
-                        <b>{{ $count }}</b>
+                    <button type="button" class="resource-category resource-category-level-1" data-category="{{ $top }}" data-path="{{ $top }}">
+                        <span>{{ $top }}</span>
+                        <b>{{ $topCount }}</b>
                     </button>
+
+                    {{ range .children }}
+                        {{ $second := .name }}
+                        {{ $secondPath := printf "%s / %s" $top $second }}
+                        {{ $secondCount := 0 }}
+                        {{ range $items }}
+                            {{ if and (ge (len .path) 2) (eq (index .path 0) $top) (eq (index .path 1) $second) }}{{ $secondCount = add $secondCount 1 }}{{ end }}
+                        {{ end }}
+                        <button type="button" class="resource-category resource-category-level-2" data-category="{{ $second }}" data-path="{{ $secondPath }}">
+                            <span>{{ $second }}</span>
+                            <b>{{ $secondCount }}</b>
+                        </button>
+                    {{ end }}
                 {{ end }}
             </div>
         </aside>
@@ -53,17 +53,24 @@
         <main class="resource-feed" aria-label="Knowledge cards">
             <div class="resource-card-grid" id="resource-card-grid">
                 {{ range $items }}
-                <a class="resource-card" href="{{ .link }}" target="_blank" rel="noopener noreferrer" data-category="{{ .cat }}" data-search="{{ lower (printf "%s %s %s" .title .cat .desc) }}">
+                {{ $path := delimit .path " / " }}
+                {{ $searchText := lower (printf "%s %s %s %s" .title $path .description (delimit (.tags | default slice) " ")) }}
+                <a class="resource-card" href="{{ .link }}" target="_blank" rel="noopener noreferrer" data-category="{{ index .path 0 }}" data-path="{{ $path }}" data-search="{{ $searchText }}">
                     <div class="resource-card-inner">
+                        <div class="resource-path">{{ $path }}</div>
                         <h2>{{ .title }}</h2>
-                        <p>{{ .desc }}</p>
-                        <span class="resource-tag">{{ .cat }}</span>
+                        <p>{{ .description }}</p>
+                        <div class="resource-card-tags">
+                            {{ range .tags }}
+                                <span class="resource-tag">{{ . }}</span>
+                            {{ end }}
+                        </div>
                         <div class="resource-meta">
                             <span>{{ .link | replaceRE "^https?://([^/]+).*" "${1}" | plainify }}</span>
                         </div>
                         <div class="resource-date">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                            <span>查看文档</span>
+                            <span>查看资料</span>
                         </div>
                     </div>
                 </a>
@@ -75,37 +82,37 @@
             <section class="resource-panel">
                 <div class="resource-panel-title">
                     {{ partial "svg-icon.html" "count" }}
-                    <span>博客统计</span>
+                    <span>知识库统计</span>
                 </div>
-                <div class="resource-stat-box">
-                    <span>总文章数</span>
+                <div class="resource-stat-box resource-stat-box-vertical">
+                    <span>资源条目</span>
                     <strong>{{ len $items }} 篇</strong>
                 </div>
                 <div class="resource-stat-row">
-                    <span>总目录数</span>
-                    <strong>{{ sub (len $cats) 1 }} 个</strong>
+                    <span>一级分类</span>
+                    <strong>{{ len $topLevels }} 个</strong>
                 </div>
                 <div class="resource-stat-row">
-                    <span>总文件数</span>
-                    <strong>22 个</strong>
+                    <span>分类深度</span>
+                    <strong>3 级</strong>
                 </div>
             </section>
 
             <section class="resource-panel">
                 <div class="resource-panel-title">
                     {{ partial "svg-icon.html" "count1" }}
-                    <span>分类统计</span>
+                    <span>一级分布</span>
                 </div>
                 <div class="resource-meter-list">
-                    {{ range after 1 $cats }}
-                        {{ $cat := . }}
+                    {{ range $topLevels }}
+                        {{ $top := .name }}
                         {{ $count := 0 }}
                         {{ range $items }}
-                            {{ if eq .cat $cat }}{{ $count = add $count 1 }}{{ end }}
+                            {{ if eq (index .path 0) $top }}{{ $count = add $count 1 }}{{ end }}
                         {{ end }}
                         <div class="resource-meter">
-                            <span>{{ $cat }}</span>
-                            <i><em style="width: {{ mul $count 18 }}%;"></em></i>
+                            <span>{{ $top }}</span>
+                            <i><em style="width: {{ mul $count 8 }}%;"></em></i>
                             <b>{{ $count }}</b>
                         </div>
                     {{ end }}
@@ -115,14 +122,13 @@
             <section class="resource-panel">
                 <div class="resource-panel-title">
                     {{ partial "svg-icon.html" "docs" }}
-                    <span>目录结构</span>
+                    <span>分类原则</span>
                 </div>
                 <div class="resource-tree">
-                    {{ range after 1 (first 6 $cats) }}
-                        <div><span>›</span>{{ partial "svg-icon.html" "docs" }}<b>{{ . }}</b></div>
+                    {{ range $taxonomy.principles }}
+                        <div><span>-</span>{{ partial "svg-icon.html" "docs" }}<b>{{ . }}</b></div>
                     {{ end }}
                 </div>
-                <p class="resource-updated">最后更新: 2026/8/9 12:01:59</p>
             </section>
         </aside>
     </div>
