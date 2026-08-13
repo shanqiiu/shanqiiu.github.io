@@ -75,6 +75,26 @@ vercel --prod       # 部署到生产
 
 **与 GitHub Pages 共存**：`.github/workflows/deploy.yml` 仍会把站点同步部署到 `github.io`；两套互不影响，可保留做备份，或删掉该 workflow 只走 Vercel。
 
+### 2c. 聊天室实时后端（可选，Supabase）
+
+聊天室默认是「纯本地模式」（消息存浏览器 `localStorage`，靠 `BroadcastChannel` 在同一浏览器的多个标签页间同步），换设备 / 换人互相看不到、昵称也不跨设备。
+
+接上 Supabase 后升级为「云端实时模式」：消息存 Postgres、Realtime 订阅实现**真·跨设备 / 跨用户实时**、Presence 统计**在线人数**。无需自建服务器。
+
+**步骤**
+
+1. **建 Supabase 项目**：登录 [supabase.com](https://supabase.com) → New Project；
+2. **建表**：SQL Editor 中执行仓库里的 `supabase/schema.sql`（建 `rooms` / `messages` 表 + 公开读写 RLS 策略 + 预填 3 个房间）；
+3. **拿凭证**：Project Settings → API，复制 **Project URL** 和 **anon public key**；
+4. **配 Vercel 环境变量**（关键）：Vercel 项目 **Settings → Environment Variables** 添加两条，作用域勾 **Production**（和 `HUGO_VERSION` 同理，必须勾 Production）：
+   - `SUPABASE_URL` = 你的 Project URL
+   - `SUPABASE_ANON_KEY` = 你的 anon public key
+5. **重新部署**：Deployments → 最新构建 → `⋯` → **Redeploy**（或往 `master` 推一个空提交 `git commit --allow-empty`）。
+
+Hugo 构建时会把这两个变量注入到 `/chat/` 页面的 `window.SUPABASE_CONFIG`，`chat.js` 自动切到云端实时模式；**未配置时自动回退本地模式，网站照常可用**。
+
+> 跨设备免重输昵称：聊天室侧边栏有「分享」按钮，点一下复制带身份的链接，在新设备打开即自动填充昵称（无需 Supabase 账号）。
+
 ### 3. 个性化配置
 
 打开 `config/_default/` 修改：

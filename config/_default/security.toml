@@ -1,0 +1,4 @@
+[security.funcs]
+# 允许构建期注入的环境变量（Hugo 默认 getenv 为 none，需显式放开）
+# 正则匹配环境变量名；^SUPABASE_ 覆盖 SUPABASE_URL / SUPABASE_ANON_KEY
+getenv = ["^HUGO_", "^CI$", "^SUPABASE_"]

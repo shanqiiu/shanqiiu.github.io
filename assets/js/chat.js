@@ -1,20 +1,35 @@
-// 聊天室模块（纯客户端，localStorage + BroadcastChannel）
+// 聊天室模块
+// 数据层可切换：
+//   - Supabase 模式（配置了 window.SUPABASE_CONFIG 且加载了 supabase-js）：
+//       消息存云端 Postgres、Realtime 订阅实现真·跨设备实时、Presence 统计在线人数
+//   - 本地模式（默认/未配置 Supabase）：localStorage + BroadcastChannel 回退，保证不崩
 (function () {
   'use strict';
 
+  // ---------- 运行时配置 ----------
+  var SUPABASE_CONFIG = window.SUPABASE_CONFIG || null;
+  var HAS_SUPABASE = !!(
+    SUPABASE_CONFIG &&
+    SUPABASE_CONFIG.url &&
+    SUPABASE_CONFIG.anonKey &&
+    window.supabase &&
+    typeof window.supabase.createClient === 'function'
+  );
+
+  // ---------- 本地存储 key（回退模式用） ----------
   var STORAGE_KEY = 'chat:messages';
   var USER_KEY = 'chat:userName';
   var USER_ID_KEY = 'chat:userId';
   var CHANNEL_NAME = 'chat-broadcast';
 
-  // 默认房间
+  // ---------- 默认房间 ----------
   var DEFAULT_ROOMS = [
-    { id: 'general', name: '综合大厅', description: '闲聊各类话题', count: 0 },
-    { id: 'tech', name: '技术交流', description: '讨论技术问题', count: 0 },
-    { id: 'random', name: '随便聊聊', description: '想说什么就说什么', count: 0 }
+    { id: 'general', name: '综合大厅', description: '闲聊各类话题' },
+    { id: 'tech', name: '技术交流', description: '讨论技术问题' },
+    { id: 'random', name: '随便聊聊', description: '想说什么就说什么' }
   ];
 
-  // 敏感词
+  // ---------- 敏感词 ----------
   var BAD_WORDS = ['傻逼', '操你妈', '草泥马', '滚蛋', '白痴', '智障', '脑残', '废物',
     'fuck', 'shit', 'bitch', 'asshole', 'damn', 'wtf', 'sb', 'nc', 'zz'];
 
@@ -49,6 +64,13 @@
     return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
   }
 
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str || ''));
+    return div.innerHTML;
+  }
+
+  // ---------- 本地消息读写（回退模式） ----------
   function loadMessages() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
     catch (e) { return {}; }
@@ -67,30 +89,25 @@
     var all = loadMessages();
     if (!all[roomId]) all[roomId] = [];
     all[roomId].push(msg);
-    if (all[roomId].length > 200) {
-      all[roomId] = all[roomId].slice(-200);
-    }
+    if (all[roomId].length > 200) all[roomId] = all[roomId].slice(-200);
     saveMessages(all);
   }
 
-  function updateRoomCounts(rooms) {
-    var all = loadMessages();
-    return rooms.map(function (r) {
-      var msgs = all[r.id] || [];
-      return { id: r.id, name: r.name, description: r.description, count: msgs.length };
-    });
-  }
-
+  // ============================================================
+  // ChatApp
+  // ============================================================
   function ChatApp() {
+    this.mode = HAS_SUPABASE ? 'supabase' : 'local';
+    this.supabase = null;
     this.rooms = DEFAULT_ROOMS.slice();
     this.currentRoom = null;
     this.messages = [];
     this.userName = '';
     this.userId = '';
     this.isSending = false;
-    this.channel = null;
-    this.onlineUsers = 1;
-
+    this.channel = null;        // 本地模式 BroadcastChannel
+    this.realtimeChannel = null; // supabase 消息订阅
+    this.presenceChannel = null; // supabase 在线人数
     this.els = {};
     this._init = false;
   }
@@ -122,23 +139,45 @@
     e.nicknameInput = document.getElementById('chat-nickname-input');
     e.nicknameError = document.getElementById('chat-nickname-error');
     e.nicknameBtn = document.getElementById('chat-nickname-btn');
+    e.shareBtn = document.getElementById('chat-share-btn');
 
     this.initUser();
-    this.initBroadcast();
+    this.initBackend();
     this.bindEvents();
     this.renderRooms();
     this.selectRoom(this.rooms[0]);
+  };
 
-    if ('BroadcastChannel' in window) {
-      e.connDot.classList.add('is-connected');
+  // ---------- 身份：优先从 URL 分享链接读取，其次本地存储 ----------
+  ChatApp.prototype.parseIdentityFromUrl = function () {
+    var hash = window.location.hash || '';
+    var m = hash.match(/identity=([^&]+)/);
+    if (!m) return {};
+    var decoded = decodeURIComponent(m[1]);
+    var parts = decoded.split('~');
+    if (parts.length === 2 && parts[0] && parts[1]) {
+      return { uid: parts[0], name: parts[1] };
     }
+    return {};
   };
 
   ChatApp.prototype.initUser = function () {
+    var fromUrl = this.parseIdentityFromUrl();
     try {
       this.userName = localStorage.getItem(USER_KEY) || '';
       this.userId = localStorage.getItem(USER_ID_KEY) || '';
     } catch (e) {}
+
+    if (fromUrl.uid && fromUrl.name) {
+      this.userId = fromUrl.uid;
+      this.userName = fromUrl.name;
+      try {
+        localStorage.setItem(USER_ID_KEY, this.userId);
+        localStorage.setItem(USER_KEY, this.userName);
+      } catch (e) {}
+      // 清理 URL，避免链接被二次传播
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {}
+    }
 
     if (!this.userId) {
       this.userId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
@@ -153,57 +192,155 @@
     }
   };
 
+  // ---------- 后端初始化（supabase 或 local） ----------
+  ChatApp.prototype.initBackend = function () {
+    var self = this;
+    if (this.mode === 'supabase') {
+      try {
+        this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        this.els.connDot.classList.add('is-connected');
+        this.els.connDot.title = '已连接（云端实时）';
+      } catch (err) {
+        // 客户端创建失败则回退本地模式
+        this.mode = 'local';
+        this.initBroadcast();
+      }
+    } else {
+      this.initBroadcast();
+    }
+  };
+
   ChatApp.prototype.initBroadcast = function () {
     var self = this;
-    if (!('BroadcastChannel' in window)) return;
-
+    if (!('BroadcastChannel' in window)) {
+      this.els.connDot.title = '本地模式';
+      return;
+    }
     try {
       this.channel = new BroadcastChannel(CHANNEL_NAME);
       this.channel.onmessage = function (event) {
         var data = event.data;
         if (!data || !data.type) return;
-
         if (data.type === 'new-message' && data.roomId === (self.currentRoom && self.currentRoom.id)) {
           self.messages.push(data.message);
           self.renderMessages();
           self.scrollToBottom();
         }
         if (data.type === 'new-message') {
-          self.rooms = updateRoomCounts(self.rooms);
           self.renderRooms();
         }
-        if (data.type === 'user-join' || data.type === 'user-leave') {
-          self.updateOnlineCount();
-        }
       };
+      this.els.connDot.classList.add('is-connected');
+      this.els.connDot.title = '已连接（本机同步）';
     } catch (e) {}
   };
 
   ChatApp.prototype.broadcast = function (type, extra) {
     if (!this.channel) return;
     try {
-      this.channel.postMessage(Object.assign({ type: type, roomId: this.currentRoom ? this.currentRoom.id : null }, extra || {}));
+      this.channel.postMessage(Object.assign(
+        { type: type, roomId: this.currentRoom ? this.currentRoom.id : null }, extra || {}
+      ));
     } catch (e) {}
   };
 
-  ChatApp.prototype.updateOnlineCount = function () {
-    var count = 1;
-    if (this.channel) {
+  // ---------- 消息拉取（按模式） ----------
+  ChatApp.prototype.loadRoomMessages = function (roomId, cb) {
+    if (this.mode === 'supabase') {
       var self = this;
-      var received = false;
-      var checkChannel = new BroadcastChannel(CHANNEL_NAME + '-ping');
-      checkChannel.onmessage = function () { received = true; };
-      checkChannel.postMessage('ping');
-      setTimeout(function () {
-        count += received ? 1 : 0;
-        self.els.onlineText.textContent = String(count);
-        try { checkChannel.close(); } catch (e) {}
-      }, 500);
+      this.supabase
+        .from('messages')
+        .select('id, room_id, user_id, user_name, content, created_at')
+        .eq('room_id', roomId)
+        .order('created_at', { ascending: true })
+        .limit(200)
+        .then(function (res) {
+          if (res.error) { cb([], res.error); return; }
+          var msgs = (res.data || []).map(function (r) {
+            return {
+              id: r.id, content: r.content, userId: r.user_id,
+              userName: r.user_name, createdAt: r.created_at
+            };
+          });
+          cb(msgs, null);
+        })
+        .catch(function (err) { cb([], err); });
     } else {
-      this.els.onlineText.textContent = '1';
+      cb(getRoomMessages(roomId), null);
     }
   };
 
+  // ---------- 消息持久化（按模式） ----------
+  ChatApp.prototype.persistMessage = function (roomId, msg, cb) {
+    if (this.mode === 'supabase') {
+      var self = this;
+      this.supabase
+        .from('messages')
+        .insert({
+          room_id: roomId,
+          user_id: msg.userId,
+          user_name: msg.userName,
+          content: msg.content
+        })
+        .then(function (res) { cb(res.error || null); })
+        .catch(function (err) { cb(err); });
+    } else {
+      addMessageToRoom(roomId, msg);
+      cb(null);
+    }
+  };
+
+  // ---------- 实时订阅（supabase 模式） ----------
+  ChatApp.prototype.subscribeRoom = function (roomId) {
+    if (this.mode !== 'supabase') return;
+    var self = this;
+    if (this.realtimeChannel) {
+      this.supabase.removeChannel(this.realtimeChannel);
+      this.realtimeChannel = null;
+    }
+    this.realtimeChannel = this.supabase
+      .channel('room:' + roomId)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: 'room_id=eq.' + roomId },
+        function (payload) {
+          var r = payload.new;
+          // 自己发的消息已乐观渲染，跳过避免重复
+          if (r.user_id === self.userId) return;
+          var msg = {
+            id: r.id, content: r.content, userId: r.user_id,
+            userName: r.user_name, createdAt: r.created_at
+          };
+          if (self.messages.some(function (m) { return m.id === msg.id; })) return;
+          if (self.currentRoom && self.currentRoom.id !== roomId) return;
+          self.messages.push(msg);
+          self.renderMessages();
+          self.scrollToBottom();
+        })
+      .subscribe();
+  };
+
+  // ---------- 在线人数（supabase Presence） ----------
+  ChatApp.prototype.initPresence = function (roomId) {
+    if (this.mode !== 'supabase') return;
+    var self = this;
+    if (this.presenceChannel) {
+      this.supabase.removeChannel(this.presenceChannel);
+      this.presenceChannel = null;
+    }
+    this.presenceChannel = this.supabase
+      .channel('online:' + roomId, { config: { presence: { key: this.userId } } })
+      .on('presence', { event: 'sync' }, function () {
+        var state = self.presenceChannel.presenceState();
+        self.els.onlineText.textContent = String(Object.keys(state).length);
+      })
+      .subscribe(function (status) {
+        if (status === 'SUBSCRIBED') {
+          self.presenceChannel.track({ userId: self.userId, userName: self.userName });
+        }
+      });
+  };
+
+  // ---------- 事件绑定 ----------
   ChatApp.prototype.bindEvents = function () {
     var self = this;
     var e = this.els;
@@ -223,14 +360,16 @@
     });
     e.input.addEventListener('input', function () {
       self.autoResize(e.input);
-      if (e.error.classList.contains('is-visible')) {
-        e.error.classList.remove('is-visible');
-      }
+      if (e.error.classList.contains('is-visible')) e.error.classList.remove('is-visible');
     });
 
     e.menuBtn.addEventListener('click', function () { self.toggleSidebar(true); });
     e.sidebarClose.addEventListener('click', function () { self.toggleSidebar(false); });
     e.mobileOverlay.addEventListener('click', function () { self.toggleSidebar(false); });
+
+    if (e.shareBtn) {
+      e.shareBtn.addEventListener('click', function () { self.copyIdentityLink(); });
+    }
 
     window.addEventListener('beforeunload', function () {
       self.broadcast('user-leave');
@@ -239,10 +378,8 @@
 
   ChatApp.prototype.showNicknameModal = function () {
     this.els.nicknameModal.classList.remove('is-hidden');
-    setTimeout(function () {
-      var input = document.getElementById('chat-nickname-input');
-      if (input) input.focus();
-    }, 100);
+    var input = document.getElementById('chat-nickname-input');
+    if (input) setTimeout(function () { input.focus(); }, 100);
   };
 
   ChatApp.prototype.hideNicknameModal = function () {
@@ -266,7 +403,27 @@
     this.els.userNameSpan.textContent = name;
     this.hideNicknameModal();
     this.broadcast('user-join');
-    this.updateOnlineCount();
+  };
+
+  // ---------- 身份分享链接：跨设备免重输昵称 ----------
+  ChatApp.prototype.copyIdentityLink = function () {
+    if (!this.userId || !this.userName) return;
+    var link = window.location.origin + window.location.pathname +
+      '#identity=' + encodeURIComponent(this.userId) + '~' + encodeURIComponent(this.userName);
+    var self = this;
+    function flash(text) {
+      if (!self.els.shareBtn) return;
+      var span = self.els.shareBtn.querySelector('.chat-share-text');
+      if (!span) return;
+      var old = span.textContent;
+      span.textContent = text;
+      setTimeout(function () { span.textContent = old; }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function () { flash('已复制!'); }, function () { flash('复制失败'); });
+    } else {
+      flash('请手动复制');
+    }
   };
 
   ChatApp.prototype.toggleSidebar = function (open) {
@@ -284,10 +441,11 @@
     var html = '';
     this.rooms.forEach(function (room) {
       var isActive = self.currentRoom && room.id === self.currentRoom.id;
+      var count = self.mode === 'supabase' ? '' : (self.getRoomCount ? self.getRoomCount(room.id) : '');
       html += '<div class="chat-room-item' + (isActive ? ' is-active' : '') + '" data-room-id="' + room.id + '">' +
         '<div class="chat-room-item-top">' +
           '<span class="chat-room-item-name">' + self.escapeHtml(room.name) + '</span>' +
-          '<span class="chat-room-item-count">' + room.count + '</span>' +
+          (count !== '' ? '<span class="chat-room-item-count">' + count + '</span>' : '') +
         '</div>';
       if (room.description) {
         html += '<p class="chat-room-item-desc">' + self.escapeHtml(room.description) + '</p>';
@@ -309,15 +467,39 @@
     });
   };
 
+  ChatApp.prototype.getRoomCount = function (roomId) {
+    var all = loadMessages();
+    return (all[roomId] || []).length;
+  };
+
   ChatApp.prototype.selectRoom = function (room) {
+    var self = this;
     this.currentRoom = room;
     this.els.roomName.textContent = room.name;
     this.els.roomDesc.textContent = room.description || '';
-    this.messages = getRoomMessages(room.id);
+    this.els.messages.innerHTML =
+      '<div class="chat-skeleton-msgs">' +
+        '<div class="chat-skeleton-msg"></div>' +
+        '<div class="chat-skeleton-msg right"></div>' +
+        '<div class="chat-skeleton-msg"></div>' +
+        '<div class="chat-skeleton-msg right"></div>' +
+        '<div class="chat-skeleton-msg"></div>' +
+      '</div>';
+
     this.renderRooms();
-    this.renderMessages();
-    this.scrollToBottom();
-    this.updateOnlineCount();
+
+    this.loadRoomMessages(room.id, function (msgs) {
+      self.messages = msgs;
+      self.renderMessages();
+      self.scrollToBottom();
+    });
+
+    if (this.mode === 'supabase') {
+      this.subscribeRoom(room.id);
+      this.initPresence(room.id);
+    } else {
+      this.els.onlineText.textContent = '1';
+    }
   };
 
   ChatApp.prototype.renderMessages = function () {
@@ -326,7 +508,6 @@
       this.els.messages.innerHTML = '<div class="chat-empty">暂无消息，发送第一条消息吧</div>';
       return;
     }
-
     var html = '';
     this.messages.forEach(function (msg) {
       var isMine = msg.userId === self.userId;
@@ -355,7 +536,6 @@
   ChatApp.prototype.sendMessage = function () {
     var content = this.els.input.value.trim();
     if (!content || !this.currentRoom || !this.userName || this.isSending) return;
-
     if (containsProfanity(content)) {
       this.showError('消息包含不当内容，请重新输入');
       return;
@@ -370,7 +550,6 @@
     this.els.sendBtn.appendChild(spinner);
 
     var filteredContent = filterProfanity(content);
-
     var msg = {
       id: uid(),
       content: filteredContent,
@@ -379,23 +558,29 @@
       createdAt: new Date().toISOString()
     };
 
-    addMessageToRoom(this.currentRoom.id, msg);
+    // 乐观更新：本地立即显示
     this.messages.push(msg);
     this.renderMessages();
     this.renderRooms();
     this.scrollToBottom();
-
     this.broadcast('new-message', { message: msg });
 
     this.els.input.value = '';
     this.autoResize(this.els.input);
 
-    setTimeout(function () {
+    this.persistMessage(this.currentRoom.id, msg, function (err) {
+      if (err) {
+        // 发送失败，回滚乐观更新
+        self.messages = self.messages.filter(function (m) { return m.id !== msg.id; });
+        self.renderMessages();
+        self.scrollToBottom();
+        self.showError('发送失败，请重试');
+      }
       self.isSending = false;
       self.els.sendBtn.disabled = false;
       self.els.sendText.textContent = '发送';
       if (spinner.parentNode) spinner.parentNode.removeChild(spinner);
-    }, 300);
+    });
   };
 
   ChatApp.prototype.showError = function (text) {
@@ -408,12 +593,6 @@
   ChatApp.prototype.autoResize = function (el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  };
-
-  ChatApp.prototype.escapeHtml = function (str) {
-    var div = document.createElement('div');
-    div.appendChild(document.createTextNode(str || ''));
-    return div.innerHTML;
   };
 
   // Boot
