@@ -6,6 +6,7 @@ $headPath = Join-Path $root 'layouts/partials/head.html'
 $layoutPath = Join-Path $root 'layouts/learning/list.html'
 $jsPath = Join-Path $root 'assets/js/main.js'
 $cssPath = Join-Path $root 'assets/css/main.css'
+$publicLearningPath = Join-Path $root 'public/learning/index.html'
 
 $utf8 = [System.Text.Encoding]::UTF8
 function ReadText($path) {
@@ -17,6 +18,7 @@ $head = ReadText $headPath
 $layout = ReadText $layoutPath
 $js = ReadText $jsPath
 $css = ReadText $cssPath
+$publicLearning = if (Test-Path -LiteralPath $publicLearningPath) { ReadText $publicLearningPath } else { '' }
 
 $checks = @(
     @{ Name = 'knowledge_items table'; Ok = $schema.Contains('create table if not exists public.knowledge_items') },
@@ -33,6 +35,8 @@ $checks = @(
     @{ Name = 'edit button support'; Ok = $js.Contains('data-edit-id') -and $css.Contains('.knowledge-edit-btn') },
     @{ Name = 'auth otp support'; Ok = $js.Contains('signInWithOtp') },
     @{ Name = 'drawer css'; Ok = $css.Contains('.knowledge-drawer') -and $css.Contains('.resource-sidebar.is-collapsed') }
+    @{ Name = 'taxonomy payload is object json'; Ok = $publicLearning.Contains('id=knowledge-taxonomy-data>{') -or $publicLearning.Contains('id="knowledge-taxonomy-data">{') },
+    @{ Name = 'sidebar backdrop mobile scoped'; Ok = $css.Contains('@media (max-width: 1100px)') -and $css.Contains('body.resource-sidebar-open .resource-sidebar-backdrop') }
 )
 
 $failed = $checks | Where-Object { -not $_.Ok }

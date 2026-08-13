@@ -84,6 +84,7 @@
     var taxonomy = {};
     try {
       taxonomy = taxonomyEl ? JSON.parse(taxonomyEl.textContent || '{}') : {};
+      if (typeof taxonomy === 'string') taxonomy = JSON.parse(taxonomy || '{}');
     } catch (e) {
       taxonomy = {};
     }
@@ -93,6 +94,7 @@
     var editingId = null;
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
     var activePath = 'ALL';
+    var mobileSidebarQuery = window.matchMedia('(max-width: 1100px)');
 
     function cleanStr(v) {
       if (typeof v !== 'string') return '';
@@ -134,8 +136,13 @@
     function openSidebar() {
       if (!sidebar) return;
       sidebar.classList.remove('is-collapsed');
-      document.body.classList.add('resource-sidebar-open');
-      if (sidebarBackdrop) sidebarBackdrop.hidden = false;
+      if (mobileSidebarQuery.matches) {
+        document.body.classList.add('resource-sidebar-open');
+        if (sidebarBackdrop) sidebarBackdrop.hidden = false;
+      } else {
+        document.body.classList.remove('resource-sidebar-open');
+        if (sidebarBackdrop) sidebarBackdrop.hidden = true;
+      }
       if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
       try { localStorage.setItem('knowledge-sidebar-collapsed', '0'); } catch (e) {}
     }
@@ -147,6 +154,14 @@
       if (sidebarBackdrop) sidebarBackdrop.hidden = true;
       if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
       try { localStorage.setItem('knowledge-sidebar-collapsed', '1'); } catch (e) {}
+    }
+
+    function syncSidebarMode() {
+      if (!sidebarBackdrop) return;
+      if (!mobileSidebarQuery.matches) {
+        sidebarBackdrop.hidden = true;
+        document.body.classList.remove('resource-sidebar-open');
+      }
     }
 
     if (search) {
@@ -172,6 +187,11 @@
     }
     if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
     if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+    if (mobileSidebarQuery.addEventListener) {
+      mobileSidebarQuery.addEventListener('change', syncSidebarMode);
+    } else if (mobileSidebarQuery.addListener) {
+      mobileSidebarQuery.addListener(syncSidebarMode);
+    }
     try {
       if (localStorage.getItem('knowledge-sidebar-collapsed') === '1') closeSidebar();
     } catch (e) {}

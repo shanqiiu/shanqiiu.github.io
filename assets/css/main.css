@@ -5061,6 +5061,7 @@ body.knowledge-admin-active .knowledge-edit-btn {
     inset: 0;
     z-index: 1190;
     background: rgba(15, 23, 42, 0.45);
+    display: none;
 }
 
 @media (max-width: 1100px) {
@@ -5078,6 +5079,10 @@ body.knowledge-admin-active .knowledge-edit-btn {
 
     body.resource-sidebar-open .resource-sidebar {
         transform: translateX(0);
+    }
+
+    body.resource-sidebar-open .resource-sidebar-backdrop {
+        display: block;
     }
 
     .resource-sidebar.is-collapsed {
