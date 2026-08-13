@@ -7,21 +7,7 @@
   'use strict';
 
   // ---------- 运行时配置 ----------
-  function cleanStr(v) {
-    if (typeof v !== 'string') return '';
-    var s = v.trim();
-    // 去掉可能存在的字面包裹引号（Vercel 里手滑带上的）
-    if ((s.charAt(0) === '"' && s.charAt(s.length - 1) === '"') ||
-        (s.charAt(0) === "'" && s.charAt(s.length - 1) === "'")) {
-      s = s.slice(1, -1).trim();
-    }
-    return s;
-  }
-  var RAW_CONFIG = window.SUPABASE_CONFIG || null;
-  var SUPABASE_CONFIG = RAW_CONFIG ? {
-    url: cleanStr(RAW_CONFIG.url),
-    anonKey: cleanStr(RAW_CONFIG.anonKey)
-  } : null;
+  var SUPABASE_CONFIG = window.SUPABASE_CONFIG || null;
   function hasSupabase() {
     return !!(
       SUPABASE_CONFIG &&
