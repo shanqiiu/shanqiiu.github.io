@@ -34,9 +34,11 @@ $checks = @(
     @{ Name = 'supabase update support'; Ok = $js.Contains(".from('knowledge_items').update") },
     @{ Name = 'edit button support'; Ok = $js.Contains('data-edit-id') -and $css.Contains('.knowledge-edit-btn') },
     @{ Name = 'auth otp support'; Ok = $js.Contains('signInWithOtp') },
-    @{ Name = 'drawer css'; Ok = $css.Contains('.knowledge-drawer') -and $css.Contains('.resource-sidebar.is-collapsed') }
+    @{ Name = 'drawer css'; Ok = $css.Contains('.knowledge-drawer') }
     @{ Name = 'taxonomy payload is object json'; Ok = $publicLearning.Contains('id=knowledge-taxonomy-data>{') -or $publicLearning.Contains('id="knowledge-taxonomy-data">{') },
-    @{ Name = 'sidebar backdrop mobile scoped'; Ok = $css.Contains('@media (max-width: 1100px)') -and $css.Contains('body.resource-sidebar-open .resource-sidebar-backdrop') }
+    @{ Name = 'category tree groups'; Ok = $layout.Contains('resource-category-group') -and $layout.Contains('data-toggle-path') },
+    @{ Name = 'tree toggle js'; Ok = $js.Contains('toggleCategoryGroup') -and $js.Contains('aria-expanded') },
+    @{ Name = 'no desktop sidebar collapse'; Ok = -not $layout.Contains('knowledge-sidebar-toggle') -and -not $css.Contains('.resource-sidebar.is-collapsed') }
 )
 
 $failed = $checks | Where-Object { -not $_.Ok }

@@ -11,10 +11,6 @@
             <input id="resource-search" type="search" placeholder="搜索标题、内容、分类或标签..." autocomplete="off">
         </label>
         <div class="knowledge-actions">
-            <button class="knowledge-action-btn" id="knowledge-sidebar-toggle" type="button" aria-expanded="true" aria-controls="resource-sidebar">
-                {{ partial "svg-icon.html" "tag" }}
-                <span>分类</span>
-            </button>
             <button class="knowledge-action-btn knowledge-primary-btn" id="knowledge-new-btn" type="button">
                 {{ partial "svg-icon.html" "docs" }}
                 <span>新增资源</span>
@@ -24,9 +20,6 @@
 
     <div class="resource-layout">
         <aside class="resource-sidebar resource-panel" id="resource-sidebar">
-            <button class="resource-sidebar-close" id="resource-sidebar-close" type="button" aria-label="关闭分类栏">
-                {{ partial "svg-icon.html" "close" }}
-            </button>
             <div class="resource-panel-title">
                 {{ partial "svg-icon.html" "tag" }}
                 <span>多级分类</span>
@@ -42,23 +35,52 @@
                     {{ range $items }}
                         {{ if eq (index .path 0) $top }}{{ $topCount = add $topCount 1 }}{{ end }}
                     {{ end }}
-                    <button type="button" class="resource-category resource-category-level-1" data-category="{{ $top }}" data-path="{{ $top }}">
-                        <span>{{ $top }}</span>
-                        <b>{{ $topCount }}</b>
-                    </button>
-
-                    {{ range .children }}
-                        {{ $second := .name }}
-                        {{ $secondPath := printf "%s / %s" $top $second }}
-                        {{ $secondCount := 0 }}
-                        {{ range $items }}
-                            {{ if and (ge (len .path) 2) (eq (index .path 0) $top) (eq (index .path 1) $second) }}{{ $secondCount = add $secondCount 1 }}{{ end }}
+                    <div class="resource-category-group is-open" data-group-path="{{ $top }}">
+                        <div class="resource-category-row">
+                            <button type="button" class="resource-category resource-category-level-1" data-category="{{ $top }}" data-path="{{ $top }}">
+                                <span>{{ $top }}</span>
+                                <b>{{ $topCount }}</b>
+                            </button>
+                            <button type="button" class="resource-category-toggle" data-toggle-path="{{ $top }}" aria-expanded="true" aria-label="展开或收起 {{ $top }}">
+                                <span aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div class="resource-category-children">
+                        {{ range .children }}
+                            {{ $second := .name }}
+                            {{ $secondPath := printf "%s / %s" $top $second }}
+                            {{ $secondCount := 0 }}
+                            {{ range $items }}
+                                {{ if and (ge (len .path) 2) (eq (index .path 0) $top) (eq (index .path 1) $second) }}{{ $secondCount = add $secondCount 1 }}{{ end }}
+                            {{ end }}
+                            <div class="resource-category-group is-open resource-category-subgroup" data-group-path="{{ $secondPath }}">
+                                <div class="resource-category-row">
+                                    <button type="button" class="resource-category resource-category-level-2" data-category="{{ $second }}" data-path="{{ $secondPath }}">
+                                        <span>{{ $second }}</span>
+                                        <b>{{ $secondCount }}</b>
+                                    </button>
+                                    <button type="button" class="resource-category-toggle" data-toggle-path="{{ $secondPath }}" aria-expanded="true" aria-label="展开或收起 {{ $second }}">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div class="resource-category-children">
+                                    {{ range .children }}
+                                        {{ $third := . }}
+                                        {{ $thirdPath := printf "%s / %s" $secondPath $third }}
+                                        {{ $thirdCount := 0 }}
+                                        {{ range $items }}
+                                            {{ if and (ge (len .path) 3) (eq (index .path 0) $top) (eq (index .path 1) $second) (eq (index .path 2) $third) }}{{ $thirdCount = add $thirdCount 1 }}{{ end }}
+                                        {{ end }}
+                                        <button type="button" class="resource-category resource-category-level-3" data-category="{{ $third }}" data-path="{{ $thirdPath }}">
+                                            <span>{{ $third }}</span>
+                                            <b>{{ $thirdCount }}</b>
+                                        </button>
+                                    {{ end }}
+                                </div>
+                            </div>
                         {{ end }}
-                        <button type="button" class="resource-category resource-category-level-2" data-category="{{ $second }}" data-path="{{ $secondPath }}">
-                            <span>{{ $second }}</span>
-                            <b>{{ $secondCount }}</b>
-                        </button>
-                    {{ end }}
+                        </div>
+                    </div>
                 {{ end }}
             </div>
         </aside>
@@ -147,7 +169,6 @@
         </aside>
     </div>
 
-    <div class="resource-sidebar-backdrop" id="resource-sidebar-backdrop" hidden></div>
     <div class="knowledge-drawer" id="knowledge-drawer" aria-hidden="true">
         <div class="knowledge-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="knowledge-drawer-title">
             <header class="knowledge-drawer-head">

@@ -62,10 +62,6 @@
     if (!grid) return;
     var search = document.getElementById('resource-search');
     var categories = document.getElementById('resource-categories');
-    var sidebar = document.getElementById('resource-sidebar');
-    var sidebarToggle = document.getElementById('knowledge-sidebar-toggle');
-    var sidebarClose = document.getElementById('resource-sidebar-close');
-    var sidebarBackdrop = document.getElementById('resource-sidebar-backdrop');
     var totalEl = document.getElementById('knowledge-total-count');
     var visibleEl = document.getElementById('knowledge-visible-count');
     var syncEl = document.getElementById('knowledge-sync-state');
@@ -94,7 +90,6 @@
     var editingId = null;
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
     var activePath = 'ALL';
-    var mobileSidebarQuery = window.matchMedia('(max-width: 1100px)');
 
     function cleanStr(v) {
       if (typeof v !== 'string') return '';
@@ -110,6 +105,11 @@
       var div = document.createElement('div');
       div.appendChild(document.createTextNode(str || ''));
       return div.innerHTML;
+    }
+
+    function escapeSelector(str) {
+      if (window.CSS && typeof window.CSS.escape === 'function') return window.CSS.escape(str);
+      return String(str).replace(/["\\]/g, '\\$&');
     }
 
     function syncCards() {
@@ -133,42 +133,43 @@
       if (visibleEl) visibleEl.textContent = String(visible);
     }
 
-    function openSidebar() {
-      if (!sidebar) return;
-      sidebar.classList.remove('is-collapsed');
-      if (mobileSidebarQuery.matches) {
-        document.body.classList.add('resource-sidebar-open');
-        if (sidebarBackdrop) sidebarBackdrop.hidden = false;
-      } else {
-        document.body.classList.remove('resource-sidebar-open');
-        if (sidebarBackdrop) sidebarBackdrop.hidden = true;
-      }
-      if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
-      try { localStorage.setItem('knowledge-sidebar-collapsed', '0'); } catch (e) {}
-    }
-
-    function closeSidebar() {
-      if (!sidebar) return;
-      sidebar.classList.add('is-collapsed');
-      document.body.classList.remove('resource-sidebar-open');
-      if (sidebarBackdrop) sidebarBackdrop.hidden = true;
-      if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
-      try { localStorage.setItem('knowledge-sidebar-collapsed', '1'); } catch (e) {}
-    }
-
-    function syncSidebarMode() {
-      if (!sidebarBackdrop) return;
-      if (!mobileSidebarQuery.matches) {
-        sidebarBackdrop.hidden = true;
-        document.body.classList.remove('resource-sidebar-open');
-      }
-    }
-
     if (search) {
       search.addEventListener('input', applyFilters);
     }
+
+    function toggleCategoryGroup(path) {
+      if (!categories || !path) return;
+      var group = categories.querySelector('[data-group-path="' + escapeSelector(path) + '"]');
+      var toggle = categories.querySelector('[data-toggle-path="' + escapeSelector(path) + '"]');
+      if (!group) return;
+      var isOpen = group.classList.toggle('is-open');
+      if (toggle) toggle.setAttribute('aria-expanded', String(isOpen));
+      try {
+        localStorage.setItem('knowledge-category-open:' + path, isOpen ? '1' : '0');
+      } catch (e) {}
+    }
+
+    function restoreCategoryGroups() {
+      if (!categories) return;
+      categories.querySelectorAll('[data-group-path]').forEach(function (group) {
+        var path = group.getAttribute('data-group-path') || '';
+        try {
+          if (localStorage.getItem('knowledge-category-open:' + path) === '0') {
+            group.classList.remove('is-open');
+            var toggle = categories.querySelector('[data-toggle-path="' + escapeSelector(path) + '"]');
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          }
+        } catch (e) {}
+      });
+    }
+
     if (categories) {
       categories.addEventListener('click', function (event) {
+        var toggle = event.target.closest('.resource-category-toggle');
+        if (toggle) {
+          toggleCategoryGroup(toggle.getAttribute('data-toggle-path') || '');
+          return;
+        }
         var btn = event.target.closest('.resource-category');
         if (!btn) return;
         activePath = btn.getAttribute('data-path') || 'ALL';
@@ -178,23 +179,7 @@
         applyFilters();
       });
     }
-
-    if (sidebarToggle) {
-      sidebarToggle.addEventListener('click', function () {
-        if (sidebar && sidebar.classList.contains('is-collapsed')) openSidebar();
-        else closeSidebar();
-      });
-    }
-    if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-    if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
-    if (mobileSidebarQuery.addEventListener) {
-      mobileSidebarQuery.addEventListener('change', syncSidebarMode);
-    } else if (mobileSidebarQuery.addListener) {
-      mobileSidebarQuery.addListener(syncSidebarMode);
-    }
-    try {
-      if (localStorage.getItem('knowledge-sidebar-collapsed') === '1') closeSidebar();
-    } catch (e) {}
+    restoreCategoryGroups();
 
     function openDrawer() {
       if (!drawer) return;
