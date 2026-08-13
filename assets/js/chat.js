@@ -129,6 +129,7 @@
     e.sidebar = document.getElementById('chat-sidebar');
     e.sidebarClose = document.getElementById('chat-sidebar-close');
     e.connDot = document.getElementById('chat-conn-dot');
+    e.connLabel = document.getElementById('chat-conn-label');
     e.userNameSpan = document.getElementById('chat-user-name');
     e.roomList = document.getElementById('chat-room-list');
     e.mobileOverlay = document.getElementById('chat-mobile-overlay');
@@ -218,7 +219,7 @@
       waited += 250;
       if (waited >= 8000) {
         clearInterval(timer);
-        if (self.els.connDot) self.els.connDot.title = '本地模式（云端未就绪）';
+        self.setConnStatus('本地模式（云端未就绪）', false);
       }
     }, 250);
   };
@@ -233,10 +234,7 @@
       return; // 创建失败，保持本地模式
     }
     this.mode = 'supabase';
-    if (this.els.connDot) {
-      this.els.connDot.classList.add('is-connected');
-      this.els.connDot.title = '已连接（云端实时）';
-    }
+    this.setConnStatus('已连接（云端实时）', true);
     var pending = this.localOnlyMessages.slice();
     this.localOnlyMessages = [];
     var afterSync = function () {
@@ -262,10 +260,20 @@
     });
   };
 
+  // 统一设置连接状态（圆点颜色 + 可见文字标签，避免只藏 hover 提示）
+  ChatApp.prototype.setConnStatus = function (text, connected) {
+    if (this.els.connDot) {
+      this.els.connDot.title = text;
+      if (connected === true) this.els.connDot.classList.add('is-connected');
+      else if (connected === false) this.els.connDot.classList.remove('is-connected');
+    }
+    if (this.els.connLabel) this.els.connLabel.textContent = text;
+  };
+
   ChatApp.prototype.initBroadcast = function () {
     var self = this;
     if (!('BroadcastChannel' in window)) {
-      this.els.connDot.title = '本地模式';
+      this.setConnStatus('本地模式', false);
       return;
     }
     try {
@@ -282,8 +290,7 @@
           self.renderRooms();
         }
       };
-      this.els.connDot.classList.add('is-connected');
-      this.els.connDot.title = '已连接（本机同步）';
+      this.setConnStatus('已连接（本机同步）', true);
     } catch (e) {}
   };
 

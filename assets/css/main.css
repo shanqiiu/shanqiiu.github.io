@@ -3870,6 +3870,13 @@ body:has(.chat-app) .site-footer {
     box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
 }
 
+.chat-conn-label {
+    font-size: 11px;
+    line-height: 1;
+    color: var(--text-muted, #9aa0a6);
+    white-space: nowrap;
+}
+
 .chat-share-btn {
     display: inline-flex;
     align-items: center;
