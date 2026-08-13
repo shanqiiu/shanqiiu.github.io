@@ -115,6 +115,9 @@
     this._init = false;
   }
 
+  // 让 ChatApp 方法内能通过 self.escapeHtml 调用
+  ChatApp.prototype.escapeHtml = escapeHtml;
+
   ChatApp.prototype.init = function () {
     if (this._init) return;
     this._init = true;
