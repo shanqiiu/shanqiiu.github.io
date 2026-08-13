@@ -50,3 +50,18 @@ insert into public.rooms (id, name, description) values
   ('tech',    '技术交流', '讨论技术问题'),
   ('random',  '随便聊聊', '想说什么就说什么')
 on conflict (id) do nothing;
+
+-- 8. 启用 Realtime：必须把表加入 supabase_realtime 发布，
+--    否则订阅 postgres_changes 收不到 INSERT，跨设备无法实时同步。
+--    （supabase_realtime 是 Supabase 默认发布，若已存在则跳过避免报错）
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'messages'
+  ) then
+    alter publication supabase_realtime add table public.messages;
+  end if;
+end $$;
