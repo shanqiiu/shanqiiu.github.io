@@ -92,18 +92,16 @@
     </div>
 </div>
 
-{{/* 安全兜底：若 chat.js 因缓存/404 未执行，8 秒后把骨架屏换成明确提示，避免「永久加载」 */}}
+{{/* 安全兜底：8 秒后若骨架屏仍在（脚本未跑或 init 抛错），换成明确提示，避免「永久加载」 */}}
 <script>
-  window.__chatBooted = false;
   setTimeout(function () {
-    if (window.__chatBooted) return;
     var m = document.getElementById('chat-messages');
     if (m && m.querySelector('.chat-skeleton-msg')) {
-      m.innerHTML = '<div class="chat-empty">聊天室脚本未能加载，请刷新页面（Ctrl/⌘ + Shift + R）后重试。</div>';
+      m.innerHTML = '<div class="chat-empty">聊天室加载异常。请按 F12 打开控制台，把红色报错截图发我；或先硬刷新（Ctrl/⌘ + Shift + R）试试。</div>';
     }
     var rl = document.getElementById('chat-room-list');
     if (rl && rl.querySelector('.chat-skeleton-room')) {
-      rl.innerHTML = '<div class="chat-empty">房间列表加载失败，请刷新页面后重试。</div>';
+      rl.innerHTML = '<div class="chat-empty">房间列表加载异常，请硬刷新或查看控制台报错。</div>';
     }
   }, 8000);
 </script>
