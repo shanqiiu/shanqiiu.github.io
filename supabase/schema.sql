@@ -65,3 +65,84 @@ begin
     alter publication supabase_realtime add table public.messages;
   end if;
 end $$;
+
+-- ============================================================
+-- 知识库：动态资源条目 + 管理员写入
+-- ============================================================
+
+create table if not exists public.knowledge_admins (
+  email      text primary key,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.knowledge_items (
+  id               uuid primary key default gen_random_uuid(),
+  title            text not null check (char_length(title) between 1 and 120),
+  description      text not null default '' check (char_length(description) <= 500),
+  content_markdown text not null default '',
+  link             text not null default '',
+  category_1       text not null,
+  category_2       text not null,
+  category_3       text not null default '',
+  tags             text[] not null default '{}',
+  item_type        text not null default 'external' check (item_type in ('article', 'tool', 'book', 'external')),
+  status           text not null default 'published' check (status in ('draft', 'published')),
+  created_by       uuid references auth.users (id) on delete set null,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
+create index if not exists knowledge_items_status_created_idx
+  on public.knowledge_items (status, created_at desc);
+
+create index if not exists knowledge_items_category_idx
+  on public.knowledge_items (category_1, category_2, category_3);
+
+alter table public.knowledge_admins enable row level security;
+alter table public.knowledge_items  enable row level security;
+
+drop policy if exists "knowledge_admins_select_self" on public.knowledge_admins;
+create policy "knowledge_admins_select_self" on public.knowledge_admins
+  for select using (email = auth.jwt() ->> 'email');
+
+drop policy if exists "knowledge_items_select_published" on public.knowledge_items;
+create policy "knowledge_items_select_published" on public.knowledge_items
+  for select using (
+    status = 'published'
+    or exists (
+      select 1 from public.knowledge_admins a
+      where a.email = auth.jwt() ->> 'email'
+    )
+  );
+
+drop policy if exists "knowledge_items_admin_insert" on public.knowledge_items;
+create policy "knowledge_items_admin_insert" on public.knowledge_items
+  for insert with check (
+    exists (
+      select 1 from public.knowledge_admins a
+      where a.email = auth.jwt() ->> 'email'
+    )
+  );
+
+drop policy if exists "knowledge_items_admin_update" on public.knowledge_items;
+create policy "knowledge_items_admin_update" on public.knowledge_items
+  for update using (
+    exists (
+      select 1 from public.knowledge_admins a
+      where a.email = auth.jwt() ->> 'email'
+    )
+  ) with check (
+    exists (
+      select 1 from public.knowledge_admins a
+      where a.email = auth.jwt() ->> 'email'
+    )
+  );
+
+drop policy if exists "knowledge_items_admin_delete" on public.knowledge_items;
+create policy "knowledge_items_admin_delete" on public.knowledge_items
+  for delete using (
+    exists (
+      select 1 from public.knowledge_admins a
+      where a.email = auth.jwt() ->> 'email'
+    )
+  );

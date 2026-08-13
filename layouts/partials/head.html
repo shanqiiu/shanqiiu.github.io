@@ -11,13 +11,15 @@
 <link rel="icon" href="{{ "img/avatar-sakuragi-tight.jpg" | relURL }}">
 {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
-{{ if eq .Section "chat" -}}
+{{ if or (eq .Section "chat") (eq .Section "learning") -}}
 {{ with (os.Getenv "SUPABASE_URL") -}}
 {{ $anon := os.Getenv "SUPABASE_ANON_KEY" -}}
 <script>window.SUPABASE_CONFIG={url:{{ . | jsonify }},anonKey:{{ $anon | jsonify }}};</script>
 {{ $supa := resources.Get "js/vendor/supabase.js" | fingerprint -}}
 <script src="{{ $supa.RelPermalink }}" async></script>
 {{ end -}}
+{{ end -}}
+{{ if eq .Section "chat" -}}
 {{ $chatJs := resources.Get "js/chat.js" | fingerprint }}
 <script src="{{ $chatJs.RelPermalink }}" defer></script>
 {{ end -}}

@@ -57,23 +57,96 @@
     el.textContent = String(Math.max(1, count));
   }
 
-  function initResourceFilters() {
+  function initKnowledgeBase() {
     var grid = document.getElementById('resource-card-grid');
     if (!grid) return;
     var search = document.getElementById('resource-search');
     var categories = document.getElementById('resource-categories');
+    var sidebar = document.getElementById('resource-sidebar');
+    var sidebarToggle = document.getElementById('knowledge-sidebar-toggle');
+    var sidebarClose = document.getElementById('resource-sidebar-close');
+    var sidebarBackdrop = document.getElementById('resource-sidebar-backdrop');
+    var totalEl = document.getElementById('knowledge-total-count');
+    var visibleEl = document.getElementById('knowledge-visible-count');
+    var syncEl = document.getElementById('knowledge-sync-state');
+    var drawer = document.getElementById('knowledge-drawer');
+    var drawerClose = document.getElementById('knowledge-drawer-close');
+    var newBtn = document.getElementById('knowledge-new-btn');
+    var login = document.getElementById('knowledge-login');
+    var loginBtn = document.getElementById('knowledge-login-btn');
+    var emailInput = document.getElementById('knowledge-email');
+    var form = document.getElementById('knowledge-form');
+    var formStatus = document.getElementById('knowledge-form-status');
+    var cat1 = document.getElementById('knowledge-category-1');
+    var cat2 = document.getElementById('knowledge-category-2');
+    var cat3 = document.getElementById('knowledge-category-3');
+    var taxonomyEl = document.getElementById('knowledge-taxonomy-data');
+    var taxonomy = {};
+    try {
+      taxonomy = taxonomyEl ? JSON.parse(taxonomyEl.textContent || '{}') : {};
+    } catch (e) {
+      taxonomy = {};
+    }
+
+    var supabaseClient = null;
+    var isAdminSession = false;
+    var editingId = null;
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
     var activePath = 'ALL';
 
+    function cleanStr(v) {
+      if (typeof v !== 'string') return '';
+      var s = v.trim();
+      if ((s.charAt(0) === '"' && s.charAt(s.length - 1) === '"') ||
+          (s.charAt(0) === "'" && s.charAt(s.length - 1) === "'")) {
+        s = s.slice(1, -1).trim();
+      }
+      return s;
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str || ''));
+      return div.innerHTML;
+    }
+
+    function syncCards() {
+      cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
+      if (totalEl) totalEl.textContent = String(cards.length);
+      applyFilters();
+    }
+
     function applyFilters() {
       var query = search ? String(search.value || '').trim().toLowerCase() : '';
+      var visible = 0;
       cards.forEach(function (card) {
         var path = card.getAttribute('data-path') || '';
         var haystack = card.getAttribute('data-search') || '';
         var matchesCategory = activePath === 'ALL' || path === activePath || path.indexOf(activePath + ' / ') === 0;
         var matchesQuery = !query || haystack.indexOf(query) !== -1;
-        card.classList.toggle('is-hidden', !(matchesCategory && matchesQuery));
+        var matched = matchesCategory && matchesQuery;
+        card.classList.toggle('is-hidden', !matched);
+        if (matched) visible += 1;
       });
+      if (visibleEl) visibleEl.textContent = String(visible);
+    }
+
+    function openSidebar() {
+      if (!sidebar) return;
+      sidebar.classList.remove('is-collapsed');
+      document.body.classList.add('resource-sidebar-open');
+      if (sidebarBackdrop) sidebarBackdrop.hidden = false;
+      if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
+      try { localStorage.setItem('knowledge-sidebar-collapsed', '0'); } catch (e) {}
+    }
+
+    function closeSidebar() {
+      if (!sidebar) return;
+      sidebar.classList.add('is-collapsed');
+      document.body.classList.remove('resource-sidebar-open');
+      if (sidebarBackdrop) sidebarBackdrop.hidden = true;
+      if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+      try { localStorage.setItem('knowledge-sidebar-collapsed', '1'); } catch (e) {}
     }
 
     if (search) {
@@ -90,6 +163,281 @@
         applyFilters();
       });
     }
+
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', function () {
+        if (sidebar && sidebar.classList.contains('is-collapsed')) openSidebar();
+        else closeSidebar();
+      });
+    }
+    if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+    if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+    try {
+      if (localStorage.getItem('knowledge-sidebar-collapsed') === '1') closeSidebar();
+    } catch (e) {}
+
+    function openDrawer() {
+      if (!drawer) return;
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      populateCategories();
+      refreshAuthState();
+    }
+
+    function closeDrawer() {
+      if (!drawer) return;
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+    }
+
+    if (newBtn) newBtn.addEventListener('click', function () {
+      editingId = null;
+      if (form) form.reset();
+      openDrawer();
+    });
+    if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+
+    function populateCategories() {
+      if (!cat1 || !cat2 || !cat3) return;
+      var topLevels = taxonomy.top_levels || [];
+      cat1.innerHTML = topLevels.map(function (top) {
+        return '<option value="' + escapeHtml(top.name) + '">' + escapeHtml(top.name) + '</option>';
+      }).join('');
+      populateSecond();
+    }
+
+    function populateSecond() {
+      if (!cat1 || !cat2 || !cat3) return;
+      var topLevels = taxonomy.top_levels || [];
+      var top = topLevels.find(function (item) { return item.name === cat1.value; }) || topLevels[0] || {};
+      var children = top.children || [];
+      cat2.innerHTML = children.map(function (child) {
+        return '<option value="' + escapeHtml(child.name) + '">' + escapeHtml(child.name) + '</option>';
+      }).join('');
+      populateThird();
+    }
+
+    function populateThird() {
+      if (!cat1 || !cat2 || !cat3) return;
+      var topLevels = taxonomy.top_levels || [];
+      var top = topLevels.find(function (item) { return item.name === cat1.value; }) || {};
+      var second = (top.children || []).find(function (item) { return item.name === cat2.value; }) || {};
+      var children = second.children || [];
+      cat3.innerHTML = children.map(function (name) {
+        return '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>';
+      }).join('');
+    }
+
+    if (cat1) cat1.addEventListener('change', populateSecond);
+    if (cat2) cat2.addEventListener('change', populateThird);
+
+    function createSupabaseClient() {
+      if (supabaseClient) return supabaseClient;
+      var raw = window.SUPABASE_CONFIG || null;
+      if (!raw || !window.supabase || typeof window.supabase.createClient !== 'function') return null;
+      var url = cleanStr(raw.url);
+      var anonKey = cleanStr(raw.anonKey);
+      if (!url || !anonKey) return null;
+      supabaseClient = window.supabase.createClient(url, anonKey);
+      return supabaseClient;
+    }
+
+    function setSync(text) {
+      if (syncEl) syncEl.textContent = text;
+    }
+
+    function renderDynamicItem(item) {
+      var pathParts = [item.category_1, item.category_2, item.category_3].filter(Boolean);
+      var path = pathParts.join(' / ');
+      var tags = Array.isArray(item.tags) ? item.tags : [];
+      var link = item.link || '#';
+      var searchText = [item.title, item.description, path, tags.join(' ')].join(' ').toLowerCase();
+      var card = document.createElement('a');
+      card.className = 'resource-card resource-card-dynamic';
+      card.setAttribute('data-id', item.id || '');
+      card.href = link || '#';
+      if (link) {
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
+      }
+      card.setAttribute('data-category', item.category_1 || '');
+      card.setAttribute('data-path', path);
+      card.setAttribute('data-search', searchText);
+      card.innerHTML =
+        '<div class="resource-card-inner">' +
+          '<div class="resource-path">' + escapeHtml(path) + '</div>' +
+          '<h2>' + escapeHtml(item.title) + '</h2>' +
+          '<p>' + escapeHtml(item.description || '') + '</p>' +
+          '<div class="resource-card-tags">' + tags.map(function (tag) {
+            return '<span class="resource-tag">' + escapeHtml(tag) + '</span>';
+          }).join('') + '</div>' +
+          '<div class="resource-meta"><span>' + escapeHtml(item.item_type || 'resource') + '</span></div>' +
+          '<div class="resource-date"><span>' + escapeHtml(item.status === 'draft' ? '草稿' : '云端资源') + '</span></div>' +
+          '<button class="knowledge-edit-btn" type="button" data-edit-id="' + escapeHtml(item.id || '') + '">编辑</button>' +
+        '</div>';
+      card._knowledgeItem = item;
+      grid.prepend(card);
+    }
+
+    function loadDynamicItems() {
+      var client = createSupabaseClient();
+      if (!client) {
+        setSync('静态数据；配置 Supabase 后启用云端新增');
+        syncCards();
+        return;
+      }
+      setSync('正在同步云端知识库...');
+      client
+        .from('knowledge_items')
+        .select('id,title,description,content_markdown,link,category_1,category_2,category_3,tags,item_type,status,created_at')
+        .order('created_at', { ascending: false })
+        .then(function (result) {
+          if (result.error) {
+            setSync('云端同步失败：' + result.error.message);
+            syncCards();
+            return;
+          }
+          (result.data || []).forEach(renderDynamicItem);
+          setSync('已同步云端知识库');
+          syncCards();
+        });
+    }
+
+    function waitForSupabase(callback) {
+      if (createSupabaseClient()) {
+        callback();
+        return;
+      }
+      var raw = window.SUPABASE_CONFIG || null;
+      if (!raw) {
+        callback();
+        return;
+      }
+      var waited = 0;
+      var timer = setInterval(function () {
+        if (createSupabaseClient()) {
+          clearInterval(timer);
+          callback();
+          return;
+        }
+        waited += 250;
+        if (waited >= 30000) {
+          clearInterval(timer);
+          callback();
+        }
+      }, 250);
+    }
+
+    function refreshAuthState() {
+      var client = createSupabaseClient();
+      if (!form || !login) return;
+      if (!client) {
+        login.hidden = false;
+        form.hidden = true;
+        if (formStatus) formStatus.textContent = '未配置 Supabase，无法在页面保存。';
+        return;
+      }
+      client.auth.getSession().then(function (result) {
+        var authed = !!(result.data && result.data.session);
+        isAdminSession = authed;
+        login.hidden = authed;
+        form.hidden = !authed;
+        document.body.classList.toggle('knowledge-admin-active', authed);
+      });
+    }
+
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function () {
+        var client = createSupabaseClient();
+        var email = emailInput ? emailInput.value.trim() : '';
+        if (!client || !email) return;
+        loginBtn.disabled = true;
+        client.auth.signInWithOtp({
+          email: email,
+          options: { emailRedirectTo: window.location.href }
+        }).then(function (result) {
+          loginBtn.disabled = false;
+          if (formStatus) formStatus.textContent = result.error ? result.error.message : '登录链接已发送，请检查邮箱。';
+        });
+      });
+    }
+
+    if (form) {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var client = createSupabaseClient();
+        if (!client) return;
+        var data = new FormData(form);
+        var tags = String(data.get('tags') || '').split(',').map(function (tag) {
+          return tag.trim();
+        }).filter(Boolean);
+        var payload = {
+          title: String(data.get('title') || '').trim(),
+          description: String(data.get('description') || '').trim(),
+          content_markdown: String(data.get('content_markdown') || '').trim(),
+          link: String(data.get('link') || '').trim(),
+          category_1: String(data.get('category_1') || '').trim(),
+          category_2: String(data.get('category_2') || '').trim(),
+          category_3: String(data.get('category_3') || '').trim(),
+          item_type: String(data.get('item_type') || 'external'),
+          status: String(data.get('status') || 'published'),
+          tags: tags
+        };
+        if (!payload.title || !payload.category_1 || !payload.category_2) return;
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.disabled = true;
+        if (formStatus) formStatus.textContent = '正在保存...';
+        var request = editingId
+          ? client.from('knowledge_items').update(payload).eq('id', editingId).select().single()
+          : client.from('knowledge_items').insert(payload).select().single();
+        request.then(function (result) {
+          if (btn) btn.disabled = false;
+          if (result.error) {
+            if (formStatus) formStatus.textContent = result.error.message;
+            return;
+          }
+          if (formStatus) formStatus.textContent = '已保存。';
+          form.reset();
+          populateCategories();
+          if (result.data) {
+            if (editingId) {
+              var oldCard = grid.querySelector('[data-id="' + editingId + '"]');
+              if (oldCard) oldCard.remove();
+            }
+            renderDynamicItem(result.data);
+          }
+          editingId = null;
+          syncCards();
+        });
+      });
+    }
+
+    grid.addEventListener('click', function (event) {
+      var editBtn = event.target.closest('[data-edit-id]');
+      if (!editBtn || !isAdminSession) return;
+      event.preventDefault();
+      var card = editBtn.closest('.resource-card');
+      var item = card && card._knowledgeItem;
+      if (!item || !form) return;
+      openDrawer();
+      editingId = item.id || null;
+      form.elements.title.value = item.title || '';
+      form.elements.link.value = item.link || '';
+      form.elements.description.value = item.description || '';
+      form.elements.content_markdown.value = item.content_markdown || '';
+      form.elements.item_type.value = item.item_type || 'external';
+      form.elements.status.value = item.status || 'published';
+      form.elements.tags.value = Array.isArray(item.tags) ? item.tags.join(', ') : '';
+      cat1.value = item.category_1 || cat1.value;
+      populateSecond();
+      cat2.value = item.category_2 || cat2.value;
+      populateThird();
+      cat3.value = item.category_3 || cat3.value;
+    });
+
+    populateCategories();
+    syncCards();
+    waitForSupabase(loadDynamicItems);
   }
 
   // 1) 首屏加载动画：资源就绪后移除 loader
@@ -477,7 +825,7 @@
     initZoom();
     initTyping();
     initVisitorStats();
-    initResourceFilters();
+    initKnowledgeBase();
     initMusicPlayer();
     initScrollTop();
     initNavHighlight();

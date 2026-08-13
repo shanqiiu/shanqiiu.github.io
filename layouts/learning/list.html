@@ -10,10 +10,23 @@
             {{ partial "svg-icon.html" "search" }}
             <input id="resource-search" type="search" placeholder="搜索标题、内容、分类或标签..." autocomplete="off">
         </label>
+        <div class="knowledge-actions">
+            <button class="knowledge-action-btn" id="knowledge-sidebar-toggle" type="button" aria-expanded="true" aria-controls="resource-sidebar">
+                {{ partial "svg-icon.html" "tag" }}
+                <span>分类</span>
+            </button>
+            <button class="knowledge-action-btn knowledge-primary-btn" id="knowledge-new-btn" type="button">
+                {{ partial "svg-icon.html" "docs" }}
+                <span>新增资源</span>
+            </button>
+        </div>
     </header>
 
     <div class="resource-layout">
-        <aside class="resource-sidebar resource-panel">
+        <aside class="resource-sidebar resource-panel" id="resource-sidebar">
+            <button class="resource-sidebar-close" id="resource-sidebar-close" type="button" aria-label="关闭分类栏">
+                {{ partial "svg-icon.html" "close" }}
+            </button>
             <div class="resource-panel-title">
                 {{ partial "svg-icon.html" "tag" }}
                 <span>多级分类</span>
@@ -86,16 +99,17 @@
                 </div>
                 <div class="resource-stat-box resource-stat-box-vertical">
                     <span>资源条目</span>
-                    <strong>{{ len $items }} 篇</strong>
+                    <strong><span id="knowledge-total-count">{{ len $items }}</span> 篇</strong>
+                </div>
+                <div class="resource-stat-row">
+                    <span>当前命中</span>
+                    <strong><span id="knowledge-visible-count">{{ len $items }}</span> 条</strong>
                 </div>
                 <div class="resource-stat-row">
                     <span>一级分类</span>
                     <strong>{{ len $topLevels }} 个</strong>
                 </div>
-                <div class="resource-stat-row">
-                    <span>分类深度</span>
-                    <strong>3 级</strong>
-                </div>
+                <p class="knowledge-sync-state" id="knowledge-sync-state">静态数据</p>
             </section>
 
             <section class="resource-panel">
@@ -132,5 +146,88 @@
             </section>
         </aside>
     </div>
+
+    <div class="resource-sidebar-backdrop" id="resource-sidebar-backdrop" hidden></div>
+    <div class="knowledge-drawer" id="knowledge-drawer" aria-hidden="true">
+        <div class="knowledge-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="knowledge-drawer-title">
+            <header class="knowledge-drawer-head">
+                <div>
+                    <p class="knowledge-drawer-kicker">Supabase Admin</p>
+                    <h2 id="knowledge-drawer-title">新增知识资源</h2>
+                </div>
+                <button class="knowledge-icon-btn" id="knowledge-drawer-close" type="button" aria-label="关闭">
+                    {{ partial "svg-icon.html" "close" }}
+                </button>
+            </header>
+
+            <section class="knowledge-login" id="knowledge-login">
+                <label>
+                    <span>管理员邮箱</span>
+                    <input id="knowledge-email" type="email" autocomplete="email" placeholder="you@example.com">
+                </label>
+                <button class="knowledge-submit-btn" id="knowledge-login-btn" type="button">发送登录链接</button>
+                <p class="knowledge-form-note">写入权限由 Supabase RLS 和 knowledge_admins 邮箱白名单控制。</p>
+            </section>
+
+            <form class="knowledge-form" id="knowledge-form">
+                <div class="knowledge-form-grid">
+                    <label>
+                        <span>标题</span>
+                        <input name="title" required maxlength="120" placeholder="例如：Clash for Windows 使用方法">
+                    </label>
+                    <label>
+                        <span>链接</span>
+                        <input name="link" type="url" placeholder="https://...">
+                    </label>
+                    <label>
+                        <span>一级分类</span>
+                        <select name="category_1" required id="knowledge-category-1"></select>
+                    </label>
+                    <label>
+                        <span>二级分类</span>
+                        <select name="category_2" required id="knowledge-category-2"></select>
+                    </label>
+                    <label>
+                        <span>三级主题</span>
+                        <select name="category_3" id="knowledge-category-3"></select>
+                    </label>
+                    <label>
+                        <span>类型</span>
+                        <select name="item_type">
+                            <option value="external">外部资料</option>
+                            <option value="article">文章</option>
+                            <option value="tool">工具</option>
+                            <option value="book">图书</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>状态</span>
+                        <select name="status">
+                            <option value="published">发布</option>
+                            <option value="draft">草稿</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>标签</span>
+                        <input name="tags" placeholder="Agent, LLM, 实践记录">
+                    </label>
+                </div>
+                <label>
+                    <span>摘要</span>
+                    <textarea name="description" maxlength="500" rows="3" required placeholder="一句话说明这条资源解决什么问题"></textarea>
+                </label>
+                <label>
+                    <span>正文 Markdown</span>
+                    <textarea name="content_markdown" rows="8" placeholder="可选：记录正文、笔记或教程步骤"></textarea>
+                </label>
+                <div class="knowledge-form-actions">
+                    <p class="knowledge-form-status" id="knowledge-form-status"></p>
+                    <button class="knowledge-submit-btn" type="submit">保存到知识库</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="application/json" id="knowledge-taxonomy-data">{{ $taxonomy | jsonify }}</script>
 </section>
 {{ end }}
