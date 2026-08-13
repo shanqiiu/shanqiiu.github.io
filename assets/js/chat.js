@@ -7,7 +7,24 @@
   'use strict';
 
   // ---------- 运行时配置 ----------
-  var SUPABASE_CONFIG = window.SUPABASE_CONFIG || null;
+  // 容错清洗：Vercel 环境变量值常因复制粘贴带入首尾空格或包裹引号，
+  // 导致 supabase-js 报「Invalid supabaseUrl」。这里统一 trim + 去首尾引号，
+  // 避免每次都要去源头改配置。若 URL 是真实拼写错误（域名打错），清洗无法修复，
+  // 仍会暴露「云端初始化失败」的真实错误信息，便于排查。
+  function cleanStr(v) {
+    if (typeof v !== 'string') return '';
+    var s = v.trim();
+    if ((s.charAt(0) === '"' && s.charAt(s.length - 1) === '"') ||
+        (s.charAt(0) === "'" && s.charAt(s.length - 1) === "'")) {
+      s = s.slice(1, -1).trim();
+    }
+    return s;
+  }
+  var RAW_CONFIG = window.SUPABASE_CONFIG || null;
+  var SUPABASE_CONFIG = RAW_CONFIG ? {
+    url: cleanStr(RAW_CONFIG.url),
+    anonKey: cleanStr(RAW_CONFIG.anonKey)
+  } : null;
   function hasSupabase() {
     return !!(
       SUPABASE_CONFIG &&
