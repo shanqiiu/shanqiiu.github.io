@@ -16,7 +16,7 @@
     {{- $currentLabel = "聊天室" -}}
     {{- $currentIcon = "comment" -}}
 {{- else if or (eq .Section "about") (eq .Type "about") -}}
-    {{- $currentLabel = "关于" -}}
+    {{- $currentLabel = "友链" -}}
     {{- $currentIcon = "site" -}}
 {{- end -}}
 
@@ -75,7 +75,7 @@
             <a href="{{ "learning/" | relURL }}">{{ partial "svg-icon.html" "tag" }}<span>资源</span></a>
             <a href="{{ "chat/" | relURL }}">{{ partial "svg-icon.html" "comment" }}<span>聊天室</span></a>
             <a href="{{ "archives/" | relURL }}">{{ partial "svg-icon.html" "docs" }}<span>归档</span></a>
-            <a href="{{ "about/" | relURL }}">{{ partial "svg-icon.html" "site" }}<span>关于</span></a>
+            <a href="{{ "about/" | relURL }}">{{ partial "svg-icon.html" "site" }}<span>友链</span></a>
         </div>
     </nav>
 </header>

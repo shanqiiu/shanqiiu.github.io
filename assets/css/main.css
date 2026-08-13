@@ -4561,3 +4561,46 @@ body:has(.chat-app) .site-footer {
         animation: none;
     }
 }
+
+/* ================================================================
+   Friends (友链) Page
+   复用 .nav-cards / .nav-card 玻璃拟态卡片，仅做页面级微调
+   ================================================================ */
+.friends-page .friends-intro {
+    margin-bottom: 0;
+}
+
+.friends-page .friends-intro p {
+    margin: 0 0 10px;
+    color: var(--text-2);
+    font-size: 0.92rem;
+}
+
+.friends-page .friends-intro blockquote {
+    margin: 12px 0 0;
+    padding: 8px 14px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-dim);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--text-3);
+    font-size: 0.82rem;
+}
+
+/* 友链卡片：比首页导航卡略大，限制超宽屏列数 */
+.friends-page .nav-cards {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.friends-page .nav-card {
+    padding: 16px 18px;
+}
+
+.friends-page .nav-card-title {
+    font-size: 0.98rem;
+}
+
+.friends-page .nav-card-desc {
+    font-size: 0.78rem;
+}

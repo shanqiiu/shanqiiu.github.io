@@ -1,0 +1,31 @@
+{{ define "main" }}
+<article class="page container friends-page">
+    <header class="page-head">
+        <h1>{{ .Title }}</h1>
+        {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+    </header>
+
+    {{ with .Content }}
+    <div class="content friends-intro">{{ . }}</div>
+    {{ end }}
+
+    {{ with .Params.friends }}
+    <section class="nav-cards friends-grid" aria-label="友链列表">
+        {{ range . }}
+        <a class="nav-card" href="{{ .url }}" target="_blank" rel="noopener noreferrer">
+            <div class="nav-card-icon">
+                {{ partial "svg-icon.html" (.icon | default "site") }}
+            </div>
+            <div class="nav-card-body">
+                <span class="nav-card-title">{{ .name }}</span>
+                {{ with .desc }}<span class="nav-card-desc">{{ . }}</span>{{ end }}
+            </div>
+            <span class="nav-card-arrow" aria-hidden="true">→</span>
+        </a>
+        {{ end }}
+    </section>
+    {{ else }}
+    <p class="page-desc">暂无友链。在 <code>content/about/index.md</code> 的 <code>friends</code> 字段添加即可。</p>
+    {{ end }}
+</article>
+{{ end }}
