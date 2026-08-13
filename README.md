@@ -28,7 +28,7 @@
 
 ### 1. 本地预览
 
-下载 [Hugo Extended](https://github.com/gohugoio/hugo/releases)（版本与流水线一致，当前 0.158.0），解压后把 `hugo.exe` 加入 PATH，然后：
+下载 [Hugo Extended](https://github.com/gohugoio/hugo/releases)（版本与流水线一致，当前 0.164.0），解压后把 `hugo.exe` 加入 PATH，然后：
 
 ```powershell
 hugo server -D
