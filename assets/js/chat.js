@@ -297,6 +297,14 @@
   ChatApp.prototype.loadRoomMessages = function (roomId, cb) {
     if (this.mode === 'supabase') {
       var self = this;
+      var done = false;
+      // 安全超时：云端（尤其免费项目暂停/冷启动）可能长时间无响应，
+      // 绝不让骨架屏永久停留——超时后降级为空列表（可正常发言，本地兜底）。
+      var timer = setTimeout(function () {
+        if (done) return;
+        done = true;
+        cb([], { code: 'timeout', message: '云端响应较慢' });
+      }, 8000);
       this.supabase
         .from('messages')
         .select('id, room_id, user_id, user_name, content, created_at')
@@ -304,6 +312,8 @@
         .order('created_at', { ascending: true })
         .limit(200)
         .then(function (res) {
+          if (done) return;
+          done = true; clearTimeout(timer);
           if (res.error) { cb([], res.error); return; }
           var msgs = (res.data || []).map(function (r) {
             return {
@@ -313,7 +323,11 @@
           });
           cb(msgs, null);
         })
-        .catch(function (err) { cb([], err); });
+        .catch(function (err) {
+          if (done) return;
+          done = true; clearTimeout(timer);
+          cb([], err);
+        });
     } else {
       cb(getRoomMessages(roomId), null);
     }
@@ -647,6 +661,7 @@
 
   // Boot
   function boot() {
+    window.__chatBooted = true;
     var app = new ChatApp();
     app.init();
   }
