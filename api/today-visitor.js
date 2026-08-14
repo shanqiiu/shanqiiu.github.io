@@ -1,9 +1,8 @@
 // Vercel Serverless Function —— 真实「今日访客」统计（Supabase 版）
 // 思路：用访客 IP 做 SHA-256 哈希（不直接存明文 IP，兼顾隐私），
 //       调用 Supabase RPC 把哈希写入当日集合（按 day 去重），返回当日独立访客数。
-// 依赖：Vercel 项目连接 Supabase 后注入的环境变量
-//       （兼容 Vercel 集成 STORAGE_ 前缀、SUPABASE_ 前缀或默认命名，
-//        优先 service_role，回退 anon key）。
+// 依赖：环境变量中以下任一前缀的 SUPABASE_URL + 配套 *_SERVICE_ROLE_KEY / *_ANON_KEY
+//   优先级：SUPABASE_* / NEXT_PUBLIC_SUPABASE_* > STORAGE_*（Vercel 集成） > 任意兜底
 // 路由：GET /api/today-visitor
 const { createHash } = require('crypto');
 
@@ -27,14 +26,29 @@ function findSupabaseEnv(env) {
     }
   };
 
-  // 优先匹配带 STORAGE 前缀的 Supabase URL
+  // 优先级 1（最高）：SUPABASE_* 或 NEXT_PUBLIC_SUPABASE_* 前缀（手动配置的最高优先级）
   for (const k of entries) {
-    if (/STORAGE/i.test(k) && /supabase\.(co|in)/i.test(env[k] || '')) consider(env[k], k);
+    if (/^SUPABASE_/i.test(k) && /supabase\.(co|in)/i.test(env[k] || '')) {
+      consider(env[k], k);
+      if (url) break;
+    }
   }
-  // 回退到任意 Supabase URL
+  // 优先级 2：STORAGE_* 前缀（Vercel Supabase Integration 注入；被 SUPABASE_* 覆盖）
   if (!url) {
     for (const k of entries) {
-      if (/supabase\.(co|in)/i.test(env[k] || '')) {
+      if (/STORAGE/i.test(k) && /supabase\.(co|in)/i.test(env[k] || '')) {
+        consider(env[k], k);
+        if (url) break;
+      }
+    }
+  }
+  // 优先级 3：兜底——任意包含 supabase.co/in 的 URL（排除 PASSWORD/HOST/POSTGRES/PRISMA）
+  if (!url) {
+    for (const k of entries) {
+      if (
+        /supabase\.(co|in)/i.test(env[k] || '') &&
+        !/PASSWORD|HOST|PRISMA|POSTGRES/i.test(k)
+      ) {
         consider(env[k], k);
         if (url) break;
       }
