@@ -1,10 +1,10 @@
 ---
-  title: "Claude Code Skills 参考手册"
-  date: 2026-08-13T22:41:00+08:00
-  draft: false 
+title: "Claude Code Skills 参考手册"
+date: 2026-08-13T22:41:00+08:00
+draft: false 
 
 categories: ["技术文章", "AI", "Agent"]
-  tags: ["Claude Code", "Skills", "AI"]
+tags: ["Claude Code", "Skills", "AI"]
 
 ---
 
