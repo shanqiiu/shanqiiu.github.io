@@ -5,16 +5,7 @@ draft: false
 
 categories: ["技术文章", "AI", "Agent"]
 tags: ["Claude Code", "Skills", "AI"]
-
 ---
-
-
-
-欢迎来到我的个人技术空间！这里计划记录三类内容：
-
-- **知识博客**（`post`）：技术笔记、踩坑记录、读书思考与随笔；
-- **个人项目**（`projects`）：正在做和想做的小项目，以及它们的进展与状态；
-- **学习历程**（`learning`）：学习目标、阶段计划与里程碑。
 
 # Claude Code Skills 参考手册
 
