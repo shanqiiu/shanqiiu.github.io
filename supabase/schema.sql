@@ -146,3 +146,41 @@ create policy "knowledge_items_admin_delete" on public.knowledge_items
       where a.email = auth.jwt() ->> 'email'
     )
   );
+
+-- ============================================================
+-- 今日访客统计（基于 IP 去重的当日独立访客数）
+-- 由 Vercel Serverless Function (api/today-visitor.js) 调用 RPC 写入并计数。
+-- 前端不接触数据库：函数用服务端 IP 算出哈希后调用 RPC，RPC 以 security definer 写入，
+-- 不向匿名用户暴露表的直读写权限。
+-- ============================================================
+
+create table if not exists public.daily_visitors (
+  day          date not null,
+  visitor_hash text not null,
+  primary key (day, visitor_hash)
+);
+
+create index if not exists daily_visitors_day_idx
+  on public.daily_visitors (day);
+
+create or replace function public.count_today_visitor(p_day date, p_hash text)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  total int;
+begin
+  insert into public.daily_visitors (day, visitor_hash)
+  values (p_day, p_hash)
+  on conflict do nothing;
+  select count(*) into total from public.daily_visitors where day = p_day;
+  return total;
+end;
+$$;
+
+-- 允许匿名（网站访客经服务端函数调用）与登录用户执行该 RPC；
+-- 函数体以 definer 权限运行，不泄露表直权限。
+grant execute on function public.count_today_visitor(date, text) to anon;
+grant execute on function public.count_today_visitor(date, text) to authenticated;
