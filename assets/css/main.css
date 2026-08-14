@@ -3,6 +3,7 @@
     --bg-soft: #1e293b;
     --bg-card: rgba(30, 41, 59, 0.58);
     --bg-elevated: rgba(51, 65, 85, 0.62);
+    --reading-mask: rgba(15, 23, 42, 0.9);
     --border: rgba(255, 255, 255, 0.09);
     --border-strong: rgba(255, 255, 255, 0.16);
     --text: #f1f5f9;
@@ -32,6 +33,7 @@
     --bg-soft: #f1f5f9;
     --bg-card: rgba(255, 255, 255, 0.62);
     --bg-elevated: rgba(255, 255, 255, 0.78);
+    --reading-mask: rgba(255, 255, 255, 0.92);
     --border: rgba(15, 23, 42, 0.08);
     --border-strong: rgba(15, 23, 42, 0.16);
     --text: #0f172a;
@@ -736,10 +738,29 @@ img {
 }
 
 /* ---------- Single post / page ---------- */
-.page,
-.post {
+.page {
     padding-top: 52px;
     padding-bottom: 80px;
+}
+
+.post {
+    position: relative;
+    padding: 44px 48px 64px;
+    background: var(--reading-mask);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+@media (max-width: 640px) {
+    .post {
+        padding: 28px 20px 44px;
+        border-radius: var(--radius-sm);
+        backdrop-filter: blur(10px) saturate(140%);
+        -webkit-backdrop-filter: blur(10px) saturate(140%);
+    }
 }
 
 .page-head,
