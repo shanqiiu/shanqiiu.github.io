@@ -46,6 +46,11 @@ function findSupabaseEnv(env) {
 module.exports = async function handler(req, res) {
   const env = findSupabaseEnv(process.env);
   if (!env.url || !env.key) {
+    // 诊断：把含 supabase/storage/url/key 的环境变量名打出来，便于在 Vercel Functions 日志定位
+    const candidateKeys = Object.keys(process.env).filter((k) =>
+      /supabase|storage|url|key/i.test(k)
+    );
+    console.error('[today-visitor] supabase env not found. candidate keys:', candidateKeys);
     // Supabase 未连接：返回 null，前端回退显示「--」，页面不报错
     res.status(200).json({ count: null, reason: 'supabase-not-configured' });
     return;
@@ -82,6 +87,8 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({ p_day: day, p_hash: member }),
     });
     if (!r.ok) {
+      const body = await r.text();
+      console.error('[today-visitor] rpc failed:', r.status, body.slice(0, 300));
       res.status(200).json({ count: null });
       return;
     }
@@ -90,6 +97,7 @@ module.exports = async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-store');
     res.status(200).json({ count: isFinite(count) ? count : null });
   } catch (e) {
+    console.error('[today-visitor] fetch error:', e && e.message);
     res.status(200).json({ count: null });
   }
 };
