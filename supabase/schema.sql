@@ -184,3 +184,6 @@ $$;
 -- 函数体以 definer 权限运行，不泄露表直权限。
 grant execute on function public.count_today_visitor(date, text) to anon;
 grant execute on function public.count_today_visitor(date, text) to authenticated;
+
+-- 新建/修改函数后强制 PostgREST 重载 schema 缓存，否则经 REST 调用 RPC 可能短暂 404。
+notify pgrst, 'reload schema';
