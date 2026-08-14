@@ -12,24 +12,32 @@ function findSupabaseEnv(env) {
   let url = null;
   let key = null;
 
-  const consider = function (u, k) {
-    if (!u || !/supabase\.(co|in)/i.test(u)) return;
-    const base = k.replace(/_?(SUPABASE_URL|URL)$/i, '');
-    const found =
-      env[base + '_SERVICE_ROLE_KEY'] ||
-      env[base + '_SUPABASE_SERVICE_ROLE_KEY'] ||
-      env[base + '_ANON_KEY'] ||
-      env[base + '_SUPABASE_ANON_KEY'];
-    if (found) {
-      url = u;
-      key = found;
+  // 给定 URL 变量名(urlKey，值 u)，推断配套的 key 候选名
+  const tryKeysFor = function (u, urlKey) {
+    if (!u || !/supabase\.(co|in)/i.test(u) || url) return;
+    // 去掉 _URL / _SUPABASE_URL 后缀，得到前缀（如 STORAGE / NEXT_PUBLIC / 空）
+    let prefix = urlKey.replace(/_?(SUPABASE_URL|URL)$/i, '').replace(/_$/, '');
+    // SUPABASE_URL / NEXT_PUBLIC_SUPABASE_URL 统一回退到 SUPABASE 前缀
+    const p = prefix === 'SUPABASE' || prefix === '' ? 'SUPABASE' : prefix;
+    const candidates = [
+      p + '_SERVICE_ROLE_KEY',
+      p + '_SUPABASE_SERVICE_ROLE_KEY',
+      p + '_ANON_KEY',
+      p + '_SUPABASE_ANON_KEY',
+    ];
+    for (const c of candidates) {
+      if (env[c]) {
+        url = u;
+        key = env[c];
+        return;
+      }
     }
   };
 
   // 优先级 1（最高）：SUPABASE_* 或 NEXT_PUBLIC_SUPABASE_* 前缀（手动配置的最高优先级）
   for (const k of entries) {
     if (/^SUPABASE_/i.test(k) && /supabase\.(co|in)/i.test(env[k] || '')) {
-      consider(env[k], k);
+      tryKeysFor(env[k], k);
       if (url) break;
     }
   }
@@ -37,7 +45,7 @@ function findSupabaseEnv(env) {
   if (!url) {
     for (const k of entries) {
       if (/STORAGE/i.test(k) && /supabase\.(co|in)/i.test(env[k] || '')) {
-        consider(env[k], k);
+        tryKeysFor(env[k], k);
         if (url) break;
       }
     }
@@ -49,7 +57,7 @@ function findSupabaseEnv(env) {
         /supabase\.(co|in)/i.test(env[k] || '') &&
         !/PASSWORD|HOST|PRISMA|POSTGRES/i.test(k)
       ) {
-        consider(env[k], k);
+        tryKeysFor(env[k], k);
         if (url) break;
       }
     }
