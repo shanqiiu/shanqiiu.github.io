@@ -34,27 +34,18 @@
   }
   initTheme();
 
+  // 真实「今日访客」：调用自建 Vercel 函数（基于 KV 的跨用户 IP 去重 UV）
   function initVisitorStats() {
     var el = document.getElementById('today-visitor-count');
     if (!el) return;
-    var now = new Date();
-    var dateKey = now.getFullYear() + '-' +
-      String(now.getMonth() + 1).padStart(2, '0') + '-' +
-      String(now.getDate()).padStart(2, '0');
-    var countKey = 'shanqiiu:visitors:today:' + dateKey;
-    var seenKey = countKey + ':seen';
-    var count = 1;
-    try {
-      count = Number(localStorage.getItem(countKey) || '0');
-      if (!localStorage.getItem(seenKey)) {
-        count += 1;
-        localStorage.setItem(countKey, String(count));
-        localStorage.setItem(seenKey, '1');
-      }
-    } catch (e) {
-      count = 1;
-    }
-    el.textContent = String(Math.max(1, count));
+    el.textContent = '--';
+    fetch('/api/today-visitor', { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var n = data && typeof data.count === 'number' ? data.count : null;
+        el.textContent = n === null ? '--' : String(n);
+      })
+      .catch(function () { el.textContent = '--'; });
   }
 
   function initKnowledgeBase() {
