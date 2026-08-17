@@ -235,6 +235,20 @@
       var anonKey = cleanStr(raw.anonKey);
       if (!url || !anonKey) return null;
       supabaseClient = window.supabase.createClient(url, anonKey);
+      // 监听登录态：magic link 回跳后 Supabase 会在初始化时自动用 URL 中的 token
+      // 建立 session 并触发 SIGNED_IN，此时自动打开抽屉并切到提交表单。
+      supabaseClient.auth.onAuthStateChange(function (event) {
+        if (event === 'SIGNED_IN') {
+          // 清理 URL 里的 access_token，避免再次发送时把旧 token 拼进回跳地址
+          if (window.location.hash && window.location.hash.indexOf('access_token') !== -1) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
+          refreshAuthState();
+          openDrawer();
+        } else if (event === 'SIGNED_OUT') {
+          refreshAuthState();
+        }
+      });
       return supabaseClient;
     }
 
@@ -350,7 +364,7 @@
         loginBtn.disabled = true;
         client.auth.signInWithOtp({
           email: email,
-          options: { emailRedirectTo: window.location.href }
+          options: { emailRedirectTo: window.location.href.split('#')[0] }
         }).then(function (result) {
           loginBtn.disabled = false;
           if (formStatus) formStatus.textContent = result.error ? result.error.message : '登录链接已发送，请检查邮箱。';
@@ -433,7 +447,10 @@
 
     populateCategories();
     syncCards();
-    waitForSupabase(loadDynamicItems);
+    waitForSupabase(function () {
+      loadDynamicItems();
+      refreshAuthState();
+    });
   }
 
   // 1) 首屏加载动画：资源就绪后移除 loader
