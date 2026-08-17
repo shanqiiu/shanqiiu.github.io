@@ -52,6 +52,12 @@
             <div class="hero-quote" aria-label="每日一句">
                 <p class="hero-quote-text">世间好物不坚牢，彩云易散琉璃脆。</p>
                 <p class="hero-quote-source">—— 白居易《简简吟》</p>
+                <button type="button" class="hero-quote-refresh" aria-label="换一句" title="换一句">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+                        <path d="M21 3v6h-6"></path>
+                    </svg>
+                </button>
             </div>
             <script type="application/json" id="hero-quotes-data">{{ hugo.Data.quotes | jsonify }}</script>
         </div>

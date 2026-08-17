@@ -970,7 +970,7 @@
     observer.observe(player, { attributes: true });
   }
 
-  // 每日随机一句：按日期确定性选取，当天不变、每日轮换
+  // 每日随机一句：默认按日期确定性选取，点击按钮可随机切换
   function initHeroQuote() {
     var holder = document.querySelector('.hero-quote');
     var dataEl = document.getElementById('hero-quotes-data');
@@ -982,15 +982,46 @@
       return;
     }
     if (!Array.isArray(quotes) || !quotes.length) return;
+
+    var textEl = holder.querySelector('.hero-quote-text');
+    var srcEl = holder.querySelector('.hero-quote-source');
+    var btn = holder.querySelector('.hero-quote-refresh');
+    var current = -1;
+
+    function render(idx) {
+      var q = quotes[idx];
+      if (!q) return;
+      if (textEl && q.text) textEl.textContent = q.text;
+      if (srcEl) srcEl.textContent = q.source ? '—— ' + q.source : '';
+      current = idx;
+    }
+
+    // 默认：按年内第几天确定性选取（当天不变、每日轮换）
     var now = new Date();
     var start = new Date(now.getFullYear(), 0, 0);
     var dayOfYear = Math.floor((now - start) / 86400000);
-    var q = quotes[dayOfYear % quotes.length];
-    if (!q) return;
-    var textEl = holder.querySelector('.hero-quote-text');
-    var srcEl = holder.querySelector('.hero-quote-source');
-    if (textEl && q.text) textEl.textContent = q.text;
-    if (srcEl) srcEl.textContent = q.source ? '—— ' + q.source : '';
+    render(dayOfYear % quotes.length);
+
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      // 随机选一句，且不与当前重复
+      var next = current;
+      if (quotes.length > 1) {
+        do {
+          next = Math.floor(Math.random() * quotes.length);
+        } while (next === current);
+      }
+      holder.classList.add('is-switching');
+      btn.classList.add('is-spinning');
+      window.setTimeout(function () {
+        render(next);
+        holder.classList.remove('is-switching');
+      }, 200);
+      window.setTimeout(function () {
+        btn.classList.remove('is-spinning');
+      }, 500);
+    });
   }
 
   // 启动入口
