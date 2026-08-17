@@ -370,6 +370,7 @@
           '<div class="resource-meta"><span>' + escapeHtml(item.item_type || 'resource') + '</span></div>' +
           '<div class="resource-date"><span>' + escapeHtml(item.status === 'draft' ? '草稿' : '云端资源') + '</span></div>' +
           '<button class="knowledge-edit-btn" type="button" data-edit-id="' + escapeHtml(item.id || '') + '">编辑</button>' +
+          '<button class="knowledge-delete-btn" type="button" data-delete-id="' + escapeHtml(item.id || '') + '">删除</button>' +
         '</div>';
       card._knowledgeItem = item;
       grid.prepend(card);
@@ -530,6 +531,23 @@
         cat2.value = item.category_2 || cat2.value;
         populateThird();
         cat3.value = item.category_3 || cat3.value;
+        return;
+      }
+      var delBtn = event.target.closest('[data-delete-id]');
+      if (delBtn) {
+        if (!isAdminSession) return;
+        event.preventDefault();
+        var delId = delBtn.getAttribute('data-delete-id');
+        if (!delId) return;
+        if (!window.confirm('确定删除该资源吗？此操作不可恢复。')) return;
+        delBtn.disabled = true;
+        var client = createSupabaseClient();
+        if (!client) { delBtn.disabled = false; return; }
+        client.from('knowledge_items').delete().eq('id', delId).then(function (res) {
+          if (res.error) { window.alert('删除失败：' + res.error.message); delBtn.disabled = false; return; }
+          var delCard = delBtn.closest('.resource-card');
+          if (delCard) delCard.remove();
+        });
         return;
       }
       var card = event.target.closest('.resource-card');
