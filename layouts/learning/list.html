@@ -249,6 +249,26 @@
         </div>
     </div>
 
+    <div class="knowledge-drawer knowledge-detail" id="knowledge-detail" aria-hidden="true">
+        <div class="knowledge-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="knowledge-detail-title">
+            <header class="knowledge-drawer-head">
+                <div>
+                    <p class="knowledge-drawer-kicker" id="knowledge-detail-kicker">资源详情</p>
+                    <h2 id="knowledge-detail-title"></h2>
+                </div>
+                <button class="knowledge-icon-btn" id="knowledge-detail-close" type="button" aria-label="关闭">
+                    {{ partial "svg-icon.html" "close" }}
+                </button>
+            </header>
+            <p class="knowledge-detail-path" id="knowledge-detail-path"></p>
+            <div class="knowledge-detail-tags" id="knowledge-detail-tags"></div>
+            <div class="knowledge-detail-body" id="knowledge-detail-body"></div>
+            <div class="knowledge-detail-actions">
+                <a class="knowledge-submit-btn" id="knowledge-detail-link" href="#" target="_blank" rel="noopener noreferrer" hidden>访问原链接 ↗</a>
+            </div>
+        </div>
+    </div>
+
     {{ $taxonomyJSON := $taxonomy | jsonify | transform.Unmarshal }}
     <script type="application/json" id="knowledge-taxonomy-data">{{ $taxonomyJSON }}</script>
 </section>

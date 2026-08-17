@@ -1,6 +1,7 @@
 /public/
 /.hugo_build.lock
 /.hugo_*/
+/.vb_verify/
 /.tmp/
 /resources/_gen/
 /.idea/

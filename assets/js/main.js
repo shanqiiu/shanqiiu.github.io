@@ -68,6 +68,13 @@
     var cat2 = document.getElementById('knowledge-category-2');
     var cat3 = document.getElementById('knowledge-category-3');
     var taxonomyEl = document.getElementById('knowledge-taxonomy-data');
+    var detailEl = document.getElementById('knowledge-detail');
+    var detailTitle = document.getElementById('knowledge-detail-title');
+    var detailPath = document.getElementById('knowledge-detail-path');
+    var detailTags = document.getElementById('knowledge-detail-tags');
+    var detailBody = document.getElementById('knowledge-detail-body');
+    var detailLink = document.getElementById('knowledge-detail-link');
+    var detailClose = document.getElementById('knowledge-detail-close');
     var taxonomy = {};
     try {
       taxonomy = taxonomyEl ? JSON.parse(taxonomyEl.textContent || '{}') : {};
@@ -186,12 +193,91 @@
       drawer.setAttribute('aria-hidden', 'true');
     }
 
+    // 点击资源卡片 → 弹出站内详情阅读面板（无外链也能浏览正文）
+    function renderMarkdown(md) {
+      if (!md) return '';
+      var esc = escapeHtml(md);
+      esc = esc.replace(/```([\s\S]*?)```/g, function (_, code) {
+        return '<pre><code>' + code.replace(/^\n/, '').replace(/\n$/, '') + '</code></pre>';
+      });
+      esc = esc
+        .replace(/^######\s+(.*)$/gm, '<h6>$1</h6>')
+        .replace(/^#####\s+(.*)$/gm, '<h5>$1</h5>')
+        .replace(/^####\s+(.*)$/gm, '<h4>$1</h4>')
+        .replace(/^###\s+(.*)$/gm, '<h3>$1</h3>')
+        .replace(/^##\s+(.*)$/gm, '<h2>$1</h2>')
+        .replace(/^#\s+(.*)$/gm, '<h1>$1</h1>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
+      esc = esc.replace(/(?:<li>[\s\S]*?<\/li>\s*)+/g, function (m) {
+        return '<ul>' + m.trim() + '</ul>';
+      });
+      return esc.split(/\n{2,}/).map(function (block) {
+        if (/^<(h\d|ul|pre|blockquote)/.test(block.trim())) return block;
+        return '<p>' + block.replace(/\n/g, '<br>') + '</p>';
+      }).join('');
+    }
+
+    function openDetail(card) {
+      if (!detailEl || !card) return;
+      var item = card._knowledgeItem || null;
+      var title = (card.querySelector('h2') || {}).textContent || '';
+      var desc = (card.querySelector('p') || {}).textContent || '';
+      var path = card.getAttribute('data-path') || '';
+      var href = card.getAttribute('href') || '';
+      var link = (href && href !== '#') ? href : (item && item.link ? item.link : '');
+      var tags = Array.prototype.slice.call(card.querySelectorAll('.resource-tag')).map(function (t) {
+        return t.textContent;
+      });
+      var markdown = item ? (item.content_markdown || '') : '';
+
+      if (detailTitle) detailTitle.textContent = title;
+      if (detailPath) detailPath.textContent = path;
+      if (detailTags) {
+        detailTags.innerHTML = tags.map(function (t) {
+          return '<span class="resource-tag">' + escapeHtml(t) + '</span>';
+        }).join('');
+      }
+      if (detailBody) {
+        var html = '';
+        if (desc) html += '<p>' + escapeHtml(desc) + '</p>';
+        if (markdown) html += renderMarkdown(markdown);
+        else if (!desc) html += '<p class="knowledge-form-note">该资源暂无正文，可访问原链接查看详情。</p>';
+        detailBody.innerHTML = html;
+      }
+      if (detailLink) {
+        if (link) {
+          detailLink.href = link;
+          detailLink.hidden = false;
+        } else {
+          detailLink.hidden = true;
+        }
+      }
+      detailEl.classList.add('is-open');
+      detailEl.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDetail() {
+      if (!detailEl) return;
+      detailEl.classList.remove('is-open');
+      detailEl.setAttribute('aria-hidden', 'true');
+    }
+
     if (newBtn) newBtn.addEventListener('click', function () {
       editingId = null;
       if (form) form.reset();
       openDrawer();
     });
     if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+    if (detailClose) detailClose.addEventListener('click', closeDetail);
+    if (detailEl) detailEl.addEventListener('click', function (e) {
+      if (e.target === detailEl) closeDetail();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && detailEl && detailEl.classList.contains('is-open')) closeDetail();
+    });
 
     function populateCategories() {
       if (!cat1 || !cat2 || !cat3) return;
@@ -424,25 +510,33 @@
 
     grid.addEventListener('click', function (event) {
       var editBtn = event.target.closest('[data-edit-id]');
-      if (!editBtn || !isAdminSession) return;
-      event.preventDefault();
-      var card = editBtn.closest('.resource-card');
-      var item = card && card._knowledgeItem;
-      if (!item || !form) return;
-      openDrawer();
-      editingId = item.id || null;
-      form.elements.title.value = item.title || '';
-      form.elements.link.value = item.link || '';
-      form.elements.description.value = item.description || '';
-      form.elements.content_markdown.value = item.content_markdown || '';
-      form.elements.item_type.value = item.item_type || 'external';
-      form.elements.status.value = item.status || 'published';
-      form.elements.tags.value = Array.isArray(item.tags) ? item.tags.join(', ') : '';
-      cat1.value = item.category_1 || cat1.value;
-      populateSecond();
-      cat2.value = item.category_2 || cat2.value;
-      populateThird();
-      cat3.value = item.category_3 || cat3.value;
+      if (editBtn) {
+        if (!isAdminSession) return;
+        event.preventDefault();
+        var card = editBtn.closest('.resource-card');
+        var item = card && card._knowledgeItem;
+        if (!item || !form) return;
+        openDrawer();
+        editingId = item.id || null;
+        form.elements.title.value = item.title || '';
+        form.elements.link.value = item.link || '';
+        form.elements.description.value = item.description || '';
+        form.elements.content_markdown.value = item.content_markdown || '';
+        form.elements.item_type.value = item.item_type || 'external';
+        form.elements.status.value = item.status || 'published';
+        form.elements.tags.value = Array.isArray(item.tags) ? item.tags.join(', ') : '';
+        cat1.value = item.category_1 || cat1.value;
+        populateSecond();
+        cat2.value = item.category_2 || cat2.value;
+        populateThird();
+        cat3.value = item.category_3 || cat3.value;
+        return;
+      }
+      var card = event.target.closest('.resource-card');
+      if (card) {
+        event.preventDefault();
+        openDetail(card);
+      }
     });
 
     populateCategories();
