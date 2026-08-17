@@ -2237,8 +2237,8 @@ img {
     font-size: 1rem;
     line-height: 1.65;
     letter-spacing: 0.02em;
-    word-break: keep-all;
-    white-space: nowrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 

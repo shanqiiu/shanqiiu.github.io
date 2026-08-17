@@ -970,6 +970,29 @@
     observer.observe(player, { attributes: true });
   }
 
+  // 每日随机一句：按日期确定性选取，当天不变、每日轮换
+  function initHeroQuote() {
+    var holder = document.querySelector('.hero-quote');
+    var dataEl = document.getElementById('hero-quotes-data');
+    if (!holder || !dataEl) return;
+    var quotes;
+    try {
+      quotes = JSON.parse(dataEl.textContent);
+    } catch (e) {
+      return;
+    }
+    if (!Array.isArray(quotes) || !quotes.length) return;
+    var now = new Date();
+    var start = new Date(now.getFullYear(), 0, 0);
+    var dayOfYear = Math.floor((now - start) / 86400000);
+    var q = quotes[dayOfYear % quotes.length];
+    if (!q) return;
+    var textEl = holder.querySelector('.hero-quote-text');
+    var srcEl = holder.querySelector('.hero-quote-source');
+    if (textEl && q.text) textEl.textContent = q.text;
+    if (srcEl) srcEl.textContent = q.source ? '—— ' + q.source : '';
+  }
+
   // 启动入口
   function boot() {
     initZoom();
@@ -981,6 +1004,7 @@
     initNavHighlight();
     initScrollReveal();
     initMusicAriaSync();
+    initHeroQuote();
     var hm = document.getElementById('github-heatmap');
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';
