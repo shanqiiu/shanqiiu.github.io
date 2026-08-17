@@ -55,6 +55,7 @@
     var categories = document.getElementById('resource-categories');
     var totalEl = document.getElementById('knowledge-total-count');
     var visibleEl = document.getElementById('knowledge-visible-count');
+    var emptyEl = document.getElementById('resource-empty-state');
     var syncEl = document.getElementById('knowledge-sync-state');
     var drawer = document.getElementById('knowledge-drawer');
     var drawerClose = document.getElementById('knowledge-drawer-close');
@@ -114,6 +115,30 @@
       cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
       if (totalEl) totalEl.textContent = String(cards.length);
       applyFilters();
+      updateCategoryCounts();
+      updateEmptyState();
+    }
+
+    function updateCategoryCounts() {
+      if (!categories) return;
+      var allBtn = categories.querySelector('.resource-category[data-path="ALL"] b');
+      if (allBtn) allBtn.textContent = String(cards.length);
+      categories.querySelectorAll('.resource-category').forEach(function (btn) {
+        var p = btn.getAttribute('data-path');
+        if (!p || p === 'ALL') return;
+        var c = 0;
+        cards.forEach(function (card) {
+          var cp = card.getAttribute('data-path') || '';
+          if (cp === p || cp.indexOf(p + ' / ') === 0) c += 1;
+        });
+        var b = btn.querySelector('b');
+        if (b) b.textContent = String(c);
+      });
+    }
+
+    function updateEmptyState() {
+      if (!emptyEl) return;
+      emptyEl.hidden = cards.length > 0;
     }
 
     function applyFilters() {

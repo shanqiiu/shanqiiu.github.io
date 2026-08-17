@@ -87,29 +87,10 @@
 
         <main class="resource-feed" aria-label="Knowledge cards">
             <div class="resource-card-grid" id="resource-card-grid">
-                {{ range $items }}
-                {{ $path := delimit .path " / " }}
-                {{ $searchText := lower (printf "%s %s %s %s" .title $path .description (delimit (.tags | default slice) " ")) }}
-                <a class="resource-card" href="{{ .link }}" target="_blank" rel="noopener noreferrer" data-category="{{ index .path 0 }}" data-path="{{ $path }}" data-search="{{ $searchText }}">
-                    <div class="resource-card-inner">
-                        <div class="resource-path">{{ $path }}</div>
-                        <h2>{{ .title }}</h2>
-                        <p>{{ .description }}</p>
-                        <div class="resource-card-tags">
-                            {{ range .tags }}
-                                <span class="resource-tag">{{ . }}</span>
-                            {{ end }}
-                        </div>
-                        <div class="resource-meta">
-                            <span>{{ .link | replaceRE "^https?://([^/]+).*" "${1}" | plainify }}</span>
-                        </div>
-                        <div class="resource-date">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                            <span>查看资料</span>
-                        </div>
-                    </div>
-                </a>
-                {{ end }}
+                <div class="resource-empty-state" id="resource-empty-state" hidden>
+                    <p class="resource-empty-title">暂无资源</p>
+                    <p class="resource-empty-hint">点击右上角「新增资源」，验证邮箱登录后即可添加并管理你的知识卡片。</p>
+                </div>
             </div>
         </main>
 

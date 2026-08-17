@@ -3093,6 +3093,38 @@ body:has(#home-bento) .hero-inner,
     column-gap: 18px;
 }
 
+.resource-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 72px 24px;
+    text-align: center;
+    color: var(--text-3);
+    border: 1px dashed var(--border-strong);
+    border-radius: 14px;
+    break-inside: avoid;
+}
+
+.resource-empty-state[hidden] {
+    display: none;
+}
+
+.resource-empty-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-2);
+}
+
+.resource-empty-hint {
+    margin: 0;
+    max-width: 340px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
 .resource-card {
     display: inline-block;
     width: 100%;
