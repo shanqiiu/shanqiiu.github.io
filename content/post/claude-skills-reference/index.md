@@ -7,7 +7,6 @@ categories: ["技术文章", "AI", "Agent"]
 tags: ["Claude Code", "Skills", "AI"]
 ---
 
-# Claude Code Skills 参考手册
 
 > 当前 Claude Code 安装的所有 Skill 汇总说明
 > 最后更新：2026-03-06

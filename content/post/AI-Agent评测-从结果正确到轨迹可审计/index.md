@@ -7,7 +7,6 @@ categories: ["技术文章", "AI", "Agent"]
 tags: ["Agent评测", "轨迹评估", "GUI Agent", "LLM", "过程奖励模型"]
 ---
 
-# AI Agent 评测：从"答案对不对"到"轨迹可审计"
 
 > 一篇技术随笔，梳理近几年 Agent 评测方法的演进，重点讨论 GUI / 手机 Agent 的轨迹与过程评测如何自动判定，并分享我在一个 GUI Agent 执行评估实践中的思路、借鉴与踩坑经验。
 >
