@@ -577,6 +577,12 @@
       }
       var card = event.target.closest('.resource-card');
       if (card) {
+        var href = card.getAttribute('href') || '';
+        if (href && href !== '#') {
+          // 卡片本身是 <a target="_blank" href=link>，放行原生跳转，点击即直接打开原链接
+          return;
+        }
+        // 无原链接：回退到站内详情弹层，避免点击后毫无反应
         event.preventDefault();
         openDetail(card);
       }
