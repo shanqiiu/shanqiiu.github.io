@@ -150,26 +150,6 @@
         </aside>
     </div>
 
-    <section class="learning-notes" id="learning-notes">
-        <header class="learning-notes-head">
-            <h2>学习历程笔记</h2>
-            <p>记录学习阶段的目标、计划与进展。共 {{ len .RegularPages }} 篇。</p>
-        </header>
-        <div class="learning-notes-grid">
-            {{ range .RegularPages }}
-            <a class="post-card" href="{{ .RelPermalink }}">
-                <div class="post-card-meta">
-                    <time>{{ .Date.Format "2006-01-02" }}</time>
-                    {{ with .Params.status }}<span class="status {{ if eq . "in-progress" }}status-live{{ else }}status-done{{ end }}">{{ if eq . "in-progress" }}进行中{{ else }}已完成{{ end }}</span>{{ end }}
-                    {{ with .Params.period }}<span class="period">{{ . }}</span>{{ end }}
-                </div>
-                <h3 class="post-card-title">{{ .Title }}</h3>
-                {{ with .Params.summary }}<p class="post-card-excerpt">{{ . }}</p>{{ end }}
-            </a>
-            {{ end }}
-        </div>
-    </section>
-
     <div class="knowledge-drawer" id="knowledge-drawer" aria-hidden="true">
         <div class="knowledge-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="knowledge-drawer-title">
             <header class="knowledge-drawer-head">
