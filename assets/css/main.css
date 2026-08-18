@@ -684,6 +684,38 @@ img {
     font-size: 0.9rem;
 }
 
+/* 学习历程笔记（/learning/ 资源页下方并存区） */
+.learning-notes {
+    margin-top: 56px;
+    padding-top: 36px;
+    border-top: 1px solid var(--border);
+}
+
+.learning-notes-head {
+    margin-bottom: 22px;
+}
+
+.learning-notes-head h2 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+}
+
+.learning-notes-head p {
+    color: var(--text-2);
+    font-size: 0.9rem;
+    margin-top: 6px;
+}
+
+.learning-notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.learning-notes-grid .post-card {
+    margin-bottom: 0;
+}
+
 /* ---------- List pages ---------- */
 .list-head {
     margin-bottom: 32px;
