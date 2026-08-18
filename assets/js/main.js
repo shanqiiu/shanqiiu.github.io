@@ -971,59 +971,102 @@
   }
 
   // 每日随机一句：默认按日期确定性选取，点击按钮可随机切换
+  // 每日随机诗词：优先调用「诗泉」API（https://poetry.palemoky.com）随机取一首，
+  // 网络不可用 / 接口失败时回退到本地 data/quotes.yaml 名句库
+  var POETRY_API = 'https://poetry.palemoky.com/api/poems/random';
+
+  function escapeHtmlStr(s) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(s == null ? '' : String(s)));
+    return div.innerHTML;
+  }
+
   function initHeroQuote() {
     var holder = document.querySelector('.hero-quote');
     var dataEl = document.getElementById('hero-quotes-data');
-    if (!holder || !dataEl) return;
-    var quotes;
-    try {
-      var raw = JSON.parse(dataEl.textContent);
-      // 兼容数据被二次编码（字符串内再包一层 JSON）的情况
-      if (typeof raw === 'string') raw = JSON.parse(raw);
-      quotes = Array.isArray(raw) ? raw : (raw && raw.items) ? raw.items : [];
-    } catch (e) {
-      return;
+    if (!holder) return;
+
+    // 本地回退名句库（data/quotes.yaml 注入）
+    var fallback = [];
+    if (dataEl) {
+      try {
+        var raw = JSON.parse(dataEl.textContent);
+        if (typeof raw === 'string') raw = JSON.parse(raw);
+        fallback = Array.isArray(raw) ? raw : (raw && raw.items) ? raw.items : [];
+      } catch (e) { /* ignore */ }
     }
-    if (!Array.isArray(quotes) || !quotes.length) return;
 
     var textEl = holder.querySelector('.hero-quote-text');
     var srcEl = holder.querySelector('.hero-quote-source');
     var btn = holder.querySelector('.hero-quote-refresh');
-    var current = -1;
+    var localIdx = -1;
 
-    function render(idx) {
-      var q = quotes[idx];
-      if (!q) return;
-      if (textEl && q.text) textEl.textContent = q.text;
-      if (srcEl) srcEl.textContent = q.source ? '—— ' + q.source : '';
-      current = idx;
+    function renderText(text, source) {
+      if (textEl) {
+        // API 诗词按句分行（content 数组），逐行转义后 <br> 拼接，防 XSS
+        var lines = String(text == null ? '' : text).split('\n');
+        textEl.innerHTML = lines.map(escapeHtmlStr).join('<br>');
+      }
+      if (srcEl) srcEl.textContent = source ? '—— ' + source : '';
     }
 
-    // 默认：按年内第几天确定性选取（当天不变、每日轮换）
-    var now = new Date();
-    var start = new Date(now.getFullYear(), 0, 0);
-    var dayOfYear = Math.floor((now - start) / 86400000);
-    render(dayOfYear % quotes.length);
+    // 回退：从本地库随机取一句（不与当前重复）
+    function renderLocal() {
+      if (!fallback.length) return false;
+      var idx = localIdx;
+      if (fallback.length > 1) {
+        do {
+          idx = Math.floor(Math.random() * fallback.length);
+        } while (idx === localIdx);
+      }
+      var q = fallback[idx];
+      if (!q) return false;
+      localIdx = idx;
+      renderText(q.text, q.source);
+      return true;
+    }
+
+    function applyPoem(data) {
+      if (!data) return false;
+      var content = Array.isArray(data.content)
+        ? data.content.join('\n')
+        : (data.content || '');
+      var author = data.author && data.author.name ? data.author.name : '';
+      var dynasty = data.dynasty && data.dynasty.name ? data.dynasty.name : '';
+      var title = data.title || '';
+      var srcParts = [];
+      if (dynasty) srcParts.push(dynasty);
+      if (author) srcParts.push(author);
+      var source = srcParts.join('·') + (title ? '《' + title + '》' : '');
+      renderText(content, source);
+      return true;
+    }
+
+    function fetchPoem() {
+      return fetch(POETRY_API, { headers: { 'Accept': 'application/json' } })
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (json) { return json && json.data; });
+    }
+
+    // 首次加载：优先 API，失败回退本地
+    fetchPoem()
+      .then(function (data) { if (!applyPoem(data)) renderLocal(); })
+      .catch(function () { renderLocal(); });
 
     if (!btn) return;
-
     btn.addEventListener('click', function () {
-      // 随机选一句，且不与当前重复
-      var next = current;
-      if (quotes.length > 1) {
-        do {
-          next = Math.floor(Math.random() * quotes.length);
-        } while (next === current);
-      }
       holder.classList.add('is-switching');
       btn.classList.add('is-spinning');
-      window.setTimeout(function () {
-        render(next);
-        holder.classList.remove('is-switching');
-      }, 200);
-      window.setTimeout(function () {
-        btn.classList.remove('is-spinning');
-      }, 500);
+      fetchPoem()
+        .then(function (data) { if (!applyPoem(data)) renderLocal(); })
+        .catch(function () { renderLocal(); })
+        .then(function () {
+          holder.classList.remove('is-switching');
+          window.setTimeout(function () { btn.classList.remove('is-spinning'); }, 300);
+        });
     });
   }
 
