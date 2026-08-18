@@ -167,7 +167,12 @@
                     <span>管理员邮箱</span>
                     <input id="knowledge-email" type="email" autocomplete="email" placeholder="you@example.com">
                 </label>
-                <button class="knowledge-submit-btn" id="knowledge-login-btn" type="button">发送登录链接</button>
+                <label>
+                    <span>密码</span>
+                    <input id="knowledge-password" type="password" autocomplete="current-password" placeholder="Supabase 账号密码">
+                </label>
+                <button class="knowledge-submit-btn" id="knowledge-login-btn" type="button">登录</button>
+                <button class="knowledge-link-btn" id="knowledge-login-otp" type="button">用邮件链接登录</button>
                 <p class="knowledge-form-note">写入权限由 Supabase RLS 和 knowledge_admins 邮箱白名单控制。</p>
             </section>
 

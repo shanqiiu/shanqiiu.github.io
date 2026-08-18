@@ -4995,6 +4995,27 @@ body:has(.chat-app) .site-footer {
     color: #fff;
 }
 
+.knowledge-link-btn {
+    width: 100%;
+    margin: 2px 0 0;
+    padding: 8px 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.knowledge-link-btn:hover {
+    opacity: 0.7;
+}
+
+.knowledge-link-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
 .knowledge-action-btn:hover,
 .knowledge-submit-btn:hover,
 .knowledge-icon-btn:hover {

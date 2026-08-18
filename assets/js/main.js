@@ -63,6 +63,8 @@
     var login = document.getElementById('knowledge-login');
     var loginBtn = document.getElementById('knowledge-login-btn');
     var emailInput = document.getElementById('knowledge-email');
+    var passwordInput = document.getElementById('knowledge-password');
+    var otpBtn = document.getElementById('knowledge-login-otp');
     var form = document.getElementById('knowledge-form');
     var formStatus = document.getElementById('knowledge-form-status');
     var cat1 = document.getElementById('knowledge-category-1');
@@ -472,13 +474,38 @@
       loginBtn.addEventListener('click', function () {
         var client = createSupabaseClient();
         var email = emailInput ? emailInput.value.trim() : '';
-        if (!client || !email) return;
+        var pwd = passwordInput ? passwordInput.value : '';
+        if (!client || !email || !pwd) {
+          if (formStatus) formStatus.textContent = '请输入邮箱和密码。';
+          return;
+        }
         loginBtn.disabled = true;
+        client.auth.signInWithPassword({ email: email, password: pwd }).then(function (result) {
+          loginBtn.disabled = false;
+          if (result.error) {
+            if (formStatus) formStatus.textContent = result.error.message;
+            return;
+          }
+          if (formStatus) formStatus.textContent = '登录成功。';
+          // SIGNED_IN 事件会触发 refreshAuthState + openDrawer，自动切到提交表单
+        });
+      });
+    }
+
+    if (otpBtn) {
+      otpBtn.addEventListener('click', function () {
+        var client = createSupabaseClient();
+        var email = emailInput ? emailInput.value.trim() : '';
+        if (!client || !email) {
+          if (formStatus) formStatus.textContent = '请输入邮箱。';
+          return;
+        }
+        otpBtn.disabled = true;
         client.auth.signInWithOtp({
           email: email,
           options: { emailRedirectTo: window.location.href.split('#')[0] }
         }).then(function (result) {
-          loginBtn.disabled = false;
+          otpBtn.disabled = false;
           if (formStatus) formStatus.textContent = result.error ? result.error.message : '登录链接已发送，请检查邮箱。';
         });
       });
