@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>图像分类 on 个人技术空间</title>
+		<link>/tags/%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/</link>
+		<description>Recent content in 图像分类 on 个人技术空间</description>
+		<generator>Hugo</generator>
+		<language>zh-cn</language>
+		
+		
+		
+		
+			<lastBuildDate>Mon, 17 Aug 2026 16:40:48 +0800</lastBuildDate>
+		
+			<atom:link href="/tags/%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>图像多级分类：从层级约束到 VLM 与 Taxonomy 的协同</title>
+				<link>/p/%E5%9B%BE%E5%83%8F%E5%A4%9A%E7%BA%A7%E5%88%86%E7%B1%BB%E4%BB%8E%E5%B1%82%E7%BA%A7%E7%BA%A6%E6%9D%9F%E5%88%B0-vlm-%E4%B8%8E-taxonomy-%E7%9A%84%E5%8D%8F%E5%90%8C/</link>
+				<pubDate>Mon, 17 Aug 2026 16:40:48 +0800</pubDate>
+				<guid>/p/%E5%9B%BE%E5%83%8F%E5%A4%9A%E7%BA%A7%E5%88%86%E7%B1%BB%E4%BB%8E%E5%B1%82%E7%BA%A7%E7%BA%A6%E6%9D%9F%E5%88%B0-vlm-%E4%B8%8E-taxonomy-%E7%9A%84%E5%8D%8F%E5%90%8C/</guid>
+				<description>&lt;blockquote&gt;&#xA;&lt;p&gt;面向大规模、多品类、层级化标签体系的图像分类，是工业界商品/素材/内容图片治理的核心任务之一。本文从任务定义出发，梳理近几年层级图像分类的代表性工作，并结合本人技术实践中的借鉴思路与经验教训，探讨&amp;quot;视觉语言模型（VLM）+ 品类树（Taxonomy）+ 约束解码&amp;quot;这条更贴近落地的路线。&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>

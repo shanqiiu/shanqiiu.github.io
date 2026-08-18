@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>项目 on 个人技术空间</title>
+		<link>/projects/</link>
+		<description>Recent content in 项目 on 个人技术空间</description>
+		<generator>Hugo</generator>
+		<language>zh-cn</language>
+		
+		
+		
+		
+			<lastBuildDate>Wed, 12 Aug 2026 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="/projects/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Hello-Agents</title>
+				<link>/projects/hello-agents/</link>
+				<pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+				<guid>/projects/hello-agents/</guid>
+				<description>&lt;p&gt;Hello-Agents 是 Datawhale 社区的系统性智能体学习教程，旨在带领读者从智能体核心原理出发，深入理解并亲手构建真正的 AI Native Agent（多智能体应用）。&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;状态设为「收藏项目」，作为个人收藏的优质开源教程；&lt;/li&gt;&#xA;&lt;li&gt;&lt;code&gt;link&lt;/code&gt; 指向在线阅读地址，卡片点击直接跳转外部站点。&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+			</item>
+	</channel>
+</rss>

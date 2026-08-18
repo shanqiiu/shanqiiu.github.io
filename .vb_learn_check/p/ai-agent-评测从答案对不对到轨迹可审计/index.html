@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="zh-cn" data-theme="dark">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Agent 评测：从&#34;答案对不对&#34;到&#34;轨迹可审计&#34; · 个人技术空间</title>
+<meta name="description" content=" 一篇技术随笔，梳理近几年 Agent 评测方法的演进，重点讨论 GUI / 手机 Agent 的轨迹与过程评测如何自动判定，并分享我在一个 GUI Agent 执行评估实践中的思路、借鉴与踩坑经验。
+">
+<meta property="og:url" content="/p/ai-agent-%E8%AF%84%E6%B5%8B%E4%BB%8E%E7%AD%94%E6%A1%88%E5%AF%B9%E4%B8%8D%E5%AF%B9%E5%88%B0%E8%BD%A8%E8%BF%B9%E5%8F%AF%E5%AE%A1%E8%AE%A1/">
+	<meta property="og:site_name" content="个人技术空间">
+	<meta property="og:title" content="AI Agent 评测：从&#34;答案对不对&#34;到&#34;轨迹可审计&#34;">
+	<meta property="og:description" content="一篇技术随笔，梳理近几年 Agent 评测方法的演进，重点讨论 GUI / 手机 Agent 的轨迹与过程评测如何自动判定，并分享我在一个 GUI Agent 执行评估实践中的思路、借鉴与踩坑经验。">
+	<meta property="og:locale" content="zh_cn">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="post">
+		<meta property="article:published_time" content="2026-08-17T16:40:48+08:00">
+		<meta property="article:modified_time" content="2026-08-17T16:40:48+08:00">
+		<meta property="article:tag" content="Agent评测">
+		<meta property="article:tag" content="轨迹评估">
+		<meta property="article:tag" content="GUI Agent">
+		<meta property="article:tag" content="LLM">
+		<meta property="article:tag" content="过程奖励模型">
+
+
+	<meta itemprop="name" content="AI Agent 评测：从&#34;答案对不对&#34;到&#34;轨迹可审计&#34;">
+	<meta itemprop="description" content="一篇技术随笔，梳理近几年 Agent 评测方法的演进，重点讨论 GUI / 手机 Agent 的轨迹与过程评测如何自动判定，并分享我在一个 GUI Agent 执行评估实践中的思路、借鉴与踩坑经验。">
+	<meta itemprop="datePublished" content="2026-08-17T16:40:48+08:00">
+	<meta itemprop="dateModified" content="2026-08-17T16:40:48+08:00">
+	<meta itemprop="wordCount" content="8866">
+	<meta itemprop="keywords" content="Agent评测,轨迹评估,GUI Agent,LLM,过程奖励模型">
+<link rel="canonical" href="/p/ai-agent-%E8%AF%84%E6%B5%8B%E4%BB%8E%E7%AD%94%E6%A1%88%E5%AF%B9%E4%B8%8D%E5%AF%B9%E5%88%B0%E8%BD%A8%E8%BF%B9%E5%8F%AF%E5%AE%A1%E8%AE%A1/">
+<link rel="icon" href="/img/avatar-sakuragi-tight.jpg">
+
+<link rel="stylesheet" href="/css/main.min.9723751433aee0fbf9d5f3d7429f7ff476d8356e63f46133601afedc018cf1d1.css">
+
+</head>
+<body>
+    <a href="#main" class="skip-link">跳转到主内容</a>
+    <div id="page-loader" class="page-loader" aria-hidden="true">
+        <div class="page-loader-inner">
+            <span class="page-loader-spinner"></span>
+            <span class="page-loader-text">加载中</span>
+        </div>
+    </div>
+    <header class="site-header" aria-label="Site controls">
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme"></button>
+
+    <div class="music-player" id="music-player" aria-label="音乐播放器">
+        <audio id="music-audio" src="/audio/slam-dunk.mp3" preload="metadata" loop></audio>
+        <button class="music-toggle" id="music-toggle" type="button" aria-label="收起播放器" aria-expanded="true" title="收起播放器">
+            <svg class="icon-collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            <svg class="icon-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </button>
+        <div class="music-body">
+            <div class="music-primary-row">
+                <div class="music-cover-small" aria-hidden="true">
+                    <img src="/img/avatar-sakuragi.jpg" alt="">
+                </div>
+                <div class="music-meta">
+                    <div class="music-title">直到世界尽头</div>
+                    <div class="music-artist">WANDS · 灌篮高手片尾曲</div>
+                </div>
+                <button class="music-play" id="music-play" type="button" aria-label="播放" title="播放">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+            </div>
+            <div class="music-secondary-row">
+                <div class="music-time" id="music-time">00:00 / 00:00</div>
+                <button class="music-btn music-prev" id="music-prev" type="button" aria-label="后退 10 秒" title="后退 10 秒">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <div class="music-progress-wrap">
+                    <input type="range" id="music-progress" min="0" max="100" value="0" aria-label="播放进度">
+                </div>
+                <button class="music-btn music-next" id="music-next" type="button" aria-label="前进 10 秒" title="前进 10 秒">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+                <button class="music-btn music-mute" id="music-mute" type="button" aria-label="静音" title="静音">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="page-nav-fab" aria-label="Quick navigation">
+        <button class="page-nav-main" type="button" aria-label="当前页面：文章">
+            <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg>
+            <span>文章</span>
+        </button>
+        <div class="page-nav-menu">
+            <a href="/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-><path stroke-linecap="round" d="M22 22H2m0-11l8.126-6.5a3 3 0 0 1 3.748 0L22 11m-6.5-5.5v-2A.5.5 0 0 1 16 3h2.5a.5.5 0 0 1 .5.5v5M4 22V9.5M20 22V9.5"/><path d="M15 22v-5c0-1.414 0-2.121-.44-2.56C14.122 14 13.415 14 12 14s-2.121 0-2.56.44C9 14.878 9 15.585 9 17v5m5-12.5a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z"/></g></svg><span>首页</span></a>
+            <a href="/projects/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke- d="m5.684 13.143l6.842 3.463L22 11.66v2.793c0 .72-.415 1.381-1.083 1.73l-6.356 3.32a4.45 4.45 0 0 1-4.074.008l-5.712-2.953C3.063 15.672 2 13.98 2 12.145m0 0c0-2.042 2.286-3.37 4.228-2.457l6.298 2.96L22 7.701l-6.28-3.126a5.56 5.56 0 0 0-5.233.166L4.23 8.382C2.843 9.19 2 10.612 2 12.145" color="currentColor"/></svg><span>项目库</span></a>
+            <a href="/post/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg><span>文章</span></a>
+            <a href="/learning/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="currentColor"><path d="M9.172 5a3 3 0 0 1 2.121.879l5.71 5.71a3.41 3.41 0 0 1 0 4.822l-3.592 3.592a3.41 3.41 0 0 1-4.822 0l-5.71-5.71A3 3 0 0 1 2 12.172V8a3 3 0 0 1 3-3zM7 9h-.01A1 1 0 1 0 7 11a1 1 0 0 0 0-2"/><path d="M14.293 5.293a1 1 0 0 1 1.414 0L20.3 9.885a5.82 5.82 0 0 1 0 8.23l-1.592 1.592a1 1 0 0 1-1.414-1.414l1.592-1.592a3.82 3.82 0 0 0 0-5.402l-4.592-4.592a1 1 0 0 1 0-1.414"/></g></svg><span>资源</span></a>
+            <a href="/chat/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-><path stroke-linejoin="round" d="M14 19c3.771 0 5.657 0 6.828-1.172S22 14.771 22 11s0-5.657-1.172-6.828S17.771 3 14 3h-4C6.229 3 4.343 3 3.172 4.172S2 7.229 2 11s0 5.657 1.172 6.828c.653.654 1.528.943 2.828 1.07"/><path d="M14 19c-1.236 0-2.598.5-3.841 1.145c-1.998 1.037-2.997 1.556-3.489 1.225s-.399-1.355-.212-3.404L6.5 17.5"/></g></svg><span>聊天室</span></a>
+            <a href="/archives/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg><span>归档</span></a>
+            <a href="/about/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1023"><path fill="currentColor" d="M881 321q-10-2-15-2q-37 0-64 25q-61-27-114-44q-87-28-182-46q-9-24-27-40Q504 96 546 0q126 9 231.5 73T948 241q-37 40-67 80M417 191q-26 0-49 14q-81-60-163-102Q329 9 483 0q-39 87-63 191zM70 253q34-57 86-108q68 35 141 86q-129-3-227 22m251 40q2 31 21.5 54.5T391 379q-6 70-6 133q0 44 3 101q-22 7-39 24q-54-21-104-48q11-22 11-45q0-40-28-68t-68-28q-44 0-73 34q-42-38-75-79q9-43 27-85q122-34 282-25M65 552q3 37 30.5 62.5T160 640q11 0 24-4q64 37 137 64v4q0 39 26.5 66.5T413 800q25 122 70 223q-100-6-189-48.5T140.5 864T38 704T0 512q0-1 1-27q28 35 64 67m436 197q72 13 145 17q7 20 22 37q-23 105-28 204q-51 13-94 16q-47-107-73-242q18-12 28-32m310 48q13-16 18-34q73-6 141-19q-48 94-132 163q-9-52-27-110m-163-95q-70-4-138-18q-11-50-57-69q-4-59-4-103q0-66 6-137q2 0 5-2t4-2q39 38 68 70q87 96 148 218q-22 17-32 43m89 130q2 0 11-1q17 61 25 121q-29 17-70 34q7-78 24-155q8 1 10 1m-5-239q-1 2-2.5 6t-2.5 6q-63-114-148-207q-31-35-74-76q1 0 1.5-1.5l.5-1.5q84 17 161 42q47 15 103 40q-2 10-2 15q0 30 18 55q-33 63-55 122m47 58q12-35 12-36q20-50 50-107q13 4 25 4q34 0 61-23q49 34 96 76q-6 57-24 110q-82 17-173 24q-13-32-47-48m183-236q0-33-22-60q21-27 42-49q36 82 42 169q-33-25-64-45q2-9 2-15"/></svg><span>友链</span></a>
+        </div>
+    </nav>
+</header>
+
+
+    <main class="main" id="main">
+        
+<article class="post container">
+    <header class="post-head">
+        <div class="post-meta">
+            <time datetime="2026-08-17">2026年08月17日</time>
+            
+                <span class="meta-sep">·</span>
+                <span class="post-category-path">
+                
+                    
+                    <a class="cat" href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a>
+                
+                    <span class="post-category-sep">/</span>
+                    <a class="cat" href="/categories/ai/">AI</a>
+                
+                    <span class="post-category-sep">/</span>
+                    <a class="cat" href="/categories/agent/">Agent</a>
+                
+                </span>
+            
+            <span class="meta-sep">·</span>
+            <span>18 分钟阅读</span>
+        </div>
+        <h1 class="post-title">AI Agent 评测：从&#34;答案对不对&#34;到&#34;轨迹可审计&#34;</h1>
+        
+        <div class="post-tags">
+            
+                <a class="tag" href="/tags/agent%E8%AF%84%E6%B5%8B/">Agent评测</a>
+            
+                <a class="tag" href="/tags/%E8%BD%A8%E8%BF%B9%E8%AF%84%E4%BC%B0/">轨迹评估</a>
+            
+                <a class="tag" href="/tags/gui-agent/">GUI Agent</a>
+            
+                <a class="tag" href="/tags/llm/">LLM</a>
+            
+                <a class="tag" href="/tags/%E8%BF%87%E7%A8%8B%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B/">过程奖励模型</a>
+            
+        </div>
+    </header>
+
+    
+
+    <div class="content post-body"><blockquote>
+<p>一篇技术随笔，梳理近几年 Agent 评测方法的演进，重点讨论 GUI / 手机 Agent 的轨迹与过程评测如何自动判定，并分享我在一个 GUI Agent 执行评估实践中的思路、借鉴与踩坑经验。</p>
+<p>日期：2026-08 · 主题：Agent Evaluation / Trajectory Evaluation / GUI Agent</p>
+</blockquote>
+<hr>
+<h2 id="引言为什么成功率不够用了">引言：为什么&quot;成功率&quot;不够用了</h2>
+<p>早期的 Agent 评测问题很好回答：给一个任务，看最终答案对不对。Exact match、测试是否通过、页面是否到达目标态，一个数字就完成了评估。这个范式简单、客观、可自动化，支撑了从静态问答到工具调用的一大批 benchmark。</p>
+<p>但当我们把 Agent 真正放进手机、网页、代码库这种<strong>有状态、有副作用、有长程依赖</strong>的环境里，&ldquo;最终结果对不对&quot;这个维度就开始失真了。一个 Agent 用 53 次工具调用、其中 20 次重复搜索才完成任务，和另一个 8 次调用就完成的 Agent，在&quot;成功率&quot;上完全不可区分。更糟的是，成功率无法回答下面这些真实问题：</p>
+<ul>
+<li>Agent 是真正完成了任务，还是碰巧利用了 benchmark 的漏洞？</li>
+<li>它是否点错了一个控件之后自己恢复过来了？</li>
+<li>它是否执行了危险操作，只是最终被环境回滚掩盖了？</li>
+<li>两个都&quot;成功&quot;的 Agent，哪个更高效、更可靠、更省成本？</li>
+</ul>
+<p>所以近几年的 Agent 评测出现了一个清晰的方向迁移：<strong>从压缩成单一成功率的静态评测，转向对任务、轨迹、成本、安全和泛化的联合评测</strong>。本文将沿着这条线梳理方法脉络，并落到最棘手的场景——只有&quot;执行日志 + 每一步截图&quot;的手机 GUI Agent，过程评测应该怎么做。</p>
+<hr>
+<h2 id="一评测范式的四次迁移">一、评测范式的四次迁移</h2>
+<p>把文献按时间摆开，能清楚看到评测对象在逐步&quot;变厚&rdquo;：</p>
+<table>
+	<thead>
+			<tr>
+					<th>阶段</th>
+					<th>评测对象</th>
+					<th>代表工作</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>静态问答</td>
+					<td>单轮答案正确性</td>
+					<td>传统 NLP benchmark</td>
+			</tr>
+			<tr>
+					<td>单步工具调用</td>
+					<td>是否能选对工具、传对参数</td>
+					<td>早期 tool-use 评测</td>
+			</tr>
+			<tr>
+					<td>多步环境交互</td>
+					<td>在交互式环境中的推理、规划、决策</td>
+					<td>AgentBench、WebArena</td>
+			</tr>
+			<tr>
+					<td>真实多模态长程任务</td>
+					<td>视觉理解 + 真实网页/手机 + 长工作流</td>
+					<td>GAIA、VisualWebArena</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>AgentBench</strong>（arXiv:2308.03688）较早把&quot;LLM 作为 Agent&quot;从静态问答里单独拎出来，在多种交互环境中评测推理、规划、决策和工具使用[1]；<strong>WebArena</strong>（arXiv:2307.13854）构建了包含搜索、购物、论坛等真实网站的可执行环境，奠定了 Web Agent 评测的常用范式[2]；<strong>VisualWebArena</strong>（arXiv:2401.13649）进一步说明网页 Agent 不能只看 DOM 文本，还必须处理截图、布局和视觉状态[3]；<strong>GAIA</strong>（arXiv:2311.12983）则把任务推向&quot;通用个人助理&quot;——需要多步推理、网页浏览、工具调用、多模态理解和现实知识的复杂问题[4]。</p>
+<p>这个演进在综述里被系统化。<strong>《Survey on Evaluation of LLM-based Agents》</strong>（arXiv:2503.16416）和 <strong>《Evaluation and Benchmarking of LLM Agents: A Survey》</strong>（arXiv:2507.21504）都强调：评测维度不应是单一结果分数，而应覆盖任务完成、工具使用、交互轨迹、长程规划、成本效率和安全性[5][6]。</p>
+<blockquote>
+<p>一句话概括趋势：<strong>从&quot;能不能完成一个预先定义的任务&quot;，转向&quot;能不能在不确定、变化且具有真实代价的环境中持续、可靠、安全地完成工作&quot;。</strong></p>
+</blockquote>
+<hr>
+<h2 id="二一个可用的五层评测框架">二、一个可用的五层评测框架</h2>
+<p>综合这些工作，可以把 Agent 评测拆成五层，每一层回答不同的问题：</p>
+<ol>
+<li><strong>结果层</strong>：任务最终是否完成？——用环境最终状态、持久化副作用、测试是否通过来判定。</li>
+<li><strong>能力层</strong>：哪类能力成功或失败了？——规划、工具选择、Grounding、视觉理解、错误恢复分别拆开看。</li>
+<li><strong>过程层</strong>：轨迹是否合理、合规？——动作是否合法、是否循环、是否绕路、是否遵循操作顺序与权限。</li>
+<li><strong>效率层</strong>：用了多少资源？——动作数、时间、token、工具调用、重试、人工介入。</li>
+<li><strong>可靠层</strong>：是否安全、稳定、可泛化？——越权、危险副作用、重复运行方差、环境变化、提示注入。</li>
+</ol>
+<p>对应地，评测结果也不应该再是一个标量 <code>Score = SuccessRate</code>，而是一个向量：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">AgentScore = (Success, Efficiency, Reliability, Safety, Recovery)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>值得注意的是，这五层里<strong>最难自动化、也最被低估的是过程层（第 3 层）</strong>。结果层有环境验证器兜底，能力层有 benchmark 拆分，效率层靠统计，但&quot;这个过程到底合不合理&quot;长期依赖人工看轨迹。接下来重点讨论它如何自动判定。</p>
+<hr>
+<h2 id="三轨迹与过程评测自动判定怎么做">三、轨迹与过程评测：自动判定怎么做</h2>
+<p>社区一个普遍的误区是&quot;直接让 LLM 看完整轨迹打个分&quot;。这个做法简单，但很不稳定——judge 模型会偏好更长更啰嗦的轨迹、会被漂亮但错误的解释误导、看不出工具调用的真实副作用。更可靠的做法是<strong>分层自动判定</strong>：能形式化的用确定性验证，能从日志算的不要交给模型，只有开放式过程质量才交给 LLM judge 或过程奖励模型。具体有下面五类方法。</p>
+<h3 id="31-确定性环境验证">3.1 确定性环境验证</h3>
+<p>可靠性最高的一类：不评价 Agent 说了什么，直接检查环境是否达到目标状态——文件是否被正确创建、数据库记录是否符合预期、购物车是否加入了正确商品、代码是否通过测试。</p>
+<p><strong>GroundEval</strong>（arXiv:2606.22737）代表了把 Agent 搜索、获取证据、引用来源等行为转化为确定性检查的方向，核心思想是：<strong>能从环境和执行日志直接验证的内容，不应该交给 LLM 主观判断</strong>[7]。这类方法的优点是客观、便宜、可复现；缺点是只能判断&quot;结果对不对&quot;，无法判断&quot;过程是否合理&quot;，Agent 可能通过不允许的捷径完成任务。</p>
+<h3 id="32-规则有限状态机与时序逻辑">3.2 规则、有限状态机与时序逻辑</h3>
+<p>如果任务有明确流程，可以把允许和禁止的行为写成规则或时序逻辑。比如报销流程要求&quot;先核验金额，再提交付款&quot;，自动判定器就可以检查：是否在审批前触发了付款、是否访问了禁止数据、是否重复提交。</p>
+<p><strong>AgentLTL</strong>（arXiv:2607.02599）把程序约束表示为时序逻辑，用于验证、约束和训练工具型 Agent，特别适合医疗、金融、企业审批这类&quot;过程本身就是正确性的一部分&quot;的场景[8]。时序规则可以表达先后关系（必须先 search 再 download）、禁止关系（未授权不能 delete）、数量关系（最多重试三次）、依赖关系（验证身份后才能访问账户）。</p>
+<h3 id="33-轨迹结构与行为统计">3.3 轨迹结构与行为统计</h3>
+<p>不判断语义质量，只从轨迹提取行为特征：工具调用次数、无效动作比例、重复动作次数、失败后恢复步数、是否出现循环、是否提前终止。可以定义一些简单指标：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Efficiency    = 有效动作数 / 总动作数
+</span></span><span class="line"><span class="cl">LoopRate      = 重复状态或重复动作次数 / 总动作数
+</span></span><span class="line"><span class="cl">RecoveryRate  = 失败后最终恢复的轨迹数 / 出现失败的轨迹数
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这类方法特别擅长发现&quot;最终成功但过程很差&quot;的情况。<strong>AgentLens</strong>（arXiv:2607.06624）代表从单一结果指标转向生产轨迹评价的方向，强调对 coding Agent 的交互轨迹进行评审而不是只记录最终是否通过测试[9]；<strong>《Failure as a Process》</strong>（arXiv:2607.09510）则专门剖析 CLI coding Agent 失败轨迹中的过程模式和失败演化[10]。</p>
+<h3 id="34-llm-as-a-judge边界在哪里">3.4 LLM-as-a-Judge：边界在哪里</h3>
+<p>对于&quot;这个工具调用是否合理&quot;&ldquo;这个计划是否充分&quot;&ldquo;这个错误恢复是否有效&quot;这类开放问题，规则不够用，可以让另一个 LLM 当评审器。常见做法包括逐步评分、阶段评分、整体评分、成对比较、带参考轨迹评分、事实核验。</p>
+<p>但它<strong>不应作为唯一裁判</strong>。更好的分工是：</p>
+<blockquote>
+<p><strong>硬事实由环境验证器判定，软质量由 LLM judge 判定。</strong></p>
+</blockquote>
+<h3 id="35-过程奖励模型prm">3.5 过程奖励模型（PRM）</h3>
+<p>PRM 不是只看最终结果，而是给每一步或每个中间状态分配质量分数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">R_process(τ) = Σ r(s_t, a_t, s_{t+1})
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>它既能用于评测，也能用于轨迹排序、训练 Agent、在线拦截低质量动作、预测任务是否失败。《A Survey of Process Reward Models》（arXiv:2510.08049）对这一类方法做了系统梳理[11]。但 PRM 的标注成本高，且模型可能学会&quot;看起来合理&quot;的行为模式，实际系统通常把它与环境奖励、工具规则和最终结果结合使用，而不是单独使用。</p>
+<hr>
+<h2 id="四gui--手机-agent-的轨迹评测状态动作状态">四、GUI / 手机 Agent 的轨迹评测：状态—动作—状态</h2>
+<p>最贴近工程实践的场景是：<strong>只有 Agent 执行日志 + 每一步操作前后截图</strong>，如何做过程评测。近期工作已经朝这个方向走：<strong>GUIDE</strong>（arXiv:2604.04399）强调对 GUI Agent 轨迹做可解释的分层诊断[12]；<strong>VisCritic</strong>（arXiv:2606.24525）把视觉状态比较用作逐步过程奖励[13]；<strong>StepReflect</strong>（arXiv:2608.05587）关注移动 GUI 的结构化界面转移反思[14]。</p>
+<p>核心思路是把每一步建模为一个<strong>状态转移单元</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">e_t = (I_t, a_t, I_{t+1}, l_t)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>I_t</code> 是动作前截图，<code>a_t</code> 是动作，<code>I_{t+1}</code> 是动作后截图，<code>l_t</code> 是日志（坐标、控件、模型输出、耗时）。整条轨迹就是这些单元的序列。评测不应只输出&quot;成功/失败&rdquo;，而应输出：最终结果 + 每步动作评分 + 界面转移评分 + 任务进展评分 + 错误恢复评分 + 效率评分 + 安全违规 + 失败根因。</p>
+<h3 id="41-截图是部分观测不是真值">4.1 截图是部分观测，不是真值</h3>
+<p>这是最容易被忽视的一点。截图单独存在几个问题：看不到控件真实可点击区域、看不出控件是否 enabled、同样的视觉界面可能对应不同内部状态、小图标和滚动位置容易误判、有些状态变化前后截图几乎一样。</p>
+<p>所以应把截图视为对真实 UI 状态的<strong>部分观测</strong>：<code>o_t = Observation(s_t)</code>。可靠的评测要先把截图转成结构化 UI 状态（页面类型、控件列表、控件状态、弹窗、主要文本），优先结合三类信息：截图视觉信息、操作日志、系统/无障碍树（Accessibility tree、UIAutomator hierarchy）。若无法拿到 UI tree，也要明确记录&quot;当前是视觉-only 证据&rdquo;，而不是假装有结构真值。</p>
+<h3 id="42-动作-grounding是否命中正确目标">4.2 动作 Grounding：是否命中正确目标</h3>
+<p>对每步动作，评估三件事：Agent 想操作什么、实际操作了什么、该操作是否符合任务当前阶段。动作定位准确率可以定义为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">ActionGrounding = Σ 1[实际命中目标控件] / T
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里要特别区分两种失败：<strong>意图正确、坐标错误</strong>（知道该点&quot;允许&quot;但点偏了）是 grounding 问题；<strong>意图错误、坐标准确</strong>（精准点中了不该点的控件）是 planning/policy 问题。二者修复方式完全不同，混为一谈会误导后续优化方向。</p>
+<h3 id="43-界面转移验证动作是否产生了正确变化">4.3 界面转移验证：动作是否产生了正确变化</h3>
+<p>单步动作最重要的不是&quot;看起来合理&quot;，而是是否导致正确的 UI 转移。可以把每一步分成四种情况：</p>
+<table>
+	<thead>
+			<tr>
+					<th>类型</th>
+					<th>动作</th>
+					<th>界面变化</th>
+					<th>解释</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>有效推进</td>
+					<td>合法</td>
+					<td>目标状态变化</td>
+					<td>最理想</td>
+			</tr>
+			<tr>
+					<td>无效动作</td>
+					<td>合法</td>
+					<td>没有有效变化</td>
+					<td>点偏、页面未加载或操作无效</td>
+			</tr>
+			<tr>
+					<td>错误推进</td>
+					<td>合法</td>
+					<td>进入错误页面/改变错误状态</td>
+					<td>规划或目标识别错误</td>
+			</tr>
+			<tr>
+					<td>危险推进</td>
+					<td>不应执行</td>
+					<td>产生敏感/不可逆副作用</td>
+					<td>安全违规</td>
+			</tr>
+	</tbody>
+</table>
+<p>界面变化又可细分为导航变化、内容变化、控件状态变化、输入变化、外部副作用五类。其中<strong>外部副作用（发消息、提交订单、删除文件、授权）必须最严格</strong>——不能仅凭截图里出现&quot;成功&quot;就认定成功，要尽量验证外部状态（重开页面、查列表、查订单、读文件系统）。</p>
+<h3 id="44-里程碑进展页面变了--任务推进了">4.4 里程碑进展：页面变了 ≠ 任务推进了</h3>
+<p>不是所有界面变化都代表任务进展。Agent 在设置页之间来回切换，截图变化很大，但任务没推进。最实用的方法是为任务定义一组<strong>子目标/里程碑</strong>，每步判断已满足哪些：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">P_t = Σ w_i · 1[m_i achieved at t] / Σ w_i
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进展分数是非单调的（误操作会导致回退），因此可以识别有效推进（ΔP&gt;0）、无效操作（ΔP=0）、回退（ΔP&lt;0）、&ldquo;局部成功但整体无效&rdquo;。固定任务里程碑可手工定义，开放任务可由模型生成候选再交给规则/环境验证确认。</p>
+<h3 id="45-循环与恢复检测">4.5 循环与恢复检测</h3>
+<p>手机 Agent 常见的问题不是一次严重错误，而是点错后继续执行、页面没变化却重复点击、搜索无结果后重复相同搜索、权限弹窗出现后无法恢复。重复动作检测要满足&quot;重复动作模式 <strong>且</strong> 状态没有有效变化&quot;双条件，否则会误伤合理的重试和列表滑动。恢复检测则识别 Agent 是否：发现错误 → 改变策略 → 回到可恢复状态 → 最终继续完成，并记录恢复代价（从错误到恢复的动作数）。一个每次错误都要 20 步才能恢复的 Agent，即使最终成功，也不适合真实部署。</p>
+<h3 id="46-vlm-结构化评审">4.6 VLM 结构化评审</h3>
+<p>VLM 适合判断截图中的开放问题：当前界面是否满足某子目标、动作后是否出现预期 UI、是否误解了弹窗。但<strong>不要让它直接生成自由文本分数</strong>，而要输出结构化 JSON：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;target_correct&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;transition_expected&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;task_progress&#34;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;state_regressed&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;unsafe&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;reason_code&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;confidence&#34;</span><span class="p">:</span> <span class="mf">0.91</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>每次给 VLM 的输入应包括：任务目标、当前任务阶段、动作前截图、动作后截图、动作类型和参数、Agent 的动作意图、已完成的里程碑、可选的 UI tree/OCR 结果。<strong>关键是前后帧一起给</strong>——单张截图缺少因果信息，无法判断动作是否有效。</p>
+<hr>
+<h2 id="五硬评测--软评测双通道与硬门控">五、硬评测 + 软评测双通道与硬门控</h2>
+<p>把上面的方法组合起来，推荐的设计是&quot;硬评测 + 软评测&quot;双通道，以及一个门控逻辑：</p>
+<ul>
+<li><strong>硬评测</strong>（规则、UI tree、OCR、状态机、系统日志）：点击坐标是否命中控件、是否进入目标页、输入是否正确、是否授权、是否发生危险操作、是否违反动作顺序。</li>
+<li><strong>软评测</strong>（VLM / LLM judge）：动作是否符合任务策略、页面是否与阶段匹配、错误恢复是否合理、是否明显绕路。</li>
+</ul>
+<p>最终判定不要简单平均，而用门控：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Pass = FinalGoalVerified  ∧  NoCriticalSafetyViolation  ∧  EvidenceSufficient
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过后再报告质量分（进展、效率、恢复、Grounding 的加权），或者报告&quot;成功率—成本&quot;曲线。<strong>安全违规应当是硬失败，而不是普通扣分</strong>——即使 Agent 最终完成任务，只要越权访问了数据，也不能判定为成功。这一设计原则在工具型 Agent 的安全评测里被反复强调，例如 <strong>SafeClawBench</strong>（arXiv:2606.18356）把语义层面的不安全行为、审计证据和沙箱中的实际危害分开对待[15]。</p>
+<hr>
+<h2 id="六评测器本身也要被评测">六、评测器本身也要被评测</h2>
+<p>一个容易被忽略的事实是：<strong>评测器也是软件，也会错</strong>。如果只报告 Agent 分数、不报告 evaluator 的误差，就会把评测器的偏差误认为 Agent 的缺陷。至少应该报告：</p>
+<ul>
+<li>任务成功判定的 Precision / Recall / F1；</li>
+<li>每类异常检测的 Precision / Recall、首错定位偏差；</li>
+<li>VLM judge 与人工的一致率及分桶结果；</li>
+<li><code>uncertain</code> 覆盖率、人工复核率和误拒率；</li>
+<li>同一轨迹重复评审的一致性；</li>
+<li>每任务延迟、模型调用、token 和货币成本；</li>
+<li>按 App、任务长度、语言、弹窗/网络异常、证据缺失程度分桶的表现。</li>
+</ul>
+<p>这条原则也回应了另一个隐患：<strong>benchmark 泄漏</strong>。如果任务、网页或代码库被训练数据记住，分数就不再代表泛化能力，因此需要隐藏测试集、动态生成任务、模板族隔离和时间外测试。</p>
+<hr>
+<h2 id="七我的技术实践与经验总结">七、我的技术实践与经验总结</h2>
+<p>下面分享我在一个 <strong>GUI Agent 执行轨迹自动评估</strong> 实践中的设计思路、对上述文献的借鉴方式，以及踩坑后的经验。为避免把问题扯到具体实现上，我只谈方法与取舍，不涉及代码和具体数据。</p>
+<h3 id="71-两阶段判定意图召回在前执行验证在后">7.1 两阶段判定：意图召回在前，执行验证在后</h3>
+<p>我借鉴了 <strong>GUIDE 的分层诊断</strong> 和 <strong>AutoEval</strong>（arXiv:2503.02403）的&quot;子状态分解 + 判官流水线&quot;思路，把每个关键检查点判定拆成两阶段：</p>
+<ol>
+<li><strong>意图召回</strong>：先判断 Agent 是否&quot;尝试过&quot;这个必要子状态（有没有对应的实际意图候选）。这回答&quot;规划/目标理解有没有问题&quot;。</li>
+<li><strong>执行验证</strong>：只在召回到候选之后，才用真实截图验证&quot;这个正确意图是否真正在界面上生效了&quot;。这回答&quot;执行有没有阻塞&quot;。</li>
+</ol>
+<p>这个拆分的价值在于能把两种截然不同的失败分开：<strong>没有对应意图</strong>（规划缺失）和<strong>有意图但状态没达成</strong>（执行失败）。二者对应完全不同的优化手段——前者改规划，后者改 grounding 或环境处理。意图未召回时，不强行分配截图、不做无意义的视觉调用，直接标记为 <code>unmatched_intent</code>。</p>
+<h3 id="72-子状态分解路径无关原子可观察">7.2 子状态分解：路径无关、原子、可观察</h3>
+<p>任务分解时我坚持三个原则，而不是&quot;按步骤数量均匀切 checkpoint&quot;或绑定某条固定操作路径：</p>
+<ul>
+<li><strong>路径无关</strong>：描述&quot;结果状态&quot;，不限定点击哪个坐标、经过哪个页面。Agent 用不同入口、快捷方式达到相同状态都不算失败。</li>
+<li><strong>原子</strong>：一个检查点只承载一个状态边界，不把&quot;搜索 → 筛选 → 进详情&quot;这种复合阶段塞进一项。</li>
+<li><strong>可观察</strong>：能通过截图、OCR、页面结构或系统状态验证。</li>
+</ul>
+<p>这也意味着&quot;点击搜索框&quot;&ldquo;输入关键词&quot;这类<strong>操作不是检查点</strong>，&ldquo;搜索结果已展示&quot;&ldquo;筛选条件已生效&quot;才是。Agent 可能通过语音、快捷入口达到相同状态，评估系统不应因为路径不同而误判失败。这一点与 WebArena/VisualWebArena 的&quot;环境状态验证&quot;范式一脉相承——<strong>评估状态，而不是评估某一种操作路径</strong>。</p>
+<h3 id="73-证据分层与不确定输出">7.3 证据分层与不确定输出</h3>
+<p>我把证据分成了几个信任等级：结构事实（动作类型、步骤索引）&gt; 客观观测（OCR、截图差分、页面文本）&gt; 模型判断（页面描述、VLM 判定）&gt; Agent 自述（操作意图）。核心纪律是：</p>
+<ul>
+<li><strong>Agent 的意图自述（&ldquo;我想做什么&rdquo;）只是召回信号，不是真值</strong>，不能独立证明任务完成。</li>
+<li><strong>截图相似度不能当状态正确性</strong>，像素变化只是&quot;发生了变化&quot;的信号，不是&quot;变对了&quot;的证明。</li>
+<li><strong>缺证据必须输出 <code>uncertain</code>，不能静默判成功</strong>。这是我对&quot;不确定传播&quot;最看重的一条：规则不能确定、VLM 置信度低、截图缺失，都不能被解释成&quot;正常&rdquo;。</li>
+</ul>
+<p>这条纪律的来源，正是 GroundEval&quot;能从环境直接验证的不要交给 LLM&quot;和 SafeClawBench&quot;把审计证据单独拆开&quot;的思想。</p>
+<h3 id="74-安全作为硬门控而不是扣分项">7.4 安全作为硬门控，而不是扣分项</h3>
+<p>统一结论我采用门控逻辑而不是加权平均：<code>通过 = 目标已证实 ∧ 无关键安全违规 ∧ 证据充分</code>。安全事件（越权、危险副作用、违反顺序/禁止约束）是硬失败，<strong>不能用一个高的过程分把它稀释掉</strong>。这与五层框架里&quot;安全违规是硬失败而非普通扣分&quot;的原则一致，也呼应了 AgentLTL 用时序约束验证过程合规的思路。</p>
+<h3 id="75-成本治理vlm-调用是绝对瓶颈">7.5 成本治理：VLM 调用是绝对瓶颈</h3>
+<p>实践中最大的工程体感是：<strong>VLM 调用是评估流水线的绝对瓶颈，而不是规则计算</strong>。于是我把&quot;能不算就不算&quot;落成了三条纪律：</p>
+<ol>
+<li><strong>缓存</strong>：以 <code>模型 + 提示词 + 图片哈希</code> 做 key 缓存 VLM 响应，重复评估命中缓存后模型调用归零。</li>
+<li><strong>并发</strong>：VLM 调用是 I/O 密集，天然适合线程池并发，串行改并发能带来接近线性的加速。</li>
+<li><strong>分层送审</strong>：规则能判的（坐标命中、动作次数、重复、耗时、权限）绝不让模型算；只把规则无法确定的片段送给 VLM，并且<strong>尽量复用 Agent 执行时自己已经产出的页面理解</strong>，避免重复调用。</li>
+</ol>
+<p>这三点背后的方法论很简单，也是 3.1—3.5 的浓缩版：<strong>能形式化的用确定性验证，能从日志算的不要交给模型，只有开放式过程质量才交给 judge</strong>。</p>
+<h3 id="76-经验教训小结">7.6 经验教训小结</h3>
+<ol>
+<li><strong>成功率是必要的主指标，但绝不是唯一指标</strong>。过程、效率、恢复、安全、证据质量必须并排出现。</li>
+<li><strong>截图是观测不是真值</strong>。优先抽 UI 语义和控件状态，不要把像素相似度当成功。</li>
+<li><strong>前后帧一起判，单帧没有因果</strong>。判断动作有效性必须给 before/after。</li>
+<li><strong>任务进展用里程碑表示</strong>。&ldquo;页面变了&quot;不等于&quot;任务推进了&rdquo;。</li>
+<li><strong>别让 VLM 算它可以直接算的东西</strong>。规则层越厚，judge 越稳、越便宜。</li>
+<li><strong>安全是门控不是扣分</strong>。越权 + 完成任务 ≠ 成功。</li>
+<li><strong>评测器要被评测</strong>。没有金标、没有 Precision/Recall、没有 judge 一致性，评估结果不可信。</li>
+<li><strong>过程评测的价值不只是给分，而是定位首错</strong>。用户真正想要的是&quot;Agent 为什么失败、第一步错在哪&rdquo;，不是一个总分。</li>
+</ol>
+<hr>
+<h2 id="八总结与展望">八、总结与展望</h2>
+<p>把整条脉络收束成一句话：</p>
+<blockquote>
+<p><strong>Agent 评测正在从&quot;静态答案正确性&rdquo;，转向&quot;动态环境中的任务、轨迹、成本、安全和泛化的联合评测&quot;，而过程评测的核心不是训练一个更强的 judge，而是先构建一个可验证的 UI 状态表示和任务里程碑表示。</strong></p>
+</blockquote>
+<p>一个稳健的评测系统，应当是&quot;环境验证器（结果是否真的完成）+ 规则验证器（是否违反流程/权限/安全）+ 轨迹分析器（是否低效/循环/恢复失败）+ LLM/VLM judge（开放语义质量）+ 人工复核（高风险或难形式化的案例）&ldquo;的组合，并用 <code>目标门控 ∧ 安全门控 ∧ 证据门控</code> 输出结论，而不是一个不透明总分。</p>
+<p>未来值得持续关注的方向包括：统一评测基础设施（如 AgentCompass，arXiv:2607.13705）对碎片化 benchmark 的整合[16]；多 Agent 系统的公平比较——不能只比 Agent 数量，要比&quot;质量/成本&rdquo;（如《Do More Agents Help?》，arXiv:2606.05670）[17]；以及软件工程 Agent 从&quot;issue 是否解决&quot;扩展到完整工作流（如 SWE Atlas，arXiv:2605.08366）[18]。对我们这些做工程落地的人而言，最重要的下一步不是追更热的模型，而是<strong>把评测器自己的效度（金标、一致性、成本）先做扎实</strong>——否则任何 Agent 分数都只是自说自话。</p>
+<hr>
+<h2 id="参考文献">参考文献</h2>
+<ol>
+<li>Liu et al., <em>AgentBench: Evaluating LLMs as Agents</em>, arXiv:2308.03688. <a href="https://arxiv.org/abs/2308.03688">https://arxiv.org/abs/2308.03688</a></li>
+<li>Zhou et al., <em>WebArena: A Realistic Web Environment for Building Autonomous Agents</em>, arXiv:2307.13854. <a href="https://arxiv.org/abs/2307.13854">https://arxiv.org/abs/2307.13854</a></li>
+<li>Koh et al., <em>VisualWebArena: Evaluating Multimodal Agents on Realistic Visual Web Tasks</em>, arXiv:2401.13649. <a href="https://arxiv.org/abs/2401.13649">https://arxiv.org/abs/2401.13649</a></li>
+<li>Mialon et al., <em>GAIA: a benchmark for General AI Assistants</em>, arXiv:2311.12983. <a href="https://arxiv.org/abs/2311.12983">https://arxiv.org/abs/2311.12983</a></li>
+<li><em>Survey on Evaluation of LLM-based Agents</em>, arXiv:2503.16416. <a href="https://arxiv.org/abs/2503.16416">https://arxiv.org/abs/2503.16416</a></li>
+<li><em>Evaluation and Benchmarking of LLM Agents: A Survey</em>, arXiv:2507.21504. <a href="https://arxiv.org/abs/2507.21504">https://arxiv.org/abs/2507.21504</a></li>
+<li><em>GroundEval: A Deterministic Replacement for LLM-as-Judge in Stateful Agent Evaluation</em>, arXiv:2606.22737. <a href="https://arxiv.org/abs/2606.22737">https://arxiv.org/abs/2606.22737</a></li>
+<li><em>AgentLTL: A Trace-Verification Framework for Measuring, Enforcing, and Training Procedural Compliance in Tool-Using LLM Agents</em>, arXiv:2607.02599. <a href="https://arxiv.org/abs/2607.02599">https://arxiv.org/abs/2607.02599</a></li>
+<li><em>AgentLens: Production-Assessed Trajectory Reviews for Coding Agent Evaluation</em>, arXiv:2607.06624. <a href="https://arxiv.org/abs/2607.06624">https://arxiv.org/abs/2607.06624</a></li>
+<li><em>Failure as a Process: An Anatomy of CLI Coding Agent Trajectories</em>, arXiv:2607.09510. <a href="https://arxiv.org/abs/2607.09510">https://arxiv.org/abs/2607.09510</a></li>
+<li><em>A Survey of Process Reward Models: From Outcome Signals to Process Supervisions for Large Language Models</em>, arXiv:2510.08049. <a href="https://arxiv.org/abs/2510.08049">https://arxiv.org/abs/2510.08049</a></li>
+<li><em>GUIDE: Interpretable GUI Agent Evaluation via Hierarchical Diagnosis</em>, arXiv:2604.04399. <a href="https://arxiv.org/abs/2604.04399">https://arxiv.org/abs/2604.04399</a></li>
+<li><em>VisCritic: Visual State Comparison as Process Reward for GUI Agents</em>, arXiv:2606.24525. <a href="https://arxiv.org/abs/2606.24525">https://arxiv.org/abs/2606.24525</a></li>
+<li><em>StepReflect: Structured UI Transition Reflection for Mobile GUI Agents</em>, arXiv:2608.05587. <a href="https://arxiv.org/abs/2608.05587">https://arxiv.org/abs/2608.05587</a></li>
+<li><em>SafeClawBench: Separating Semantic, Audit-Evidence, and Sandbox Harm in Tool-Using LLM Agents</em>, arXiv:2606.18356. <a href="https://arxiv.org/abs/2606.18356">https://arxiv.org/abs/2606.18356</a></li>
+<li><em>AgentCompass: A Unified Evaluation Infrastructure for Agent Capabilities</em>, arXiv:2607.13705. <a href="https://arxiv.org/abs/2607.13705">https://arxiv.org/abs/2607.13705</a></li>
+<li><em>Do More Agents Help? Controlled and Protocol-Aligned Evaluation of LLM Agent Workflows</em>, arXiv:2606.05670. <a href="https://arxiv.org/abs/2606.05670">https://arxiv.org/abs/2606.05670</a></li>
+<li><em>SWE Atlas: Benchmarking Coding Agents Beyond Issue Resolution</em>, arXiv:2605.08366. <a href="https://arxiv.org/abs/2605.08366">https://arxiv.org/abs/2605.08366</a></li>
+</ol>
+<blockquote>
+<p>另参考（项目实践背景，未在本篇正文展开）：VeriGUI（arXiv:2604.05477）、TrajAD（arXiv:2602.06443）、AutoEval（arXiv:2503.02403）、VeriSafe Agent（arXiv:2503.18492）、GUI-SHEPHERD。</p>
+</blockquote>
+</div>
+
+    <footer class="post-foot">
+        <div class="post-nav">
+            
+                <a class="post-nav-prev" href="/p/%E4%BB%8E%E5%83%8F%E4%B8%8D%E5%83%8F%E5%88%B0%E5%90%88%E4%B8%8D%E5%90%88%E7%90%86aigc-%E8%A7%86%E9%A2%91%E7%94%9F%E6%88%90%E8%B4%A8%E9%87%8F%E8%AF%84%E6%B5%8B%E7%9A%84%E6%96%B9%E6%B3%95%E6%BC%94%E8%BF%9B%E4%B8%8E%E5%AE%9E%E8%B7%B5/">← 从&#34;像不像&#34;到&#34;合不合理&#34;：AIGC 视频生成质量评测的方法演进与实践</a>
+            
+            
+        </div>
+        
+    </footer>
+</article>
+
+    </main>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" defer></script>
+    
+    <script src="/js/main.186cd2326a164e588e5dfbe16d4d0abc3907b10ff89b2249c7fe71abbe70cb32.js" defer></script>
+</body>
+</html>

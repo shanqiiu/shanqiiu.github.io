@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-cn" data-theme="dark">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hello-Agents · 个人技术空间</title>
+<meta name="description" content="Datawhale 出品的系统性智能体学习教程，从零构建 AI Native Agent，覆盖核心原理、经典范式与多智能体实战。">
+<meta property="og:url" content="/projects/hello-agents/">
+	<meta property="og:site_name" content="个人技术空间">
+	<meta property="og:title" content="Hello-Agents">
+	<meta property="og:description" content="Datawhale 出品的系统性智能体学习教程，从零构建 AI Native Agent，覆盖核心原理、经典范式与多智能体实战。">
+	<meta property="og:locale" content="zh_cn">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="projects">
+		<meta property="article:published_time" content="2026-08-12T00:00:00+00:00">
+		<meta property="article:modified_time" content="2026-08-12T00:00:00+00:00">
+		<meta property="article:tag" content="Agent">
+		<meta property="article:tag" content="教程">
+		<meta property="article:tag" content="开源">
+
+
+	<meta itemprop="name" content="Hello-Agents">
+	<meta itemprop="description" content="Datawhale 出品的系统性智能体学习教程，从零构建 AI Native Agent，覆盖核心原理、经典范式与多智能体实战。">
+	<meta itemprop="datePublished" content="2026-08-12T00:00:00+00:00">
+	<meta itemprop="dateModified" content="2026-08-12T00:00:00+00:00">
+	<meta itemprop="wordCount" content="110">
+	<meta itemprop="keywords" content="Agent,教程,开源">
+<link rel="canonical" href="/projects/hello-agents/">
+<link rel="icon" href="/img/avatar-sakuragi-tight.jpg">
+
+<link rel="stylesheet" href="/css/main.min.9723751433aee0fbf9d5f3d7429f7ff476d8356e63f46133601afedc018cf1d1.css">
+
+</head>
+<body>
+    <a href="#main" class="skip-link">跳转到主内容</a>
+    <div id="page-loader" class="page-loader" aria-hidden="true">
+        <div class="page-loader-inner">
+            <span class="page-loader-spinner"></span>
+            <span class="page-loader-text">加载中</span>
+        </div>
+    </div>
+    <header class="site-header" aria-label="Site controls">
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme"></button>
+
+    <div class="music-player" id="music-player" aria-label="音乐播放器">
+        <audio id="music-audio" src="/audio/slam-dunk.mp3" preload="metadata" loop></audio>
+        <button class="music-toggle" id="music-toggle" type="button" aria-label="收起播放器" aria-expanded="true" title="收起播放器">
+            <svg class="icon-collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            <svg class="icon-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </button>
+        <div class="music-body">
+            <div class="music-primary-row">
+                <div class="music-cover-small" aria-hidden="true">
+                    <img src="/img/avatar-sakuragi.jpg" alt="">
+                </div>
+                <div class="music-meta">
+                    <div class="music-title">直到世界尽头</div>
+                    <div class="music-artist">WANDS · 灌篮高手片尾曲</div>
+                </div>
+                <button class="music-play" id="music-play" type="button" aria-label="播放" title="播放">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+            </div>
+            <div class="music-secondary-row">
+                <div class="music-time" id="music-time">00:00 / 00:00</div>
+                <button class="music-btn music-prev" id="music-prev" type="button" aria-label="后退 10 秒" title="后退 10 秒">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <div class="music-progress-wrap">
+                    <input type="range" id="music-progress" min="0" max="100" value="0" aria-label="播放进度">
+                </div>
+                <button class="music-btn music-next" id="music-next" type="button" aria-label="前进 10 秒" title="前进 10 秒">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+                <button class="music-btn music-mute" id="music-mute" type="button" aria-label="静音" title="静音">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="page-nav-fab" aria-label="Quick navigation">
+        <button class="page-nav-main" type="button" aria-label="当前页面：项目库">
+            <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke- d="m5.684 13.143l6.842 3.463L22 11.66v2.793c0 .72-.415 1.381-1.083 1.73l-6.356 3.32a4.45 4.45 0 0 1-4.074.008l-5.712-2.953C3.063 15.672 2 13.98 2 12.145m0 0c0-2.042 2.286-3.37 4.228-2.457l6.298 2.96L22 7.701l-6.28-3.126a5.56 5.56 0 0 0-5.233.166L4.23 8.382C2.843 9.19 2 10.612 2 12.145" color="currentColor"/></svg>
+            <span>项目库</span>
+        </button>
+        <div class="page-nav-menu">
+            <a href="/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-><path stroke-linecap="round" d="M22 22H2m0-11l8.126-6.5a3 3 0 0 1 3.748 0L22 11m-6.5-5.5v-2A.5.5 0 0 1 16 3h2.5a.5.5 0 0 1 .5.5v5M4 22V9.5M20 22V9.5"/><path d="M15 22v-5c0-1.414 0-2.121-.44-2.56C14.122 14 13.415 14 12 14s-2.121 0-2.56.44C9 14.878 9 15.585 9 17v5m5-12.5a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z"/></g></svg><span>首页</span></a>
+            <a href="/projects/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke- d="m5.684 13.143l6.842 3.463L22 11.66v2.793c0 .72-.415 1.381-1.083 1.73l-6.356 3.32a4.45 4.45 0 0 1-4.074.008l-5.712-2.953C3.063 15.672 2 13.98 2 12.145m0 0c0-2.042 2.286-3.37 4.228-2.457l6.298 2.96L22 7.701l-6.28-3.126a5.56 5.56 0 0 0-5.233.166L4.23 8.382C2.843 9.19 2 10.612 2 12.145" color="currentColor"/></svg><span>项目库</span></a>
+            <a href="/post/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg><span>文章</span></a>
+            <a href="/learning/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="currentColor"><path d="M9.172 5a3 3 0 0 1 2.121.879l5.71 5.71a3.41 3.41 0 0 1 0 4.822l-3.592 3.592a3.41 3.41 0 0 1-4.822 0l-5.71-5.71A3 3 0 0 1 2 12.172V8a3 3 0 0 1 3-3zM7 9h-.01A1 1 0 1 0 7 11a1 1 0 0 0 0-2"/><path d="M14.293 5.293a1 1 0 0 1 1.414 0L20.3 9.885a5.82 5.82 0 0 1 0 8.23l-1.592 1.592a1 1 0 0 1-1.414-1.414l1.592-1.592a3.82 3.82 0 0 0 0-5.402l-4.592-4.592a1 1 0 0 1 0-1.414"/></g></svg><span>资源</span></a>
+            <a href="/chat/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-><path stroke-linejoin="round" d="M14 19c3.771 0 5.657 0 6.828-1.172S22 14.771 22 11s0-5.657-1.172-6.828S17.771 3 14 3h-4C6.229 3 4.343 3 3.172 4.172S2 7.229 2 11s0 5.657 1.172 6.828c.653.654 1.528.943 2.828 1.07"/><path d="M14 19c-1.236 0-2.598.5-3.841 1.145c-1.998 1.037-2.997 1.556-3.489 1.225s-.399-1.355-.212-3.404L6.5 17.5"/></g></svg><span>聊天室</span></a>
+            <a href="/archives/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg><span>归档</span></a>
+            <a href="/about/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1023"><path fill="currentColor" d="M881 321q-10-2-15-2q-37 0-64 25q-61-27-114-44q-87-28-182-46q-9-24-27-40Q504 96 546 0q126 9 231.5 73T948 241q-37 40-67 80M417 191q-26 0-49 14q-81-60-163-102Q329 9 483 0q-39 87-63 191zM70 253q34-57 86-108q68 35 141 86q-129-3-227 22m251 40q2 31 21.5 54.5T391 379q-6 70-6 133q0 44 3 101q-22 7-39 24q-54-21-104-48q11-22 11-45q0-40-28-68t-68-28q-44 0-73 34q-42-38-75-79q9-43 27-85q122-34 282-25M65 552q3 37 30.5 62.5T160 640q11 0 24-4q64 37 137 64v4q0 39 26.5 66.5T413 800q25 122 70 223q-100-6-189-48.5T140.5 864T38 704T0 512q0-1 1-27q28 35 64 67m436 197q72 13 145 17q7 20 22 37q-23 105-28 204q-51 13-94 16q-47-107-73-242q18-12 28-32m310 48q13-16 18-34q73-6 141-19q-48 94-132 163q-9-52-27-110m-163-95q-70-4-138-18q-11-50-57-69q-4-59-4-103q0-66 6-137q2 0 5-2t4-2q39 38 68 70q87 96 148 218q-22 17-32 43m89 130q2 0 11-1q17 61 25 121q-29 17-70 34q7-78 24-155q8 1 10 1m-5-239q-1 2-2.5 6t-2.5 6q-63-114-148-207q-31-35-74-76q1 0 1.5-1.5l.5-1.5q84 17 161 42q47 15 103 40q-2 10-2 15q0 30 18 55q-33 63-55 122m47 58q12-35 12-36q20-50 50-107q13 4 25 4q34 0 61-23q49 34 96 76q-6 57-24 110q-82 17-173 24q-13-32-47-48m183-236q0-33-22-60q21-27 42-49q36 82 42 169q-33-25-64-45q2-9 2-15"/></svg><span>友链</span></a>
+        </div>
+    </nav>
+</header>
+
+
+    <main class="main" id="main">
+        
+
+
+<article class="page container">
+    <header class="page-head">
+        <div class="post-meta">
+            <span class="status status-collected">收藏项目</span>
+            <span class="meta-sep">·</span><time>2026-08-12</time>
+        </div>
+        <h1>Hello-Agents</h1>
+        <p class="page-desc">Datawhale 出品的系统性智能体学习教程，从零构建 AI Native Agent，覆盖核心原理、经典范式与多智能体实战。</p>
+        <div class="post-tags">
+            
+                <a class="tag" href="/tags/agent/">Agent</a>
+            
+                <a class="tag" href="/tags/%E6%95%99%E7%A8%8B/">教程</a>
+            
+                <a class="tag" href="/tags/%E5%BC%80%E6%BA%90/">开源</a>
+            
+        </div>
+    </header>
+    <div class="content"><p>Hello-Agents 是 Datawhale 社区的系统性智能体学习教程，旨在带领读者从智能体核心原理出发，深入理解并亲手构建真正的 AI Native Agent（多智能体应用）。</p>
+<ul>
+<li>状态设为「收藏项目」，作为个人收藏的优质开源教程；</li>
+<li><code>link</code> 指向在线阅读地址，卡片点击直接跳转外部站点。</li>
+</ul>
+</div>
+    
+        <p class="project-links">
+            <a class="btn btn-primary" href="https://datawhalechina.github.io/hello-agents/" target="_blank" rel="noopener">访问项目 →</a>
+        </p>
+    
+</article>
+
+    </main>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" defer></script>
+    
+    <script src="/js/main.186cd2326a164e588e5dfbe16d4d0abc3907b10ff89b2249c7fe71abbe70cb32.js" defer></script>
+</body>
+</html>

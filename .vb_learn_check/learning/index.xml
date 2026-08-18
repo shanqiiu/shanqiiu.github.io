@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>学习历程 on 个人技术空间</title>
+		<link>/learning/</link>
+		<description>Recent content in 学习历程 on 个人技术空间</description>
+		<generator>Hugo</generator>
+		<language>zh-cn</language>
+		
+		
+		
+		
+			<lastBuildDate>Thu, 06 Aug 2026 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="/learning/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>从搭建个人空间开始</title>
+				<link>/learning/%E4%BB%8E%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%A9%BA%E9%97%B4%E5%BC%80%E5%A7%8B/</link>
+				<pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+				<guid>/learning/%E4%BB%8E%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%A9%BA%E9%97%B4%E5%BC%80%E5%A7%8B/</guid>
+				<description>学习历程的第一站：把知识沉淀下来，形成自己的输出习惯。</description>
+			</item>
+	</channel>
+</rss>

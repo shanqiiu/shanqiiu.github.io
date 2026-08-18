@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh-cn" data-theme="dark">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>从&#34;像不像&#34;到&#34;合不合理&#34;：AIGC 视频生成质量评测的方法演进与实践 · 个人技术空间</title>
+<meta name="description" content=" 摘要：AIGC 生成质量评测的主线，已经从&quot;与参考答案有多像&quot;（FID、CLIP、词重叠）转向同时衡量真实感、语义/指令一致性、结构与时序一致性、事实正确性与物理合理性。本文梳理了这条演进脉络中的关键工作 …">
+<meta property="og:url" content="/p/%E4%BB%8E%E5%83%8F%E4%B8%8D%E5%83%8F%E5%88%B0%E5%90%88%E4%B8%8D%E5%90%88%E7%90%86aigc-%E8%A7%86%E9%A2%91%E7%94%9F%E6%88%90%E8%B4%A8%E9%87%8F%E8%AF%84%E6%B5%8B%E7%9A%84%E6%96%B9%E6%B3%95%E6%BC%94%E8%BF%9B%E4%B8%8E%E5%AE%9E%E8%B7%B5/">
+	<meta property="og:site_name" content="个人技术空间">
+	<meta property="og:title" content="从&#34;像不像&#34;到&#34;合不合理&#34;：AIGC 视频生成质量评测的方法演进与实践">
+	<meta property="og:description" content="摘要：AIGC 生成质量评测的主线，已经从&#34;与参考答案有多像&#34;（FID、CLIP、词重叠）转向同时衡量真实感、语义/指令一致性、结构与时序一致性、事实正确性与物理合理性。本文梳理了这条演进脉络中的关键工作——VBench、VMBench、VideoScore、VBench-2.0、VideoPhy-2、PhyWorldBench、Video-Bench 等——并结合笔者搭建生成视频合理性评测系统的实践经验，讨论&#34;多维诊断 &#43; 专项算法 &#43; VLM 仲裁&#34;这一路线该怎么落地、有哪些坑。">
+	<meta property="og:locale" content="zh_cn">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="post">
+		<meta property="article:published_time" content="2026-08-17T16:40:48+08:00">
+		<meta property="article:modified_time" content="2026-08-17T16:40:48+08:00">
+		<meta property="article:tag" content="AIGC">
+		<meta property="article:tag" content="视频生成">
+		<meta property="article:tag" content="质量评测">
+		<meta property="article:tag" content="VBench">
+		<meta property="article:tag" content="VLM">
+
+
+	<meta itemprop="name" content="从&#34;像不像&#34;到&#34;合不合理&#34;：AIGC 视频生成质量评测的方法演进与实践">
+	<meta itemprop="description" content="摘要：AIGC 生成质量评测的主线，已经从&#34;与参考答案有多像&#34;（FID、CLIP、词重叠）转向同时衡量真实感、语义/指令一致性、结构与时序一致性、事实正确性与物理合理性。本文梳理了这条演进脉络中的关键工作——VBench、VMBench、VideoScore、VBench-2.0、VideoPhy-2、PhyWorldBench、Video-Bench 等——并结合笔者搭建生成视频合理性评测系统的实践经验，讨论&#34;多维诊断 &#43; 专项算法 &#43; VLM 仲裁&#34;这一路线该怎么落地、有哪些坑。">
+	<meta itemprop="datePublished" content="2026-08-17T16:40:48+08:00">
+	<meta itemprop="dateModified" content="2026-08-17T16:40:48+08:00">
+	<meta itemprop="wordCount" content="7746">
+	<meta itemprop="keywords" content="AIGC,视频生成,质量评测,VBench,VLM">
+<link rel="canonical" href="/p/%E4%BB%8E%E5%83%8F%E4%B8%8D%E5%83%8F%E5%88%B0%E5%90%88%E4%B8%8D%E5%90%88%E7%90%86aigc-%E8%A7%86%E9%A2%91%E7%94%9F%E6%88%90%E8%B4%A8%E9%87%8F%E8%AF%84%E6%B5%8B%E7%9A%84%E6%96%B9%E6%B3%95%E6%BC%94%E8%BF%9B%E4%B8%8E%E5%AE%9E%E8%B7%B5/">
+<link rel="icon" href="/img/avatar-sakuragi-tight.jpg">
+
+<link rel="stylesheet" href="/css/main.min.9723751433aee0fbf9d5f3d7429f7ff476d8356e63f46133601afedc018cf1d1.css">
+
+</head>
+<body>
+    <a href="#main" class="skip-link">跳转到主内容</a>
+    <div id="page-loader" class="page-loader" aria-hidden="true">
+        <div class="page-loader-inner">
+            <span class="page-loader-spinner"></span>
+            <span class="page-loader-text">加载中</span>
+        </div>
+    </div>
+    <header class="site-header" aria-label="Site controls">
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme"></button>
+
+    <div class="music-player" id="music-player" aria-label="音乐播放器">
+        <audio id="music-audio" src="/audio/slam-dunk.mp3" preload="metadata" loop></audio>
+        <button class="music-toggle" id="music-toggle" type="button" aria-label="收起播放器" aria-expanded="true" title="收起播放器">
+            <svg class="icon-collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            <svg class="icon-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </button>
+        <div class="music-body">
+            <div class="music-primary-row">
+                <div class="music-cover-small" aria-hidden="true">
+                    <img src="/img/avatar-sakuragi.jpg" alt="">
+                </div>
+                <div class="music-meta">
+                    <div class="music-title">直到世界尽头</div>
+                    <div class="music-artist">WANDS · 灌篮高手片尾曲</div>
+                </div>
+                <button class="music-play" id="music-play" type="button" aria-label="播放" title="播放">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+            </div>
+            <div class="music-secondary-row">
+                <div class="music-time" id="music-time">00:00 / 00:00</div>
+                <button class="music-btn music-prev" id="music-prev" type="button" aria-label="后退 10 秒" title="后退 10 秒">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <div class="music-progress-wrap">
+                    <input type="range" id="music-progress" min="0" max="100" value="0" aria-label="播放进度">
+                </div>
+                <button class="music-btn music-next" id="music-next" type="button" aria-label="前进 10 秒" title="前进 10 秒">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+                <button class="music-btn music-mute" id="music-mute" type="button" aria-label="静音" title="静音">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="page-nav-fab" aria-label="Quick navigation">
+        <button class="page-nav-main" type="button" aria-label="当前页面：文章">
+            <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg>
+            <span>文章</span>
+        </button>
+        <div class="page-nav-menu">
+            <a href="/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-><path stroke-linecap="round" d="M22 22H2m0-11l8.126-6.5a3 3 0 0 1 3.748 0L22 11m-6.5-5.5v-2A.5.5 0 0 1 16 3h2.5a.5.5 0 0 1 .5.5v5M4 22V9.5M20 22V9.5"/><path d="M15 22v-5c0-1.414 0-2.121-.44-2.56C14.122 14 13.415 14 12 14s-2.121 0-2.56.44C9 14.878 9 15.585 9 17v5m5-12.5a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z"/></g></svg><span>首页</span></a>
+            <a href="/projects/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke- d="m5.684 13.143l6.842 3.463L22 11.66v2.793c0 .72-.415 1.381-1.083 1.73l-6.356 3.32a4.45 4.45 0 0 1-4.074.008l-5.712-2.953C3.063 15.672 2 13.98 2 12.145m0 0c0-2.042 2.286-3.37 4.228-2.457l6.298 2.96L22 7.701l-6.28-3.126a5.56 5.56 0 0 0-5.233.166L4.23 8.382C2.843 9.19 2 10.612 2 12.145" color="currentColor"/></svg><span>项目库</span></a>
+            <a href="/post/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg><span>文章</span></a>
+            <a href="/learning/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="currentColor"><path d="M9.172 5a3 3 0 0 1 2.121.879l5.71 5.71a3.41 3.41 0 0 1 0 4.822l-3.592 3.592a3.41 3.41 0 0 1-4.822 0l-5.71-5.71A3 3 0 0 1 2 12.172V8a3 3 0 0 1 3-3zM7 9h-.01A1 1 0 1 0 7 11a1 1 0 0 0 0-2"/><path d="M14.293 5.293a1 1 0 0 1 1.414 0L20.3 9.885a5.82 5.82 0 0 1 0 8.23l-1.592 1.592a1 1 0 0 1-1.414-1.414l1.592-1.592a3.82 3.82 0 0 0 0-5.402l-4.592-4.592a1 1 0 0 1 0-1.414"/></g></svg><span>资源</span></a>
+            <a href="/chat/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-><path stroke-linejoin="round" d="M14 19c3.771 0 5.657 0 6.828-1.172S22 14.771 22 11s0-5.657-1.172-6.828S17.771 3 14 3h-4C6.229 3 4.343 3 3.172 4.172S2 7.229 2 11s0 5.657 1.172 6.828c.653.654 1.528.943 2.828 1.07"/><path d="M14 19c-1.236 0-2.598.5-3.841 1.145c-1.998 1.037-2.997 1.556-3.489 1.225s-.399-1.355-.212-3.404L6.5 17.5"/></g></svg><span>聊天室</span></a>
+            <a href="/archives/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24"><path fill="currentColor" d="M2 5V3q0-.825.588-1.412T4 1h2q.425 0 .713.288T7 2t-.288.713T6 3H4v2q0 .425-.288.713T3 6t-.712-.288T2 5m18 0V3h-2q-.425 0-.712-.288T17 2t.288-.712T18 1h2q.825 0 1.413.588T22 3v2q0 .425-.288.713T21 6t-.712-.288T20 5M2 21v-2q0-.425.288-.712T3 18t.713.288T4 19v2h2q.425 0 .713.288T7 22t-.288.713T6 23H4q-.825 0-1.412-.587T2 21m18 2h-2q-.425 0-.712-.288T17 22t.288-.712T18 21h2v-2q0-.425.288-.712T21 18t.713.288T22 19v2q0 .825-.587 1.413T20 23M7 20q-.825 0-1.412-.587T5 18V6q0-.825.588-1.412T7 4h10q.825 0 1.413.588T19 6v12q0 .825-.587 1.413T17 20zm3-10h4q.425 0 .713-.288T15 9t-.288-.712T14 8h-4q-.425 0-.712.288T9 9t.288.713T10 10m0 3h4q.425 0 .713-.288T15 12t-.288-.712T14 11h-4q-.425 0-.712.288T9 12t.288.713T10 13m0 3h4q.425 0 .713-.288T15 15t-.288-.712T14 14h-4q-.425 0-.712.288T9 15t.288.713T10 16"/></svg><span>归档</span></a>
+            <a href="/about/"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1023"><path fill="currentColor" d="M881 321q-10-2-15-2q-37 0-64 25q-61-27-114-44q-87-28-182-46q-9-24-27-40Q504 96 546 0q126 9 231.5 73T948 241q-37 40-67 80M417 191q-26 0-49 14q-81-60-163-102Q329 9 483 0q-39 87-63 191zM70 253q34-57 86-108q68 35 141 86q-129-3-227 22m251 40q2 31 21.5 54.5T391 379q-6 70-6 133q0 44 3 101q-22 7-39 24q-54-21-104-48q11-22 11-45q0-40-28-68t-68-28q-44 0-73 34q-42-38-75-79q9-43 27-85q122-34 282-25M65 552q3 37 30.5 62.5T160 640q11 0 24-4q64 37 137 64v4q0 39 26.5 66.5T413 800q25 122 70 223q-100-6-189-48.5T140.5 864T38 704T0 512q0-1 1-27q28 35 64 67m436 197q72 13 145 17q7 20 22 37q-23 105-28 204q-51 13-94 16q-47-107-73-242q18-12 28-32m310 48q13-16 18-34q73-6 141-19q-48 94-132 163q-9-52-27-110m-163-95q-70-4-138-18q-11-50-57-69q-4-59-4-103q0-66 6-137q2 0 5-2t4-2q39 38 68 70q87 96 148 218q-22 17-32 43m89 130q2 0 11-1q17 61 25 121q-29 17-70 34q7-78 24-155q8 1 10 1m-5-239q-1 2-2.5 6t-2.5 6q-63-114-148-207q-31-35-74-76q1 0 1.5-1.5l.5-1.5q84 17 161 42q47 15 103 40q-2 10-2 15q0 30 18 55q-33 63-55 122m47 58q12-35 12-36q20-50 50-107q13 4 25 4q34 0 61-23q49 34 96 76q-6 57-24 110q-82 17-173 24q-13-32-47-48m183-236q0-33-22-60q21-27 42-49q36 82 42 169q-33-25-64-45q2-9 2-15"/></svg><span>友链</span></a>
+        </div>
+    </nav>
+</header>
+
+
+    <main class="main" id="main">
+        
+<article class="post container">
+    <header class="post-head">
+        <div class="post-meta">
+            <time datetime="2026-08-17">2026年08月17日</time>
+            
+                <span class="meta-sep">·</span>
+                <span class="post-category-path">
+                
+                    
+                    <a class="cat" href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a>
+                
+                    <span class="post-category-sep">/</span>
+                    <a class="cat" href="/categories/ai/">AI</a>
+                
+                    <span class="post-category-sep">/</span>
+                    <a class="cat" href="/categories/%E8%AF%84%E6%B5%8B/">评测</a>
+                
+                </span>
+            
+            <span class="meta-sep">·</span>
+            <span>16 分钟阅读</span>
+        </div>
+        <h1 class="post-title">从&#34;像不像&#34;到&#34;合不合理&#34;：AIGC 视频生成质量评测的方法演进与实践</h1>
+        
+        <div class="post-tags">
+            
+                <a class="tag" href="/tags/aigc/">AIGC</a>
+            
+                <a class="tag" href="/tags/%E8%A7%86%E9%A2%91%E7%94%9F%E6%88%90/">视频生成</a>
+            
+                <a class="tag" href="/tags/%E8%B4%A8%E9%87%8F%E8%AF%84%E6%B5%8B/">质量评测</a>
+            
+                <a class="tag" href="/tags/vbench/">VBench</a>
+            
+                <a class="tag" href="/tags/vlm/">VLM</a>
+            
+        </div>
+    </header>
+
+    
+
+    <div class="content post-body"><blockquote>
+<p>摘要：AIGC 生成质量评测的主线，已经从&quot;与参考答案有多像&quot;（FID、CLIP、词重叠）转向同时衡量<strong>真实感、语义/指令一致性、结构与时序一致性、事实正确性与物理合理性</strong>。本文梳理了这条演进脉络中的关键工作——VBench、VMBench、VideoScore、VBench-2.0、VideoPhy-2、PhyWorldBench、Video-Bench 等——并结合笔者搭建生成视频合理性评测系统的实践经验，讨论&quot;多维诊断 + 专项算法 + VLM 仲裁&quot;这一路线该怎么落地、有哪些坑。</p>
+</blockquote>
+<hr>
+<h2 id="一先厘清一件事我们在评测什么">一、先厘清一件事：我们在评测什么</h2>
+<p>过去几年，AIGC 评测最容易犯的错误，是把四个不同层次的概念混为一谈：</p>
+<ul>
+<li><strong>评价对象（judge what）</strong>：画质、时序、运动、物理、prompt 对齐；</li>
+<li><strong>测试内容（test what）</strong>：人体、动物、数量、空间关系、碰撞、状态变化；</li>
+<li><strong>评价方法（measure how）</strong>：光流、追踪、嵌入相似度、专项分类器、VLM 问答；</li>
+<li><strong>标签协议（label how）</strong>：二分类、连续分、1–5 Likert、成对偏好、不可判定。</li>
+</ul>
+<p>一个经典误区是：把某个自动指标（比如光流、CLIP 相似度）当成一个独立的质量维度。光流大只说明&quot;画面动得多&quot;，既不代表&quot;动得对&quot;，也不代表&quot;动得好&quot;。EvalCrafter 就发现，光流幅度这类指标对高动态的坏视频反而可能给出高分——&ldquo;运动幅度&quot;不能直接作为&quot;运动质量&quot;的正向代理（EvalCrafter, arXiv:2310.11440）。</p>
+<p>一篇跨文本、视觉、语音的评测综述，将自动评测方法归纳为五类：<strong>启发式、嵌入式、学习型、LLM/VLM 型、基准测试型</strong>（arXiv:2506.10019）。这张表值得贴在墙上：</p>
+<table>
+	<thead>
+			<tr>
+					<th>方法类型</th>
+					<th>基本思路</th>
+					<th>典型优点</th>
+					<th>主要问题</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>启发式指标</td>
+					<td>词重叠、像素误差、信噪比、编辑距离</td>
+					<td>快、便宜、可复现</td>
+					<td>只覆盖表层质量，与人类偏好相关性有限</td>
+			</tr>
+			<tr>
+					<td>嵌入相似度</td>
+					<td>比较预训练表示</td>
+					<td>能识别语义相似与跨模态对齐</td>
+					<td>受底层模型偏差影响，复杂关系与事实错误易漏检</td>
+			</tr>
+			<tr>
+					<td>学习型评估器</td>
+					<td>用人工评分/偏好训练质量模型</td>
+					<td>可拟合人类判断</td>
+					<td>依赖标注数据，跨域泛化有限</td>
+			</tr>
+			<tr>
+					<td>LLM/VLM 评审</td>
+					<td>让模型按标准打分、比较、批评</td>
+					<td>处理开放式输出并生成解释</td>
+					<td>位置/长度偏差、自我偏好、幻觉、不稳定</td>
+			</tr>
+			<tr>
+					<td>基准测试</td>
+					<td>设计覆盖特定能力的题集</td>
+					<td>测组合能力、事实性、长尾</td>
+					<td>依赖题集设计，易被提示模板过拟合</td>
+			</tr>
+	</tbody>
+</table>
+<p>对视频生成而言，情况比图像更复杂：视频不仅要&quot;每一帧都好看&rdquo;，还要在时间上连续、运动上合理。一篇视频生成评测综述把常见错误归纳为六类（arXiv:2410.19884）：技术错误（模糊/低清/伪影）、动态错误（动作不足近似静态）、物理错误（违反重力/碰撞）、一致性错误（人物物体颜色形状突变）、结构质量错误（几何畸变/缺失部件）、指令对齐错误（遗漏或添加 prompt 内容）。</p>
+<hr>
+<h2 id="二vbench把视频好不好拆成-16-个可诊断的问题">二、VBench：把&quot;视频好不好&quot;拆成 16 个可诊断的问题</h2>
+<p>VBench 是视频生成评测的一个分水岭（arXiv:2311.17982）。它的核心判断是：FVD、IS、CLIP 这类单值指标既难以充分反映人类判断，也无法揭示模型&quot;在哪些能力上失败&quot;。于是它把评测拆成两大类、16 个解耦维度：</p>
+<p><strong>Video Quality（只看视频本身好不好）</strong>：</p>
+<ul>
+<li>Subject Consistency（主体一致性）</li>
+<li>Background Consistency（背景一致性）</li>
+<li>Temporal Flickering（时序闪烁）</li>
+<li>Motion Smoothness（运动平滑度）</li>
+<li>Dynamic Degree（动态程度）</li>
+<li>Aesthetic Quality（审美质量）</li>
+<li>Imaging Quality（成像质量）</li>
+</ul>
+<p><strong>Video-Condition Consistency（看是否满足用户条件）</strong>：</p>
+<ul>
+<li>Object Class、Multiple Objects、Human Action、Color、Spatial Relationship、Scene、Appearance Style、Temporal Style、Overall Consistency</li>
+</ul>
+<p>VBench 的研究范式比它提出的具体指标更值得保留：它不是问&quot;这个视频总体好不好&quot;，而是问&quot;<strong>在这个特定能力上，哪个视频更好</strong>&quot;。每个维度配专门 prompt、专门评测方法，再用人类成对偏好标注验证每个维度与人类判断的相关性。多数维度取得了较高相关性，但颜色、人类动作等复杂语义维度相对困难。</p>
+<p>一个非常重要的发现是：<strong>时序一致性和动态程度之间存在潜在冲突</strong>。一个模型可以生成几乎静止的视频，从而获得极高的帧间一致分，但它根本没有生成有意义的动作。所以&quot;稳不稳定&quot;必须和&quot;是否发生了正确变化&quot;联合判断——这一点在我自己的实践中反复踩坑，后文会细说。</p>
+<hr>
+<h2 id="三从看起来真实到内在真实vbench-20">三、从&quot;看起来真实&quot;到&quot;内在真实&quot;：VBench-2.0</h2>
+<p>VBench-2.0 提出了一个关键区分（arXiv:2503.21755）：</p>
+<ul>
+<li><strong>Superficial Faithfulness（表面真实性）</strong>：画面清晰、平滑、像真的；</li>
+<li><strong>Intrinsic Faithfulness（内在真实性）</strong>：遵守物理规律、常识、人体结构、对象关系和事件逻辑。</li>
+</ul>
+<p>它在原有基础上新增五个大类、18 个细粒度能力：Human Fidelity（人体解剖/身份/服装/人物交互）、Controllability（动态空间关系/动作顺序/复杂场景）、Creativity（多样性/构图/复杂剧情）、Physics（力学/热学/材料/多视角一致性）、Commonsense（运动合理性/实例保持/物体状态变化）。</p>
+<p>VBench-2.0 使用了三类评估器，这个设计透露了一个重要趋势：</p>
+<ol>
+<li><strong>VLM 生成视频描述，LLM 判断描述是否符合 ground truth</strong>；</li>
+<li><strong>视频问答</strong>：用多组问题检查关键对象、动作和状态是否存在；</li>
+<li><strong>专门的异常检测器</strong>：处理人体畸变、实体分裂、物体合并等通用 VLM 不擅长的错误。</li>
+</ol>
+<p>结论是：<strong>通用 VLM 不是所有视频错误的最佳评估器</strong>。对于物体计数、人体解剖、实体身份变化和细粒度时序异常，专门模型往往更可靠。它揭示的模型共性问题也很有参考价值：复杂多场景剧情弱、简单属性变化也常完不成、长时序人体运动不稳定、物理与常识能力没有随画面质量同步提升。</p>
+<hr>
+<h2 id="四vmbench运动质量该拆成五个问题">四、VMBench：运动质量该拆成五个问题</h2>
+<p>VMBench 是运动质量专项基准（arXiv:2503.10076），它的出发点是：现有评测往往关注静态画质、文本对齐或简单运动平滑，却不能充分识别&quot;运动是否自然、是否符合人体与物理常识、是否真的被人感知为合理&quot;。它把运动质量拆成五个符合人类感知流程的指标（合称 PMM，Perception-Driven Motion Metrics）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>含义</th>
+					<th>检测的问题</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>OIS 对象完整性</td>
+					<td>运动中人/物是否形变、断裂、结构异常</td>
+					<td>手脚长度突变、身体融合、边缘撕裂</td>
+			</tr>
+			<tr>
+					<td>PAS 可感知幅度</td>
+					<td>主体是否真的在动（剥离镜头运动）</td>
+					<td>画面有变化但主体几乎不动</td>
+			</tr>
+			<tr>
+					<td>TCS 时序连贯</td>
+					<td>对象是否无故消失、重现、身份跳变</td>
+					<td>突然出现/消失、轨迹跳变</td>
+			</tr>
+			<tr>
+					<td>MSS 运动平滑</td>
+					<td>是否出现闪烁、突变、运动模糊</td>
+					<td>光流平滑但局部形变</td>
+			</tr>
+			<tr>
+					<td>CAS 常识合理</td>
+					<td>动作是否符合物理与日常经验</td>
+					<td>无惯性、无重心变化、碰撞无反应</td>
+			</tr>
+	</tbody>
+</table>
+<p>其中三个设计尤其值得借鉴：</p>
+<ul>
+<li><strong>PAS 把主体运动和镜头运动分开</strong>：用 GroundingDINO 定位主体、Grounded-SAM 取掩码、CoTracker 跟踪关键点，再按主体关键点位移算幅度。简单用全局光流会把&quot;镜头摇得很大&quot;误判成&quot;主体运动很充分&quot;。</li>
+<li><strong>TCS 区分真实遮挡和生成错误</strong>：物体被遮挡、出画、因景深变小并不一定是错误，规则过滤掉这些合法事件后，才对无法解释的消失/跳变扣分。</li>
+<li><strong>CAS 是一个学习型分类器而非规则指标</strong>：用约 1 万条生成视频和 VideoReward 偏好数据生成五级标签（Bad/Poor/Fair/Good/Perfect），再用 VideoMAEv2 训练分类器，以五级预测概率计算加权 MOS。</li>
+</ul>
+<p>在人类对齐实验中，PMM 平均 Spearman 相关约 0.622，各维度 CAS 0.699、MSS 0.771、OIS 0.658、PAS 0.652、TCS 0.545；相比规则型指标和直接 MLLM prompting，平均相关性提升约 35.3%。这个数字说明：把笼统的&quot;Motion Quality&quot;拆成更贴近人类感知的五个子问题，比只算光流或帧间相似度更接近人类判断。</p>
+<hr>
+<h2 id="五物理真实性画面逼真--物理正确">五、物理真实性：画面逼真 ≠ 物理正确</h2>
+<p>物理合理性是最容易被&quot;画面逼真&quot;掩盖的维度。一个视频可以光影自然、画面漂亮，但苹果下落速度不变、碰撞后没有动量变化、玻璃落地不破碎、物体凭空漂浮或穿透。</p>
+<p>VideoPhy / VideoPhy-2 集中评测生成视频能否在正确呈现动作的同时遵守物理常识（arXiv:2406.03520、arXiv:2503.06800），提出三类标签：</p>
+<ul>
+<li><strong>SA（Semantic Adherence）</strong>：prompt 中的实体、动作、关系、时序是否准确呈现，1–5 分；</li>
+<li><strong>PC（Physical Commonsense）</strong>：仅依视频判断对象属性、运动与力、交互反应是否现实，1–5 分；</li>
+<li><strong>PR（Physical Rules, VideoPhy-2）</strong>：针对每条候选物理规则判断是否遵守，<strong>0=违反 / 1=遵守 / 2=无法确定</strong>。</li>
+</ul>
+<p>其中 PR 的&quot;无法确定&quot;非常重要：物理规则可能不可见、被遮挡或无法从视频证据可靠判断，不应强制二分类。联合指标也强调：只有 SA 和 PC 都达到较高水平才计高分，避免&quot;物理正确但完全没执行动作&quot;的静态/无关视频拿高分。</p>
+<p>PhyWorldBench 则把物理评测进一步落到<strong>事件级、现象级的可验证标准</strong>（arXiv:2507.13428）。它设计了 1,050 个 prompt（覆盖 969 类运动），每条视频按两级标准做 Yes/No 判断：</p>
+<ul>
+<li><strong>Basic Standards</strong>：关键对象/事件是否真的出现（如&quot;是否出现苹果和树枝&quot;&ldquo;苹果是否向下掉落&rdquo;）；</li>
+<li><strong>Key Standards</strong>：关键物理现象是否出现且合理（如&quot;速度是否随时间增加&quot;&ldquo;轨迹是否合理&rdquo;）。</li>
+</ul>
+<p>它揭示的现象很值得警惕：物理增强 prompt 通常比普通 prompt 更容易得到物理合理结果；碰撞、破碎、突然状态变化尤其困难；<strong>模型容易生成&quot;电影化的平滑动作&quot;，而不是严格遵守物理规律</strong>。这意味着物理评测不能只依赖整体审美分数，而要使用事件级、现象级的可验证标准。</p>
+<hr>
+<h2 id="六让-mllm-更可靠地评审video-bench-与-llm-as-a-judge">六、让 MLLM 更可靠地评审：Video-Bench 与 LLM-as-a-Judge</h2>
+<p>近两年最重要的变化是让 LLM/VLM 充当评审器。但 LLM 评审不能直接当作&quot;自动真值&quot;。LLM-as-a-Judge 综述系统梳理了它的偏差（arXiv:2411.15594）：位置偏差（偏好第一个/第二个候选）、长度偏差（偏好更长答案）、具体性偏差、自我增强偏差（偏爱同系列模型）、文化与语言偏差、提示词敏感性、对无关系统提示或对抗措辞的脆弱性。</p>
+<p>因此比较可靠的流程是：随机交换候选顺序、多次采样、多数投票，并在一小部分样本上与人工结果校准。综述实验也显示，LLM 评审与人类判断之间仍存在明显差距，推理能力更强并不必然带来稳定的人类偏好一致性。</p>
+<p>Video-Bench 重点研究如何让 MLLM 更可靠地评估视频（arXiv:2504.04907），它有两项核心技术：</p>
+<ol>
+<li>
+<p><strong>Chain-of-Query（CoQ）</strong>：不让 MLLM 直接从&quot;视频 + prompt&quot;输出一个分数，而是分两步——先让 MLLM 专门描述视频的某一方面（颜色、动作、主体），再根据多个细化问题判断描述与 prompt 是否一致。例如评估&quot;一只棕色考拉在冲浪&quot;，依次问：是否有考拉？是否在冲浪？颜色是否为棕？动作是否完整？波浪与考拉关系是否合理？本质是把一个困难的跨模态判断拆成多个容易验证的局部问题。</p>
+</li>
+<li>
+<p><strong>Few-shot scoring</strong>：给 MLLM 提供若干带分数的视频示例，让它学习评分尺度，解决&quot;3 分和 4 分到底差多少&quot;的绝对评分问题。</p>
+</li>
+</ol>
+<p>它的稳定性结果很有启发：重复运行时完全相同分数的比例约 67%，但 Krippendorff&rsquo;s alpha 达 0.867——评估器可能有少量分数抖动，但整体排序仍然稳定。实践结论是：<strong>CoQ + few-shot 比&quot;请 GPT-4o 给视频打 1–10 分&quot;可靠得多</strong>。</p>
+<p>另一个路线是学习型评估器。VideoScore 用约 37,600 条视频在五个维度（Visual Quality、Temporal Consistency、Dynamic Degree、Text-to-Video Alignment、Factual Consistency）上做人工评分，训练专门的质量评估模型（arXiv:2406.15252）。它的平均 Spearman 相关达 77.1，显著高于传统特征指标和直接 prompting 的 GPT-4o/Gemini 评审。这再次印证：直接让通用 MLLM&quot;看视频打分&quot;效果不一定好，在多维人工反馈上专门训练的评估器往往更稳定——但代价是需要大量高质量人工标注，且受训练分布限制。</p>
+<hr>
+<h2 id="七我的实践一个可诊断合理性评测系统的思路与经验">七、我的实践：一个&quot;可诊断合理性&quot;评测系统的思路与经验</h2>
+<p>基于上面的调研，我在实践中搭建了一个面向生成视频的<strong>合理性评测系统</strong>。这里不展开具体实现细节，只谈思路、借鉴方式和踩坑经验。</p>
+<h3 id="71-核心思路多维诊断而非单一总分">7.1 核心思路：多维诊断，而非单一总分</h3>
+<p>系统的第一性原理是：<strong>&ldquo;视频是否合理&quot;不是一个分数，而是一组可以各自独立诊断的能力</strong>。因此我把它拆成了若干彼此解耦的维度，每个维度有自己的适用性判定（能不能评）、证据（依据什么）、异常定位（哪里出了问题）和分数。这一思想直接来自 VBench 的维度分解范式。</p>
+<p>每个维度的内部，我采用&rdquo;<strong>专项算法信号 + VLM 开放语义仲裁</strong>&ldquo;的组合，而不是单一的 CLIP 分或单一的 VLM 总分：</p>
+<ul>
+<li>对可精确测量的信号（人脸身份漂移、人体关键点结构、光流平滑度、对象出现/消失），用专项模型或规则给出可定位的证据；</li>
+<li>对开放世界语义与常识（生物结构是否真的异常、动作是否自然、物理是否违规），让 VLM 在算法提供的候选证据上做仲裁，而不是让 VLM 从头看全片。</li>
+</ul>
+<p>这个设计来自 VBench-2.0 的启示——通用 VLM 不是所有错误的最佳评估器，物体计数、人体解剖、实体身份变化等需要专项模型兜底。</p>
+<h3 id="72-借鉴了什么">7.2 借鉴了什么</h3>
+<p><strong>从 VMBench 借运动质量拆解</strong>：PAS 的&quot;分离镜头运动与主体运动&rdquo;、OIS 的&quot;运动中的结构完整性&quot;、TCS 的&quot;区分合法遮挡与生成错误&quot;，分别对应我系统中运动维度与时间一致性维度的几个子信号。尤其是 PAS 的教训——不能把全局光流当成主体运动——直接避免了一类&quot;镜头动得大被误判为主体在动&quot;的错误。</p>
+<p><strong>从 VideoPhy-2 / PhyWorldBench 借&quot;不可判定&quot;与两级标准</strong>：物理、遮挡等场景天然存在&quot;证据不足&quot;，强制二分类会把&quot;看不清&quot;混同于&quot;正常&quot;。我引入了&quot;不可判定/不适用&quot;的语义，并尝试把物理合理性拆成&quot;对象/事件是否真的出现（Basic）&ldquo;与&quot;物理现象是否合理（Key）&ldquo;两级，避免&quot;动作没发生所以没有物理错误&quot;的假高分。</p>
+<p><strong>从 Video-Bench 借 CoQ 与 few-shot</strong>：对 VLM 评审，我采用了&quot;强制分步推理 + 动态规则注入 + few-shot 参考图&quot;的 prompt 设计，并引入结构化 JSON 输出与后处理归一化，而不是让模型自由发挥。这与 Video-Bench 的 CoQ + few-shot scoring 同路线。</p>
+<p><strong>从 LLM-as-a-Judge 借自一致性投票</strong>：对最依赖语义判断的维度，我做了多次并行采样 + 多数票决（verdict 多票决、数值取中位数、列表取并集），用并发调用摊平额外延迟。这直接对应&quot;重复评测 + 多数投票&quot;的可靠流程。</p>
+<h3 id="73-经验总结五条最值得记下的教训">7.3 经验总结：五条最值得记下的教训</h3>
+<p><strong>第一，&ldquo;合理&quot;和&quot;遵循&quot;要分层。</strong> 系统最开始只评&quot;视频自身是否合理&rdquo;，后来才意识到：能判断主体漂移、物理违规，却回答不了&quot;prompt 要求的对象、数量、属性、关系、动作顺序是否都出现了&rdquo;。这是两件事——前者是内在合理性，后者是条件遵循。VBench 的 Video-Condition Consistency 一整块，和 VBench-2.0 的 Controllability，都属于后者，需要独立的输入（prompt/参考图/控制信号）和独立的输出结构，不能用一个全局 CLIP 分或一句 VLM 总评混进物理/时序分里。</p>
+<p><strong>第二，警惕&quot;静态视频高一致分&quot;陷阱。</strong> VBench 指出的&quot;时序一致性与动态程度冲突&quot;在实践中非常真实：一个几乎不动的视频，帧间一致性接近满分，但它没有完成任何动作。所以&quot;稳定&quot;必须与&quot;是否发生了预期变化&quot;联合判断，评分策略里要显式处理这种冲突，而不是简单加权平均。</p>
+<p><strong>第三，VLM 单点依赖是脆弱的设计。</strong> 如果某个维度在 VLM 可用时直接采用 VLM 分、不可用时才降级，那么这个维度本质上就退化成了&quot;黑盒单判&rdquo;。VMBench 的 CAS 和 VideoScore 都说明：学习型/专项评估器比直接 prompting 通用 VLM 更稳定。正确的姿势是把 VLM 当作仲裁者，用算法证据去约束它，而不是当唯一裁判。</p>
+<p><strong>第四，评测器本身也要被评测。</strong> 自一致性投票只是起点，不能默认&quot;多数投票一定提升人类一致性&quot;。LLM-as-a-Judge 列出的位置偏差、长度偏差、自我偏好，以及 Video-Bench 报告的&quot;67% 精确重复率但 alpha 0.867&quot;，都说明需要建立固定的校准集，定期报告重复一致率、后端一致率、候选顺序一致率、跨域切片和与人工的相关性。</p>
+<p><strong>第五，物理正确不等于画面好看。</strong> PhyWorldBench 揭示的&quot;电影化平滑动作&quot;现象——模型倾向生成视觉上流畅但违反物理的运动——意味着物理维度必须用事件级、现象级的可验证标准去测，不能被高分辨率、景深和电影化镜头带偏。</p>
+<hr>
+<h2 id="八总结">八、总结</h2>
+<p>AIGC 视频质量评测的演进可以概括为一条清晰的脉络：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">单一总分（FVD/CLIP）
+</span></span><span class="line"><span class="cl">  → 多维诊断（VBench 16 维）
+</span></span><span class="line"><span class="cl">  → 学习型评估器（VideoScore）
+</span></span><span class="line"><span class="cl">  → 内在真实性与专项能力（VBench-2.0 / VMBench / PhyWorldBench）
+</span></span><span class="line"><span class="cl">  → 更可靠的 MLLM 评审方法论（Video-Bench）
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>未来较可靠的评测系统，不会由某个单一指标取代人工，而会采用&quot;<strong>任务分解的自动指标 + 多模态评审器 + 小规模人工校准 + 偏差与鲁棒性测试</strong>&ldquo;的组合。其中最关键的转变，是把&quot;质量&quot;从一个抽象总分，拆成可诊断的能力维度，并针对不同模态分别建模：文本侧重事实性与指令遵循，图像侧重组合关系与知识一致性，视频侧重时序与物理合理性，音频侧重自然度、语义与跨模态同步。</p>
+<p>对视频而言，我更愿意用一句话总结这个领域的核心共识：<strong>评测一个生成视频，不是问&quot;它好不好看&rdquo;，而是问&quot;它在这一项能力上，是否真的合理&quot;</strong>——而&quot;合理&quot;这个词，需要被拆解到每一帧、每一段运动、每一条物理规则，才能被真正测量。</p>
+<hr>
+<h2 id="参考文献">参考文献</h2>
+<ol>
+<li>VBench: <em>VBench: Comprehensive Benchmark Suite for Video Generative Models</em>. <a href="https://arxiv.org/abs/2311.17982">arXiv:2311.17982</a></li>
+<li>VBench++: <em>VBench++: Comprehensive and Versatile Benchmark Suite for Video Generative Models</em>. <a href="https://arxiv.org/abs/2411.13503">arXiv:2411.13503</a></li>
+<li>VBench-2.0: <em>VBench-2.0: Advancing Video Generation Benchmark Suite for Intrinsic Faithfulness</em>. <a href="https://arxiv.org/abs/2503.21755">arXiv:2503.21755</a></li>
+<li>VMBench: <em>VMBench: A Benchmark for Perception-Aligned Video Motion Generation</em>. <a href="https://arxiv.org/abs/2503.10076">arXiv:2503.10076</a></li>
+<li>VideoScore: <em>VideoScore: Building Automatic Metrics to Simulate Fine-grained Human Feedback for Video Generation</em>. <a href="https://arxiv.org/abs/2406.15252">arXiv:2406.15252</a></li>
+<li>Video-Bench: <em>Video-Bench: A Comprehensive Benchmark and Evaluation Methodology towards Reliable Video Understanding with MLLMs</em>. <a href="https://arxiv.org/abs/2504.04907">arXiv:2504.04907</a></li>
+<li>VideoPhy: <em>VideoPhy: Evaluating Physical Commonsense for Video Generation</em>. <a href="https://arxiv.org/abs/2406.03520">arXiv:2406.03520</a></li>
+<li>VideoPhy-2: <em>VideoPhy-2: A Challenging Action-Centric Physical Commonsense Evaluation in Video Generation</em>. <a href="https://arxiv.org/abs/2503.06800">arXiv:2503.06800</a></li>
+<li>PhyWorldBench: <em>PhyWorldBench: Benchmarking Physical World Model for Video Generation</em>. <a href="https://arxiv.org/abs/2507.13428">arXiv:2507.13428</a></li>
+<li>EvalCrafter: <em>EvalCrafter: Benchmarking and Evaluating Large Video Generation Models</em>. <a href="https://arxiv.org/abs/2310.11440">arXiv:2310.11440</a></li>
+<li>T2V-CompBench: <em>T2V-CompBench: A Comprehensive Benchmark for Compositional Text-to-video Generation</em>. <a href="https://arxiv.org/abs/2407.14505">arXiv:2407.14505</a></li>
+<li>FETV: <em>FETV: A Benchmark for Fine-Grained Evaluation of Open-Domain Text-to-Video Generation</em>. <a href="https://arxiv.org/abs/2311.01813">arXiv:2311.01813</a></li>
+<li>AIGCBench: <em>AIGCBench: Comprehensive Evaluation of Image-to-Video Content Generated by AI</em>. <a href="https://arxiv.org/abs/2401.01651">arXiv:2401.01651</a></li>
+<li>VideoReward: <em>Improving Video Generation with Human Feedback</em>. <a href="https://arxiv.org/abs/2501.13918">arXiv:2501.13918</a></li>
+<li>WISE: <em>WISE: A World Knowledge-Informed Semantic Evaluation for Text-to-Image Generation</em>. <a href="https://arxiv.org/abs/2503.07265">arXiv:2503.07265</a></li>
+<li>A Survey on LLM-as-a-Judge. <a href="https://arxiv.org/abs/2411.15594">arXiv:2411.15594</a></li>
+<li>A Survey of Automatic Evaluation Methods on Text, Visual and Speech Generations. <a href="https://arxiv.org/abs/2506.10019">arXiv:2506.10019</a></li>
+<li>A Survey of AI-Generated Video Evaluation. <a href="https://arxiv.org/abs/2410.19884">arXiv:2410.19884</a></li>
+</ol>
+</div>
+
+    <footer class="post-foot">
+        <div class="post-nav">
+            
+                <a class="post-nav-prev" href="/p/%E5%9B%BE%E5%83%8F%E5%A4%9A%E7%BA%A7%E5%88%86%E7%B1%BB%E4%BB%8E%E5%B1%82%E7%BA%A7%E7%BA%A6%E6%9D%9F%E5%88%B0-vlm-%E4%B8%8E-taxonomy-%E7%9A%84%E5%8D%8F%E5%90%8C/">← 图像多级分类：从层级约束到 VLM 与 Taxonomy 的协同</a>
+            
+            
+                <a class="post-nav-next" href="/p/ai-agent-%E8%AF%84%E6%B5%8B%E4%BB%8E%E7%AD%94%E6%A1%88%E5%AF%B9%E4%B8%8D%E5%AF%B9%E5%88%B0%E8%BD%A8%E8%BF%B9%E5%8F%AF%E5%AE%A1%E8%AE%A1/">AI Agent 评测：从&#34;答案对不对&#34;到&#34;轨迹可审计&#34; →</a>
+            
+        </div>
+        
+    </footer>
+</article>
+
+    </main>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" defer></script>
+    
+    <script src="/js/main.186cd2326a164e588e5dfbe16d4d0abc3907b10ff89b2249c7fe71abbe70cb32.js" defer></script>
+</body>
+</html>
