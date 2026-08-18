@@ -7,19 +7,9 @@
   'use strict';
 
   // ---------- 运行时配置 ----------
-  // 容错清洗：Vercel 环境变量值常因复制粘贴带入首尾空格或包裹引号，
-  // 导致 supabase-js 报「Invalid supabaseUrl」。这里统一 trim + 去首尾引号，
-  // 避免每次都要去源头改配置。若 URL 是真实拼写错误（域名打错），清洗无法修复，
-  // 仍会暴露「云端初始化失败」的真实错误信息，便于排查。
-  function cleanStr(v) {
-    if (typeof v !== 'string') return '';
-    var s = v.trim();
-    if ((s.charAt(0) === '"' && s.charAt(s.length - 1) === '"') ||
-        (s.charAt(0) === "'" && s.charAt(s.length - 1) === "'")) {
-      s = s.slice(1, -1).trim();
-    }
-    return s;
-  }
+  // 容错清洗（cleanStr）与文本转义（escapeHtml）统一来自 assets/js/util.js 的
+  // window.SiteUtils（单一真源，util.js 以 defer 在 head 最先加载，此处必已就绪）。
+  var cleanStr = window.SiteUtils.cleanStr;
   var RAW_CONFIG = window.SUPABASE_CONFIG || null;
   var SUPABASE_CONFIG = RAW_CONFIG ? {
     url: cleanStr(RAW_CONFIG.url),
@@ -48,7 +38,11 @@
     { id: 'random', name: '随便聊聊', description: '想说什么就说什么' }
   ];
 
-  // ---------- 敏感词 ----------
+  // ---------- 敏感词 / 昵称校验（仅前端即时提示，非权威）----------
+  // 注意：这些校验只是 UX 层的即时反馈，可被绕过（跳过 UI 直连 REST、或用 URL identity
+  //   预设昵称）。真正的把关在服务端——Supabase 的 messages BEFORE INSERT 触发器
+  //   (public.chat_message_guard) 才是权威：拒绝保留昵称、屏蔽敏感词、按 user_id 限流。
+  //   此处词表若与服务端不一致，以服务端（schema.sql）为准。
   var BAD_WORDS = ['傻逼', '操你妈', '草泥马', '滚蛋', '白痴', '智障', '脑残', '废物',
     'fuck', 'shit', 'bitch', 'asshole', 'damn', 'wtf', 'sb', 'nc', 'zz'];
 
@@ -83,11 +77,7 @@
     return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
   }
 
-  function escapeHtml(str) {
-    var div = document.createElement('div');
-    div.appendChild(document.createTextNode(str || ''));
-    return div.innerHTML;
-  }
+  var escapeHtml = window.SiteUtils.escapeHtml;
 
   // ---------- 本地消息读写（回退模式） ----------
   function loadMessages() {

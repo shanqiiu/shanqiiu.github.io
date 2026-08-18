@@ -92,21 +92,9 @@
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.resource-card'));
     var activePath = 'ALL';
 
-    function cleanStr(v) {
-      if (typeof v !== 'string') return '';
-      var s = v.trim();
-      if ((s.charAt(0) === '"' && s.charAt(s.length - 1) === '"') ||
-          (s.charAt(0) === "'" && s.charAt(s.length - 1) === "'")) {
-        s = s.slice(1, -1).trim();
-      }
-      return s;
-    }
-
-    function escapeHtml(str) {
-      var div = document.createElement('div');
-      div.appendChild(document.createTextNode(str || ''));
-      return div.innerHTML;
-    }
+    // cleanStr / escapeHtml 统一取自 window.SiteUtils（assets/js/util.js 单一真源）
+    var cleanStr = window.SiteUtils.cleanStr;
+    var escapeHtml = window.SiteUtils.escapeHtml;
 
     function escapeSelector(str) {
       if (window.CSS && typeof window.CSS.escape === 'function') return window.CSS.escape(str);
@@ -373,13 +361,15 @@
       var pathParts = [item.category_1, item.category_2, item.category_3].filter(Boolean);
       var path = pathParts.join(' / ');
       var tags = Array.isArray(item.tags) ? item.tags : [];
-      var link = item.link || '#';
+      var link = (item.link || '').trim();
+      var hasLink = !!link;
       var searchText = [item.title, item.description, path, tags.join(' ')].join(' ').toLowerCase();
       var card = document.createElement('a');
       card.className = 'resource-card resource-card-dynamic';
       card.setAttribute('data-id', item.id || '');
-      card.href = link || '#';
-      if (link) {
+      // 有原链接：新标签打开；无链接：href='#'，点击回退站内详情弹层（不加 target=_blank）
+      card.href = hasLink ? link : '#';
+      if (hasLink) {
         card.target = '_blank';
         card.rel = 'noopener noreferrer';
       }

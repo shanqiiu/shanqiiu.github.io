@@ -67,6 +67,62 @@ begin
 end $$;
 
 -- ============================================================
+-- 聊天消息服务端护栏（BEFORE INSERT 触发器）
+-- 无论来自网页 UI 还是直连 REST，所有插入都经此校验，因此客户端里的
+-- 昵称黑名单 / 敏感词过滤仅为即时 UX 提示（非权威，可被绕过），真正的把关在这里：
+--   1) 拒绝保留昵称（站长身份）  2) 屏蔽敏感词  3) 按 user_id 限流
+-- 消息长度由 messages.content 的列 CHECK(1..500) 保证，无需在此重复。
+-- 注：敏感词表须为纯字面量（不含正则元字符）；如需扩展含特殊字符的词，另加转义。
+-- ============================================================
+
+-- 按 user_id + 时间的限流查询加速
+create index if not exists messages_user_created_idx
+  on public.messages (user_id, created_at);
+
+create or replace function public.chat_message_guard()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  reserved   text[] := array['山海', 'shanhai', 'wuxian'];
+  bad_words  text[] := array['傻逼', '操你妈', '草泥马', '滚蛋', '白痴', '智障', '脑残', '废物',
+    'fuck', 'shit', 'bitch', 'asshole', 'damn', 'wtf', 'sb', 'nc', 'zz'];
+  w            text;
+  recent_count int;
+  rate_window  interval := interval '10 seconds';
+  rate_max     int := 5;
+begin
+  -- 1) 保留昵称：拒绝（阻断经 URL identity 等途径冒充站长）
+  if lower(btrim(new.user_name)) = any (reserved) then
+    raise exception 'reserved nickname not allowed';
+  end if;
+
+  -- 2) 敏感词：逐词替换为等长星号（大小写不敏感）
+  foreach w in array bad_words loop
+    new.content := regexp_replace(new.content, w, repeat('*', char_length(w)), 'gi');
+  end loop;
+
+  -- 3) 限流：同一 user_id 在窗口内已达上限则拒绝
+  select count(*) into recent_count
+  from public.messages
+  where user_id = new.user_id
+    and created_at > now() - rate_window;
+  if recent_count >= rate_max then
+    raise exception 'rate limit exceeded';
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists chat_message_guard_trg on public.messages;
+create trigger chat_message_guard_trg
+  before insert on public.messages
+  for each row execute function public.chat_message_guard();
+
+-- ============================================================
 -- 知识库：动态资源条目 + 管理员写入
 -- ============================================================
 
@@ -187,3 +243,31 @@ grant execute on function public.count_today_visitor(date, text) to authenticate
 
 -- 新建/修改函数后强制 PostgREST 重载 schema 缓存，否则经 REST 调用 RPC 可能短暂 404。
 notify pgrst, 'reload schema';
+
+-- ============================================================
+-- daily_visitors 保留策略（避免历史行无限增长）
+-- 只删除超过保留窗口的历史行；当日统计口径不受影响。
+-- ============================================================
+
+-- 删除早于 p_keep_days 天的访客行，返回删除行数。
+create or replace function public.prune_daily_visitors(p_keep_days integer default 90)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  removed int;
+begin
+  delete from public.daily_visitors
+  where day < (current_date - make_interval(days => greatest(p_keep_days, 1)));
+  get diagnostics removed = row_count;
+  return removed;
+end;
+$$;
+
+-- 可选：用 pg_cron 每天定时清理（需在 Supabase 启用 pg_cron 扩展）。
+-- 未启用扩展时，可手动执行 `select public.prune_daily_visitors(90);` 或改由外部定时任务调用。
+--   create extension if not exists pg_cron;
+--   select cron.schedule('prune-daily-visitors', '17 3 * * *',
+--     $$select public.prune_daily_visitors(90);$$);

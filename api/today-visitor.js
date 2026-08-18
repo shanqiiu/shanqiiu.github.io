@@ -95,7 +95,10 @@ module.exports = async function handler(req, res) {
     '-' +
     String(now.getUTCDate()).padStart(2, '0');
 
-  const member = createHash('sha256').update('v1:' + ip).digest('hex');
+  // 用「服务端密钥盐 + IP」做 SHA-256，避免仅哈希 IP 时哈希可被枚举 IP 空间反推。
+  // 盐从环境变量读取，只存在于服务端，永不下发浏览器；未配置盐时回退为无盐（仍可用）。
+  const salt = process.env.VISITOR_HASH_SALT || '';
+  const member = createHash('sha256').update('v1:' + salt + ':' + ip).digest('hex');
 
   try {
     const endpoint = env.url.replace(/\/$/, '') + '/rest/v1/rpc/count_today_visitor';

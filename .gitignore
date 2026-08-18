@@ -1,14 +1,20 @@
+# --- 构建产物（生成的站点，永不提交）---
 /public/
+/resources/_gen/
+
+# --- 本地 Hugo 构建 / 验证临时目录 ---
+# 约定：所有本地构建与验证输出统一放到以 .hugo_ 或 .vb_ 前缀命名的
+# 仓库内相对目录中（勿用 /d/... 绝对路径），各由一条通用规则覆盖，
+# 避免每出一个新目录就补一条窄规则。
 /.hugo_build.lock
 /.hugo_*/
-/.vb_verify/
+/.vb_*/
+# 误用绝对路径（/d/...）验证时落到仓库根的散落产物
+/d/
+
+# --- 工具 / 系统 ---
 /.tmp/
-/resources/_gen/
 /.idea/
 .DS_Store
 Thumbs.db
 *.log
-
-/.vb_learn_check/
-
-/.vb_learn_check/
