@@ -977,7 +977,10 @@
     if (!holder || !dataEl) return;
     var quotes;
     try {
-      quotes = JSON.parse(dataEl.textContent);
+      var raw = JSON.parse(dataEl.textContent);
+      // 兼容数据被二次编码（字符串内再包一层 JSON）的情况
+      if (typeof raw === 'string') raw = JSON.parse(raw);
+      quotes = Array.isArray(raw) ? raw : (raw && raw.items) ? raw.items : [];
     } catch (e) {
       return;
     }
@@ -1024,18 +1027,27 @@
     });
   }
 
+  // 单个初始化函数容错执行，避免一个模块报错中断后续所有模块
+  function safe(label, fn) {
+    try {
+      fn();
+    } catch (e) {
+      if (window.console && console.error) console.error('[' + label + '] init failed:', e);
+    }
+  }
+
   // 启动入口
   function boot() {
-    initZoom();
-    initTyping();
-    initVisitorStats();
-    initKnowledgeBase();
-    initMusicPlayer();
-    initScrollTop();
-    initNavHighlight();
-    initScrollReveal();
-    initMusicAriaSync();
-    initHeroQuote();
+    safe('zoom', initZoom);
+    safe('typing', initTyping);
+    safe('visitorStats', initVisitorStats);
+    safe('knowledgeBase', initKnowledgeBase);
+    safe('musicPlayer', initMusicPlayer);
+    safe('scrollTop', initScrollTop);
+    safe('navHighlight', initNavHighlight);
+    safe('scrollReveal', initScrollReveal);
+    safe('musicAriaSync', initMusicAriaSync);
+    safe('heroQuote', initHeroQuote);
     var hm = document.getElementById('github-heatmap');
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';
