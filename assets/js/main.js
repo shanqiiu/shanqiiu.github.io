@@ -1165,6 +1165,30 @@
   }
 
   // 启动入口
+  function initGallery() {
+    var root = document.querySelector('[data-gallery]');
+    if (!root) return;
+    var main = root.querySelector('.gallery-main img');
+    var back1 = root.querySelector('.gallery-back-1 img');
+    var back2 = root.querySelector('.gallery-back-2 img');
+    var counter = document.querySelector('.gallery-counter span');
+    var arrows = document.querySelectorAll('.gallery-arrow');
+    var items = ['/img/gallery/wallhaven-9ogxx1.jpg','/img/gallery/wallhaven-gwdz7d.jpg','/img/gallery/wallhaven-w5xwyx.png',''];
+    var index = 0;
+    function render() {
+      var current = items[index];
+      main.src = current || '';
+      main.alt = current ? '个人图库图片 ' + (index + 1) : '';
+      main.parentElement.classList.toggle('is-empty', !current);
+      back1.src = items[(index + 1) % 3];
+      back2.src = items[(index + 2) % 3];
+      counter.textContent = String(index + 1);
+    }
+    if (arrows[0]) arrows[0].addEventListener('click', function () { index = (index + items.length - 1) % items.length; render(); });
+    if (arrows[1]) arrows[1].addEventListener('click', function () { index = (index + 1) % items.length; render(); });
+    render();
+  }
+
   function boot() {
     safe('zoom', initZoom);
     safe('typing', initTyping);
@@ -1176,6 +1200,7 @@
     safe('scrollReveal', initScrollReveal);
     safe('musicAriaSync', initMusicAriaSync);
     safe('heroQuote', initHeroQuote);
+    safe('gallery', initGallery);
     var hm = document.getElementById('github-heatmap');
     if (hm) {
       var user = hm.getAttribute('data-user') || 'shanqiiu';

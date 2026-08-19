@@ -366,6 +366,10 @@
     min-height: 0;
 }
 
+.home-bottom .gallery-card { order: 1; }
+.home-bottom .music-embed { order: 2; }
+.home-bottom .now-card { order: 3; }
+
 .hero-tech {
     margin-top: 6px;
     padding: 6px 10px;
@@ -1183,22 +1187,12 @@ body:has(#home-bento) .hero-inner,
     line-height: 1.45;
 }
 
-#home-bento .gallery-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.28) transparent;
-    align-content: start;
-}
+#home-bento .gallery-stage { flex: 1 1 auto; min-height: 0; display: flex; align-items: flex-start; justify-content: flex-start; padding: 8px 38px 14px 8px; }
+#home-bento .gallery-stack { position: relative; width: 100%; min-height: 0; aspect-ratio: 1.58 / 1; flex: 0 0 auto; }
 
 #home-bento .gallery-cell {
-    aspect-ratio: 1 / 1;
-    border-radius: 6px;
-    background: linear-gradient(135deg, var(--accent-dim), rgba(255, 255, 255, 0.06));
+    border-radius: 9px;
+    background: var(--bg-elevated);
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -1206,6 +1200,13 @@ body:has(#home-bento) .hero-inner,
     font-size: 0.72rem;
     color: var(--text-3);
 }
+#home-bento .gallery-cell img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+#home-bento .gallery-main { position: absolute; inset: 0; z-index: 3; overflow: hidden; box-shadow: 0 10px 20px rgba(15,23,42,.22); }
+#home-bento .gallery-back { position: absolute; inset: 8% -9% -10% 9%; opacity: .48; transform: rotate(4deg); z-index: 1; overflow: hidden; }
+#home-bento .gallery-back-2 { inset: 14% -16% -17% 16%; opacity: .25; transform: rotate(8deg); z-index: 0; }
+#home-bento .gallery-empty-label { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; color: var(--text-3); font-size: .72rem; }
+#home-bento .gallery-main.is-empty img { display: none; }
+#home-bento .gallery-main.is-empty .gallery-empty-label { display: flex; }
 
 #home-bento .gallery-cell.gallery-empty {
     background:
@@ -1512,7 +1513,7 @@ body:has(#home-bento) .hero-inner,
     }
 
     #home-bento .now-list,
-    #home-bento .gallery-grid,
+    #home-bento .gallery-stage,
     .music-embed .music-playlist {
         overflow: visible;
     }

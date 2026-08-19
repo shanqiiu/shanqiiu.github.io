@@ -187,12 +187,12 @@
                             <button class="gallery-arrow" type="button" aria-label="下一组" title="下一组">›</button>
                         </div>
                     </div>
-                    <div class="gallery-grid">
-                        {{ range seq 4 }}
-                        <div class="gallery-cell gallery-empty">
-                            <span>待添加</span>
+                    <div class="gallery-stage" data-gallery>
+                        <div class="gallery-stack" aria-live="polite">
+                            <div class="gallery-cell gallery-back gallery-back-2"><img src="{{ "img/gallery/wallhaven-gwdz7d.jpg" | relURL }}" alt="" loading="lazy"></div>
+                            <div class="gallery-cell gallery-back gallery-back-1"><img src="{{ "img/gallery/wallhaven-w5xwyx.png" | relURL }}" alt="" loading="lazy"></div>
+                            <div class="gallery-cell gallery-main"><img src="{{ "img/gallery/wallhaven-9ogxx1.jpg" | relURL }}" alt="个人图库图片 1" loading="lazy"><span class="gallery-empty-label">待添加</span></div>
                         </div>
-                        {{ end }}
                     </div>
                 </div>
 
