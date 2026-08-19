@@ -480,11 +480,10 @@
 }
 
 .tech-logo {
-    display: grid;
-    place-items: center;
-    gap: 4px;
-    min-width: 58px;
-    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--border);
@@ -504,24 +503,11 @@
     font-weight: 900;
 }
 
-.tech-logo em {
-    font-style: normal;
-    font-size: 0.72rem;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--text-2);
-}
-
 .tech-logo-icon {
     width: 28px;
     height: 28px;
     object-fit: contain;
     display: block;
-}
-
-.tech-logo b + em,
-.tech-logo-icon + em {
-    margin-top: 0;
 }
 
 @keyframes tech-stack-scroll {
@@ -1179,10 +1165,9 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .nav-card {
-    min-height: 76px;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
-    padding: 14px;
+    padding: 12px 14px;
     border-radius: 6px;
     background: color-mix(in srgb, var(--bg-elevated) 82%, rgba(15, 23, 42, 0.28));
     border: 1px solid var(--border);
@@ -1208,6 +1193,9 @@ body:has(#home-bento) .hero-inner,
 #home-bento .nav-card-desc {
     color: var(--text-2);
     font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #home-bento .nav-card-icon {
