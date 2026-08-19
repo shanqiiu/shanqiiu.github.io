@@ -981,7 +981,7 @@ body:has(#home-bento) .main {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: safe center;
     gap: 10px;
     padding: 24px 0 52px;
 }
