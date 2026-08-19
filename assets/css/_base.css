@@ -56,11 +56,10 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 0;
-    font-family: var(--font-mono);
-    font-size: 0.86rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
     color: var(--text-2);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .hero-title {
@@ -75,8 +74,8 @@
 .hero-name {
     display: inline;
     font-family: var(--font-sans);
-    font-size: clamp(2.6rem, 6vw, 4.4rem);
-    font-weight: 900;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 800;
     line-height: 1.12;
     letter-spacing: 0;
     color: var(--text);
@@ -87,11 +86,11 @@
     margin-top: 0;
     margin-left: 10px;
     font-family: var(--font-sans);
-    font-size: clamp(1rem, 2vw, 1.4rem);
-    font-weight: 700;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 600;
     font-style: normal;
     letter-spacing: 0;
-    color: var(--accent);
+    color: var(--text-2);
 }
 
 .tag {

@@ -845,7 +845,7 @@
 
 .hero-info-wide {
     grid-column: 1 / -1;
-    color: var(--accent);
+    color: var(--text-2);
 }
 
 .hero-quote {
