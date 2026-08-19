@@ -110,3 +110,7 @@ layouts/index.html           首页模块结构
 static/img/gallery/          个人图库图片
 static/audio/                音乐文件
 ```
+
+## 鸣谢
+
+本网站的页面结构与个人空间设计参考了 [Alxian](https://www.alxian.cn/)，感谢其公开作品带来的设计启发。
