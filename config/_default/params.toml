@@ -26,27 +26,47 @@ since       = 2026
     [[hero.techStack]]
         name = "Git"
         mark = "Git"
+        icon = "git"
     [[hero.techStack]]
         name = "Python"
         mark = "Py"
+        icon = "python"
     [[hero.techStack]]
         name = "PyTorch"
         mark = "PT"
+        icon = "pytorch"
     [[hero.techStack]]
         name = "OpenCV"
         mark = "CV"
+        icon = "opencv"
     [[hero.techStack]]
         name = "FastAPI"
         mark = "API"
+        icon = "fastapi"
     [[hero.techStack]]
         name = "Docker"
         mark = "D"
+        icon = "docker"
     [[hero.techStack]]
         name = "Nginx"
         mark = "N"
+        icon = "nginx"
     [[hero.techStack]]
         name = "Hugo"
         mark = "H"
+        icon = "hugo"
+    [[hero.techStack]]
+        name = "Ollama"
+        mark = "Ol"
+        icon = "ollama"
+    [[hero.techStack]]
+        name = "AI Agent"
+        mark = "AI"
+        icon = "aiagent"
+    [[hero.techStack]]
+        name = "Qwen"
+        mark = "Qw"
+        icon = "qwen"
 
     [[hero.timeline]]
         title = "本科"

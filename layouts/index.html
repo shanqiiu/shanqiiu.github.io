@@ -74,15 +74,17 @@
                         <div class="tech-marquee">
                             <div class="tech-track">
                                 {{ range site.Params.hero.techStack }}
+                                    {{ $name := .name }}
                                     <span class="tech-logo">
-                                        <b>{{ .mark }}</b>
-                                        <em>{{ .name }}</em>
+                                        {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="{{ $name }}" loading="lazy">{{ else }}<b>{{ .mark }}</b>{{ end }}
+                                        <em>{{ $name }}</em>
                                     </span>
                                 {{ end }}
                                 {{ range site.Params.hero.techStack }}
+                                    {{ $name := .name }}
                                     <span class="tech-logo" aria-hidden="true">
-                                        <b>{{ .mark }}</b>
-                                        <em>{{ .name }}</em>
+                                        {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="">{{ else }}<b>{{ .mark }}</b>{{ end }}
+                                        <em>{{ $name }}</em>
                                     </span>
                                 {{ end }}
                             </div>

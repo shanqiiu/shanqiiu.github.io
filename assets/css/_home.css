@@ -512,6 +512,18 @@
     color: var(--text-2);
 }
 
+.tech-logo-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    display: block;
+}
+
+.tech-logo b + em,
+.tech-logo-icon + em {
+    margin-top: 0;
+}
+
 @keyframes tech-stack-scroll {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
