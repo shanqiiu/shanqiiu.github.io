@@ -1,9 +1,9 @@
-﻿/* ---------- 鍙充笅瑙掕儗鏅煶涔愭挱鏀惧櫒 ---------- */
+/* ---------- 鍙充笅瑙掕儗鏅煶涔愭挱鏀惧櫒 ---------- */
 .music-player {
     position: fixed;
     top: auto;
     right: 16px;
-    bottom: 74px;
+    bottom: 96px;
     z-index: 1001;
     width: min(360px, calc(100vw - 32px));
     font-family: var(--font-sans);

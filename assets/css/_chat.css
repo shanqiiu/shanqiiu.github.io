@@ -1,4 +1,4 @@
-﻿/* ---------- Page reset for chat ---------- */
+/* ---------- Page reset for chat ---------- */
 body:has(.chat-app) .main {
     min-height: 100vh;
     display: flex;
