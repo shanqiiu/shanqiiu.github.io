@@ -46,7 +46,7 @@
 }
 
 #github-heatmap::before {
-    content: attr(data-total) " contributions in " attr(data-year) "\A" attr(data-total) " 娆℃彁浜ゅ湪 " attr(data-year) "骞?;
+    content: attr(data-total) " contributions in " attr(data-year) "\A" attr(data-total) " 次提交在 " attr(data-year) "年";
     position: absolute;
     left: 0;
     top: 0;
@@ -856,7 +856,7 @@
     max-width: 360px;
     padding-right: 14px;
     text-align: right;
-    font-family: "KaiTi", "STKaiti", "妤蜂綋", "BiauKai", serif;
+    font-family: "KaiTi", "STKaiti", "楷体", "BiauKai", serif;
     color: var(--text-2);
     pointer-events: none;
     user-select: none;
