@@ -1,6 +1,7 @@
 ﻿/* ---------- 鍙充笅瑙掕儗鏅煶涔愭挱鏀惧櫒 ---------- */
 .music-player {
     position: fixed;
+    top: auto;
     right: 16px;
     bottom: 74px;
     z-index: 1001;
