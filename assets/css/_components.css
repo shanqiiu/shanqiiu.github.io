@@ -312,3 +312,37 @@
     height: 22px;
 }
 
+/* ---------- 棣栭〉鍐呴緟闊涔愭挱鏀惧櫒锛堜笉娴佹诞锛屽竷灞€鍐呴儴 ---------- */
+.music-embed .music-player {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    z-index: auto;
+}
+
+.music-embed .music-toggle {
+    display: none;
+}
+
+.music-embed .music-body {
+    padding: 12px;
+    border-radius: 8px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
+        var(--bg-card);
+    border: 1px solid var(--border-strong);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transform: none;
+    opacity: 1;
+}
+
+.music-embed .music-player.is-collapsed .music-body {
+    transform: none;
+    opacity: 1;
+}
+

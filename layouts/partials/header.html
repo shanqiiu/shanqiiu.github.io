@@ -40,6 +40,7 @@
     </nav>
 </header>
 
+{{- if not .IsHome -}}
 <div class="music-player" id="music-player" aria-label="音乐播放器">
     <audio id="music-audio" src="/audio/slam-dunk.mp3" preload="metadata" loop></audio>
     <button class="music-toggle" id="music-toggle" type="button" aria-label="收起播放器" aria-expanded="true" title="收起播放器">
@@ -76,3 +77,4 @@
         </div>
     </div>
 </div>
+{{- end -}}

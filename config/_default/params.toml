@@ -81,6 +81,24 @@ since       = 2026
         date  = "2025-至今"
         desc  = "各种技术有限公司"
 
+    # 首页底部「最近在做的事」卡片数据（status: doing=进行中 / done=已完成 / plan=计划中）
+    [[hero.now]]
+        title = "gui-agent-evaluation 项目"
+        desc  = "研究 GUI Agent 执行轨迹验证与异常检测（循环跳转、重复点击等）"
+        status = "doing"
+    [[hero.now]]
+        title = "AIGC 视频质量评估"
+        desc  = "跟进 Awesome-AIGC-Detection，研究生成内容检测与质量评测方法"
+        status = "doing"
+    [[hero.now]]
+        title = "个人空间站点重构"
+        desc  = "Hugo 静态站 + Supabase 知识库，首页布局与交互持续迭代"
+        status = "doing"
+    [[hero.now]]
+        title = "摄影入门练习"
+        desc  = "作为摄影初学者，日常记录光影与城市街景"
+        status = "plan"
+
 [homepage]
     recentPosts        = 5
     recentLearning     = 3

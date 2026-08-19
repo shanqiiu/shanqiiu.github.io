@@ -328,8 +328,6 @@
 }
 
 #home-bento .container {
-    --home-top-panel-h: 246px;
-    --home-bottom-panel-h: 176px;
     max-width: 980px;
     background: transparent;
     backdrop-filter: none;
@@ -339,28 +337,38 @@
     padding: 0 0 18px;
 }
 
-.bento-grid {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 10px;
-    align-items: start;
-}
-
-.bento-col {
+.bento-stack {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
 .bento-full {
-    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.home-bottom {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.1fr;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.hero-tech {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 5px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
+        var(--bg-card);
+    border: 1px solid var(--border-strong);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 14px 34px rgba(15, 23, 42, 0.14);
+    overflow: hidden;
 }
 
 @media (max-width: 900px) {
-    .bento-grid {
-        grid-template-columns: 1fr;
-    }
-
     .hero-inner {
         grid-template-columns: 1fr;
         text-align: center;
@@ -399,6 +407,10 @@
 
     .hero-title {
         font-size: 1.85rem;
+    }
+
+    .home-bottom {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -475,7 +487,7 @@
     animation: tech-stack-scroll 24s linear infinite;
 }
 
-.tech-card:hover .tech-track {
+.hero-tech:hover .tech-track {
     animation-play-state: paused;
 }
 
@@ -994,37 +1006,11 @@ body:has(#home-bento) #home-bento {
     padding-bottom: 0;
 }
 
-#home-bento .bento-grid {
-    align-items: stretch;
-}
-
-#home-bento .bento-col {
-    display: grid;
-    grid-template-rows: var(--home-top-panel-h) var(--home-bottom-panel-h);
-    gap: 10px;
-}
-
-#home-bento .left-top-panels {
-    display: grid;
-    grid-template-rows: 74px minmax(0, 1fr);
-    gap: 10px;
-    min-height: 0;
-}
-
 #home-bento .info-card {
     padding: 10px;
     border-radius: 5px;
 }
 
-#home-bento .github-card,
-#home-bento .timeline-card,
-#home-bento .nav-cards {
-    height: 100%;
-    min-height: 0;
-}
-
-#home-bento .tag-card,
-#home-bento .timeline-card,
 #home-bento .github-card {
     overflow: hidden;
 }
@@ -1087,6 +1073,91 @@ body:has(#home-bento) .hero-inner,
     line-height: 1;
     font-size: inherit;
     font-weight: inherit;
+}
+
+/* ---------- 鍦ㄥ仛鐨勪簨 / 鍥剧増 / 闊充箒 涓変笁鏍?---------- */
+#home-bento .now-card,
+#home-bento .gallery-card,
+#home-bento .music-embed {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#home-bento .now-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#home-bento .now-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+}
+
+#home-bento .now-dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--text-3);
+}
+
+#home-bento .now-dot.now-doing {
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+#home-bento .now-dot.now-plan {
+    background: var(--text-3);
+}
+
+#home-bento .now-dot.now-done {
+    background: #34d399;
+}
+
+#home-bento .now-body {
+    min-width: 0;
+}
+
+#home-bento .now-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+#home-bento .now-desc {
+    margin-top: 2px;
+    font-size: 0.74rem;
+    color: var(--text-2);
+    line-height: 1.45;
+}
+
+#home-bento .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+#home-bento .gallery-cell {
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--accent-dim), rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    color: var(--text-3);
+}
+
+#home-bento .gallery-cell.gallery-empty {
+    background:
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04) 0 8px, transparent 8px 16px),
+        var(--bg-elevated);
 }
 
 #home-bento .timeline-card {

@@ -60,129 +60,162 @@
                 </button>
             </div>
             <script type="application/json" id="hero-quotes-data">{{ hugo.Data.quotes.items }}</script>
+            {{ if site.Params.hero.techStack }}
+            <div class="hero-tech" aria-label="技术栈">
+                <div class="tech-marquee">
+                    <div class="tech-track">
+                        {{ range site.Params.hero.techStack }}
+                            {{ $name := .name }}
+                            <span class="tech-logo">
+                                {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="{{ $name }}" loading="lazy">{{ else }}<b>{{ .mark }}</b>{{ end }}
+                            </span>
+                        {{ end }}
+                        {{ range site.Params.hero.techStack }}
+                            {{ $name := .name }}
+                            <span class="tech-logo" aria-hidden="true">
+                                {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="">{{ else }}<b>{{ .mark }}</b>{{ end }}
+                            </span>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
+            {{ end }}
         </div>
     </div>
 </section>
 
 <section class="section" id="home-bento">
     <div class="container">
-        <div class="bento-grid">
-            <div class="bento-col bento-col-profile">
-                <div class="left-top-panels">
-                    {{ if site.Params.hero.techStack }}
-                    <div class="info-card tech-card" aria-label="技术栈">
-                        <div class="tech-marquee">
-                            <div class="tech-track">
-                                {{ range site.Params.hero.techStack }}
-                                    {{ $name := .name }}
-                                    <span class="tech-logo">
-                                        {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="{{ $name }}" loading="lazy">{{ else }}<b>{{ .mark }}</b>{{ end }}
-                                    </span>
-                                {{ end }}
-                                {{ range site.Params.hero.techStack }}
-                                    {{ $name := .name }}
-                                    <span class="tech-logo" aria-hidden="true">
-                                        {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="">{{ else }}<b>{{ .mark }}</b>{{ end }}
-                                    </span>
-                                {{ end }}
-                            </div>
-                        </div>
-                    </div>
-                    {{ end }}
-
-                    <div class="info-card tag-card" aria-label="标签">
-                        <div class="tag-cloud">
-                            {{ range site.Params.hero.tags }}
-                                <span class="tag">{{ . }}</span>
-                            {{ end }}
-                        </div>
-                    </div>
+        <div class="bento-stack">
+            <div class="info-card github-card bento-full">
+                <div class="info-title">
+                    {{ partial "svg-icon.html" "github" }}
+                    GitHub 活跃度
                 </div>
+                <div id="github-heatmap" data-user="shanqiiu"></div>
+            </div>
 
-                {{ if site.Params.hero.timeline }}
-                <div class="info-card timeline-card" aria-label="经历">
-                    <div class="timeline-list">
-                        {{ range site.Params.hero.timeline }}
-                        <div class="timeline-item">
-                            <div class="timeline-head">
-                                <span class="timeline-title">{{ .title }}</span>
-                                {{ with .desc }}<span class="timeline-desc"> · {{ . }}</span>{{ end }}
+            <div class="nav-cards bento-full">
+                <div class="nav-cards-title">
+                    {{ partial "svg-icon.html" "site" }}
+                    <span>
+                        <strong>Navigation</strong>
+                        <em>导航</em>
+                    </span>
+                </div>
+                <a class="nav-card" href="{{ "projects/" | relURL }}">
+                    <div class="nav-card-icon">
+                        {{ partial "svg-icon.html" "zuopin" }}
+                    </div>
+                    <div class="nav-card-body">
+                        <span class="nav-card-title">项目库</span>
+                        <span class="nav-card-desc">记录项目</span>
+                    </div>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+                <a class="nav-card" href="{{ "post/" | relURL }}">
+                    <div class="nav-card-icon">
+                        {{ partial "svg-icon.html" "docs" }}
+                    </div>
+                    <div class="nav-card-body">
+                        <span class="nav-card-title">文章</span>
+                        <span class="nav-card-desc">随便写写</span>
+                    </div>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+                <a class="nav-card" href="{{ "learning/" | relURL }}">
+                    <div class="nav-card-icon">
+                        {{ partial "svg-icon.html" "MingcutePlanetFill" }}
+                    </div>
+                    <div class="nav-card-body">
+                        <span class="nav-card-title">资源</span>
+                        <span class="nav-card-desc">记录常用资源</span>
+                    </div>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+                <a class="nav-card" href="{{ "chat/" | relURL }}">
+                    <div class="nav-card-icon">
+                        {{ partial "svg-icon.html" "comment" }}
+                    </div>
+                    <div class="nav-card-body">
+                        <span class="nav-card-title">聊天室</span>
+                        <span class="nav-card-desc">实时聊天交流</span>
+                    </div>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+                <a class="nav-card" href="{{ "about/" | relURL }}">
+                    <div class="nav-card-icon">
+                        {{ partial "svg-icon.html" "PhLinkBold" }}
+                    </div>
+                    <div class="nav-card-body">
+                        <span class="nav-card-title">友链</span>
+                        <span class="nav-card-desc">友链共享</span>
+                    </div>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+            </div>
+
+            <div class="home-bottom">
+                <div class="info-card now-card">
+                    <div class="info-title">最近在做的事</div>
+                    <div class="now-list">
+                        {{ range site.Params.hero.now }}
+                        <div class="now-item">
+                            <span class="now-dot now-{{ .status | default "doing" }}"></span>
+                            <div class="now-body">
+                                <div class="now-title">{{ .title }}</div>
+                                {{ with .desc }}<div class="now-desc">{{ . }}</div>{{ end }}
                             </div>
-                            <div class="timeline-date">{{ .date }}</div>
                         </div>
                         {{ end }}
                     </div>
                 </div>
-                {{ end }}
-            </div>
 
-            <div class="bento-col bento-col-main">
-                <div class="info-card github-card">
-                    <div class="info-title">
-                        {{ partial "svg-icon.html" "github" }}
-                        GitHub 活跃度
+                <div class="info-card gallery-card">
+                    <div class="info-title">个人图库</div>
+                    <div class="gallery-grid">
+                        {{ range seq 4 }}
+                        <div class="gallery-cell gallery-empty">
+                            <span>待添加</span>
+                        </div>
+                        {{ end }}
                     </div>
-                    <div id="github-heatmap" data-user="shanqiiu"></div>
                 </div>
 
-                <div class="nav-cards">
-                    <div class="nav-cards-title">
-                        {{ partial "svg-icon.html" "site" }}
-                        <span>
-                            <strong>Navigation</strong>
-                            <em>导航</em>
-                        </span>
+                <div class="info-card music-embed">
+                    <div class="info-title">音乐</div>
+                    <div class="music-player" id="music-player" aria-label="音乐播放器">
+                        <audio id="music-audio" src="/audio/slam-dunk.mp3" preload="metadata" loop></audio>
+                        <div class="music-body">
+                            <div class="music-primary-row">
+                                <div class="music-cover-small" aria-hidden="true">
+                                    <img src="/img/avatar-sakuragi.jpg" alt="">
+                                </div>
+                                <div class="music-meta">
+                                    <div class="music-title">直到世界尽头</div>
+                                    <div class="music-artist">WANDS · 灌篮高手片尾曲</div>
+                                </div>
+                                <button class="music-play" id="music-play" type="button" aria-label="播放" title="播放">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                            </div>
+                            <div class="music-secondary-row">
+                                <div class="music-time" id="music-time">00:00 / 00:00</div>
+                                <button class="music-btn music-prev" id="music-prev" type="button" aria-label="后退 10 秒" title="后退 10 秒">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                                </button>
+                                <div class="music-progress-wrap">
+                                    <input type="range" id="music-progress" min="0" max="100" value="0" aria-label="播放进度">
+                                </div>
+                                <button class="music-btn music-next" id="music-next" type="button" aria-label="前进 10 秒" title="前进 10 秒">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                                </button>
+                                <button class="music-btn music-mute" id="music-mute" type="button" aria-label="静音" title="静音">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <a class="nav-card" href="{{ "projects/" | relURL }}">
-                        <div class="nav-card-icon">
-                            {{ partial "svg-icon.html" "zuopin" }}
-                        </div>
-                        <div class="nav-card-body">
-                            <span class="nav-card-title">项目库</span>
-                            <span class="nav-card-desc">记录项目</span>
-                        </div>
-                        <span class="nav-card-arrow">→</span>
-                    </a>
-                    <a class="nav-card" href="{{ "post/" | relURL }}">
-                        <div class="nav-card-icon">
-                            {{ partial "svg-icon.html" "docs" }}
-                        </div>
-                        <div class="nav-card-body">
-                            <span class="nav-card-title">文章</span>
-                            <span class="nav-card-desc">随便写写</span>
-                        </div>
-                        <span class="nav-card-arrow">→</span>
-                    </a>
-                    <a class="nav-card" href="{{ "learning/" | relURL }}">
-                        <div class="nav-card-icon">
-                            {{ partial "svg-icon.html" "MingcutePlanetFill" }}
-                        </div>
-                        <div class="nav-card-body">
-                            <span class="nav-card-title">资源</span>
-                            <span class="nav-card-desc">记录常用资源</span>
-                        </div>
-                        <span class="nav-card-arrow">→</span>
-                    </a>
-                    <a class="nav-card" href="{{ "chat/" | relURL }}">
-                        <div class="nav-card-icon">
-                            {{ partial "svg-icon.html" "comment" }}
-                        </div>
-                        <div class="nav-card-body">
-                            <span class="nav-card-title">聊天室</span>
-                            <span class="nav-card-desc">实时聊天交流</span>
-                        </div>
-                        <span class="nav-card-arrow">→</span>
-                    </a>
-                    <a class="nav-card" href="{{ "about/" | relURL }}">
-                        <div class="nav-card-icon">
-                            {{ partial "svg-icon.html" "PhLinkBold" }}
-                        </div>
-                        <div class="nav-card-body">
-                            <span class="nav-card-title">友链</span>
-                            <span class="nav-card-desc">友链共享</span>
-                        </div>
-                        <span class="nav-card-arrow">→</span>
-                    </a>
                 </div>
             </div>
         </div>
