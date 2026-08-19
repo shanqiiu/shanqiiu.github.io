@@ -4,7 +4,7 @@ mainSections = ["post"]
 since       = 2026
 
 [hero]
-    greeting    = "你好，我是"
+    # greeting 已移除：首页不再显示“你好，我是”
     name        = "山海"
     englishName = "Shan Hai"
     role        = "AI 算法工程师 / 摄影初学者"
@@ -98,6 +98,24 @@ since       = 2026
         title = "摄影入门练习"
         desc  = "作为摄影初学者，日常记录光影与城市街景"
         status = "plan"
+
+    # 首页音乐播放器歌单（title/artist/cover/src，点击可切歌）
+    # 占位条目目前复用同一音频文件，需替换为真实音频路径
+    [[hero.playlist]]
+        title  = "直到世界尽头"
+        artist = "WANDS · 灌篮高手片尾曲"
+        cover  = "/img/avatar-sakuragi.jpg"
+        src    = "/audio/slam-dunk.mp3"
+    [[hero.playlist]]
+        title  = "天空中的歌"
+        artist = "待补充"
+        cover  = "/img/avatar-sakuragi.jpg"
+        src    = "/audio/slam-dunk.mp3"
+    [[hero.playlist]]
+        title  = "鲜花"
+        artist = "待补充"
+        cover  = "/img/avatar-sakuragi.jpg"
+        src    = "/audio/slam-dunk.mp3"
 
 [homepage]
     recentPosts        = 5

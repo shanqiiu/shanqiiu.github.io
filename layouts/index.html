@@ -24,58 +24,47 @@
             </svg>
         </div>
         <div class="hero-content">
-            <div class="hero-meta">{{ site.Params.hero.greeting }}</div>
-            <h1 class="hero-title" data-typing>
-                <span class="hero-name">{{ site.Params.hero.name }}</span>
-                <span class="hero-en">{{ site.Params.hero.englishName }}</span>
-                <span class="typing-cursor"></span>
-            </h1>
-            <div class="hero-info-grid" aria-label="Profile summary">
-                <span class="hero-info-item hero-info-wide">{{ site.Params.hero.role }}</span>
-                <span class="hero-info-item">{{ site.Params.hero.age | default "26" }} 岁</span>
-                <span class="hero-info-item">{{ site.Params.hero.location | default "北京" }}</span>
-                <span class="hero-info-item">{{ site.Params.hero.experience | default "1" }} 年经验</span>
-                <span class="hero-info-item">{{ site.Params.hero.workStatus | default "在职" }}</span>
+            <div class="hero-main">
+                <h1 class="hero-title" data-typing>
+                    <span class="hero-name">{{ site.Params.hero.name }}</span>
+                    <span class="hero-en">{{ site.Params.hero.englishName }}</span>
+                    <span class="typing-cursor"></span>
+                </h1>
+                <div class="hero-info-grid" aria-label="Profile summary">
+                    <span class="hero-info-item hero-info-wide">{{ site.Params.hero.role }}</span>
+                    <span class="hero-info-item">{{ site.Params.hero.age | default "26" }} 岁</span>
+                    <span class="hero-info-item">{{ site.Params.hero.location | default "北京" }}</span>
+                    <span class="hero-info-item">{{ site.Params.hero.experience | default "1" }} 年经验</span>
+                    <span class="hero-info-item">{{ site.Params.hero.workStatus | default "在职" }}</span>
+                </div>
+                <div class="hero-quote" aria-label="每日一句（单击换一句）" title="单击换一句">
+                    <p class="hero-quote-text">世间好物不坚牢，彩云易散琉璃脆。</p>
+                    <p class="hero-quote-source">—— 白居易《简简吟》</p>
+                </div>
+                <script type="application/json" id="hero-quotes-data">{{ hugo.Data.quotes.items }}</script>
             </div>
-            <div class="hero-socials">
-                {{ with site.Params.hero.socials.github }}
-                <a href="{{ . }}" target="_blank" rel="noopener" aria-label="GitHub">
-                    {{ partial "svg-icon.html" "github" }}
-                </a>
-                {{ end }}
-                {{ with site.Params.hero.socials.qq }}
-                <a href="{{ . }}" aria-label="QQ">
-                    {{ partial "svg-icon.html" "qq" }}
-                </a>
-                {{ end }}
-            </div>
-            <div class="hero-quote" aria-label="每日一句">
-                <p class="hero-quote-text">世间好物不坚牢，彩云易散琉璃脆。</p>
-                <p class="hero-quote-source">—— 白居易《简简吟》</p>
-                <button type="button" class="hero-quote-refresh" aria-label="换一句" title="换一句">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
-                        <path d="M21 3v6h-6"></path>
-                    </svg>
-                </button>
-            </div>
-            <script type="application/json" id="hero-quotes-data">{{ hugo.Data.quotes.items }}</script>
             {{ if site.Params.hero.techStack }}
             <div class="hero-tech" aria-label="技术栈">
                 <div class="tech-marquee">
                     <div class="tech-track">
+                        <div class="tech-group">
                         {{ range site.Params.hero.techStack }}
                             {{ $name := .name }}
                             <span class="tech-logo">
                                 {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="{{ $name }}" loading="lazy">{{ else }}<b>{{ .mark }}</b>{{ end }}
+                                <span class="tech-name">{{ .name }}</span>
                             </span>
                         {{ end }}
+                        </div>
+                        <div class="tech-group" aria-hidden="true">
                         {{ range site.Params.hero.techStack }}
                             {{ $name := .name }}
-                            <span class="tech-logo" aria-hidden="true">
-                                {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="">{{ else }}<b>{{ .mark }}</b>{{ end }}
+                            <span class="tech-logo">
+                                {{ with .icon }}<img class="tech-logo-icon" src="/svg/{{ . }}.svg" alt="{{ $name }}" loading="lazy">{{ else }}<b>{{ .mark }}</b>{{ end }}
+                                <span class="tech-name">{{ .name }}</span>
                             </span>
                         {{ end }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -88,9 +77,12 @@
     <div class="container">
         <div class="bento-stack">
             <div class="info-card github-card bento-full">
-                <div class="info-title">
-                    {{ partial "svg-icon.html" "github" }}
-                    GitHub 活跃度
+                <div class="github-card-head">
+                    <div class="info-title">
+                        {{ partial "svg-icon.html" "github" }}
+                        GitHub 活跃度
+                    </div>
+                    <span class="github-stats" id="github-stats">加载中…</span>
                 </div>
                 <div id="github-heatmap" data-user="shanqiiu"></div>
             </div>
@@ -159,20 +151,33 @@
                 <div class="info-card now-card">
                     <div class="info-title">最近在做的事</div>
                     <div class="now-list">
-                        {{ range site.Params.hero.now }}
+                        {{ range $idx, $item := site.Params.hero.now }}
                         <div class="now-item">
-                            <span class="now-dot now-{{ .status | default "doing" }}"></span>
+                            <span class="now-num">{{ add $idx 1 }}</span>
                             <div class="now-body">
-                                <div class="now-title">{{ .title }}</div>
-                                {{ with .desc }}<div class="now-desc">{{ . }}</div>{{ end }}
+                                <div class="now-title">{{ $item.title }}</div>
+                                {{ with $item.desc }}<div class="now-desc">{{ . }}</div>{{ end }}
                             </div>
+                            {{ $statusText := "" }}
+                            {{ $statusClass := $item.status | default "doing" }}
+                            {{ if eq $statusClass "doing" }}{{ $statusText = "进行中" }}{{ end }}
+                            {{ if eq $statusClass "plan" }}{{ $statusText = "计划中" }}{{ end }}
+                            {{ if eq $statusClass "done" }}{{ $statusText = "已完成" }}{{ end }}
+                            <span class="now-status now-status-{{ $statusClass }}">{{ $statusText }}</span>
                         </div>
                         {{ end }}
                     </div>
                 </div>
 
                 <div class="info-card gallery-card">
-                    <div class="info-title">个人图库</div>
+                    <div class="gallery-head">
+                        <div class="info-title">个人图库</div>
+                        <div class="gallery-nav">
+                            <button class="gallery-arrow" type="button" aria-label="上一组" title="上一组">‹</button>
+                            <span class="gallery-counter"><span>1</span> / 4</span>
+                            <button class="gallery-arrow" type="button" aria-label="下一组" title="下一组">›</button>
+                        </div>
+                    </div>
                     <div class="gallery-grid">
                         {{ range seq 4 }}
                         <div class="gallery-cell gallery-empty">
@@ -184,16 +189,16 @@
 
                 <div class="info-card music-embed">
                     <div class="info-title">音乐</div>
-                    <div class="music-player" id="music-player" aria-label="音乐播放器">
-                        <audio id="music-audio" src="/audio/slam-dunk.mp3" preload="metadata" loop></audio>
+                    <div class="music-player" id="music-player" aria-label="音乐播放器" data-playlist='{{ site.Params.hero.playlist | jsonify }}'>
+                        <audio id="music-audio" preload="metadata" loop></audio>
                         <div class="music-body">
                             <div class="music-primary-row">
                                 <div class="music-cover-small" aria-hidden="true">
-                                    <img src="/img/avatar-sakuragi.jpg" alt="">
+                                    <img src="" alt="" id="music-cover">
                                 </div>
                                 <div class="music-meta">
-                                    <div class="music-title">直到世界尽头</div>
-                                    <div class="music-artist">WANDS · 灌篮高手片尾曲</div>
+                                    <div class="music-title" id="music-title"></div>
+                                    <div class="music-artist" id="music-artist"></div>
                                 </div>
                                 <button class="music-play" id="music-play" type="button" aria-label="播放" title="播放">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -201,13 +206,13 @@
                             </div>
                             <div class="music-secondary-row">
                                 <div class="music-time" id="music-time">00:00 / 00:00</div>
-                                <button class="music-btn music-prev" id="music-prev" type="button" aria-label="后退 10 秒" title="后退 10 秒">
+                                <button class="music-btn music-prev" id="music-prev" type="button" aria-label="上一首" title="上一首">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                                 </button>
                                 <div class="music-progress-wrap">
                                     <input type="range" id="music-progress" min="0" max="100" value="0" aria-label="播放进度">
                                 </div>
-                                <button class="music-btn music-next" id="music-next" type="button" aria-label="前进 10 秒" title="前进 10 秒">
+                                <button class="music-btn music-next" id="music-next" type="button" aria-label="下一首" title="下一首">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                                 </button>
                                 <button class="music-btn music-mute" id="music-mute" type="button" aria-label="静音" title="静音">
@@ -215,6 +220,15 @@
                                 </button>
                             </div>
                         </div>
+                        <ol class="music-playlist" id="music-playlist">
+                            {{ range $idx, $song := site.Params.hero.playlist }}
+                            <li class="music-track{{ if eq $idx 0 }} is-active{{ end }}" data-index="{{ $idx }}">
+                                <span class="music-track-num">{{ add $idx 1 }}</span>
+                                <span class="music-track-title">{{ $song.title }}</span>
+                                <span class="music-track-artist">{{ $song.artist }}</span>
+                            </li>
+                            {{ end }}
+                        </ol>
                     </div>
                 </div>
             </div>

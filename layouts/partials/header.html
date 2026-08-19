@@ -21,6 +21,18 @@
 {{- end -}}
 
 <header class="site-header" aria-label="Site controls">
+    <div class="header-socials">
+        {{ with site.Params.hero.socials.github }}
+        <a href="{{ . }}" target="_blank" rel="noopener" aria-label="GitHub">
+            {{ partial "svg-icon.html" "github" }}
+        </a>
+        {{ end }}
+        {{ with site.Params.hero.socials.qq }}
+        <a href="{{ . }}" aria-label="QQ">
+            {{ partial "svg-icon.html" "qq" }}
+        </a>
+        {{ end }}
+    </div>
     <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme"></button>
 
     <nav class="page-nav-fab" aria-label="Quick navigation">

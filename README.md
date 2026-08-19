@@ -1,15 +1,17 @@
 # 个人技术空间
 
-一个用于记录**知识博客**、**个人项目**和**学习历程**的个人网站模板。技术栈与 [鬼哥的空间](https://luoli523.github.io/) 相同：
+一个用于记录**知识博客**、**个人项目**和**学习历程**的个人网站。站点使用 Hugo 自包含模板渲染，聊天室可选接入 Supabase 实现跨设备实时同步。
 
 - [Hugo](https://gohugo.io)（静态站点生成器）
-- [GitHub Pages](https://pages.github.com)（免费托管）
+- [GitHub Pages](https://pages.github.com) 或 [Vercel](https://vercel.com)（均可自动部署）
 - GitHub Actions（推送后自动构建部署）
 
 ## 目录结构
 
 ```text
 .
+├── api/                 # Vercel Serverless API（今日访客统计）
+├── assets/              # Hugo 管线处理的 CSS、JS 和第三方资源
 ├── config/_default/     # 站点配置（hugo.toml / 菜单 / 参数 / Markdown）
 ├── content/
 │   ├── post/            # 知识博客（文章）
@@ -17,12 +19,16 @@
 │   ├── learning/        # 学习历程
 │   ├── about/           # 关于我
 │   └── archives/        # 归档（自动汇总）
+├── data/                # 引用数据和知识分类配置
 ├── layouts/             # 页面模板（自包含，不依赖第三方主题）
-├── assets/css/          # 主题样式（深/浅色）
-├── static/              # 静态资源（头像、JS）
-├── scripts/             # 建文脚本
+├── scripts/             # 新建文章和项目检查脚本
+├── specs/               # 已实现功能与仓库维护记录
+├── static/              # 不经 Hugo 管线处理的图片、音频、SVG 等资源
+├── supabase/            # 数据库结构和知识库种子 SQL
 └── .github/workflows/   # 自动部署流水线
 ```
+
+本地构建输出不属于源码：`public/`、`resources/_gen/`、`.hugo_*`、`.vb_*` 和 `d/` 均已加入 `.gitignore`，不要提交到仓库。
 
 ## 快速开始
 
@@ -107,6 +113,20 @@ Hugo 构建时会把这两个变量注入到 `/chat/` 页面的 `window.SUPABASE
 | `static/img/avatar.svg` | 替换成你自己的头像 |
 
 > 本项目 `baseURL` 已设为 `/`，生成相对链接，GitHub Pages / Vercel / 自定义域名通用。若需要 RSS、sitemap 输出绝对地址，可把它改成你的正式域名（如 `https://example.com`）。
+
+## 本地检查
+
+项目提供了一组 PowerShell 检查脚本，用于验证构建产物、播放器界面、知识库页面和仓库卫生。先生成一次本地构建，再按需执行：
+
+```powershell
+hugo --minify
+.\scripts\check-repo-hygiene.ps1
+.\scripts\check-knowledge-deploy.ps1
+.\scripts\check-knowledge-dynamic.ps1
+.\scripts\check-knowledge-taxonomy.ps1
+```
+
+播放器相关检查脚本为 `check-player-ui.ps1`、`check-player-layout.ps1` 和 `check-no-load-shift.ps1`。这些脚本只读取源码或本地构建结果，不会修改内容。
 
 ## 写内容
 

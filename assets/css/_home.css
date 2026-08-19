@@ -41,20 +41,8 @@
 /* ---------- GitHub 璐＄尞鐑姏鍥?---------- */
 #github-heatmap {
     position: relative;
-    min-height: 136px;
-    padding-top: 36px;
-}
-
-#github-heatmap::before {
-    content: attr(data-total) " contributions in " attr(data-year) "\A" attr(data-total) " 次提交在 " attr(data-year) "年";
-    position: absolute;
-    left: 0;
-    top: 0;
-    white-space: pre-line;
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    line-height: 1.45;
-    color: var(--text-2);
+    min-height: 124px;
+    padding-top: 8px;
 }
 
 .info-card:has(#github-heatmap) {
@@ -64,12 +52,27 @@
         var(--bg-card);
 }
 
-.info-card:has(#github-heatmap) .info-title {
-    margin-bottom: 8px;
+.github-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.github-card-head .info-title {
+    margin-bottom: 0;
     color: var(--text);
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 0.95rem;
     letter-spacing: 0;
+}
+
+.github-stats {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-2);
+    white-space: nowrap;
 }
 
 .hm-scroll {
@@ -84,13 +87,12 @@
 }
 
 .hm-year-controls {
-    position: absolute;
-    top: 0;
-    right: 0;
+    position: static;
+    margin-left: auto;
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    height: 28px;
+    height: 26px;
     padding: 2px;
     border-radius: 9px;
     background: rgba(255, 255, 255, 0.1);
@@ -271,7 +273,15 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
+    width: 100%;
+}
+
+.hero-main {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     width: 100%;
 }
 
@@ -324,7 +334,7 @@
 
 /* ---------- Bento 棣栭〉缃戞牸 ---------- */
 #home-bento {
-    padding: 0 0 18px;
+    padding: 0;
 }
 
 #home-bento .container {
@@ -334,13 +344,15 @@
     -webkit-backdrop-filter: none;
     border: 0;
     box-shadow: none;
-    padding: 0 0 18px;
+    padding: 0;
 }
 
 .bento-stack {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .bento-full {
@@ -352,11 +364,13 @@
     grid-template-columns: 1.2fr 1fr 1.1fr;
     gap: 10px;
     align-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .hero-tech {
-    margin-top: 16px;
-    padding: 12px 14px;
+    margin-top: 6px;
+    padding: 6px 10px;
     border-radius: 5px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
@@ -482,9 +496,13 @@
 .tech-track {
     display: flex;
     width: max-content;
-    gap: 8px;
-    padding: 0 10px;
     animation: tech-stack-scroll 24s linear infinite;
+}
+
+.tech-group {
+    display: flex;
+    gap: 5px;
+    padding-right: 5px;
 }
 
 .hero-tech:hover .tech-track {
@@ -493,33 +511,42 @@
 
 .tech-logo {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 5px;
+    gap: 3px;
+    padding: 2px 5px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: 0;
     color: var(--text);
 }
 
 .tech-logo b {
     display: grid;
     place-items: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
     background: var(--accent-dim);
     color: var(--accent);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 900;
 }
 
 .tech-logo-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
     display: block;
+}
+
+.tech-name {
+    font-size: 0.6rem;
+    line-height: 1;
+    color: var(--text-2);
+    white-space: nowrap;
 }
 
 @keyframes tech-stack-scroll {
@@ -652,8 +679,8 @@
 /* ---------- 澶村儚钂告苯锛坱emplate-web smoke.png锛?---------- */
 .hero-avatar-wrap {
     position: relative;
-    width: 176px;
-    height: 176px;
+    width: 156px;
+    height: 156px;
     flex-shrink: 0;
     margin: 0 auto;
     display: flex;
@@ -664,11 +691,11 @@
 .avatar-badge {
     position: relative;
     z-index: 2;
-    width: 176px;
-    height: 176px;
+    width: 156px;
+    height: 156px;
     display: block;
     overflow: visible;
-    filter: drop-shadow(0 14px 28px rgba(15, 23, 42, 0.26));
+    filter: drop-shadow(0 12px 24px rgba(15, 23, 42, 0.24));
     transition: transform 0.35s ease;
 }
 
@@ -696,9 +723,9 @@
 
 .avatar-badge-text text {
     font-family: var(--font-mono);
-    font-size: 9.4px;
+    font-size: 8.4px;
     font-weight: 900;
-    letter-spacing: 1.05px;
+    letter-spacing: 0.9px;
     fill: rgba(30, 41, 59, 0.95);
     dominant-baseline: middle;
     paint-order: stroke;
@@ -714,9 +741,9 @@
 .avatar-smoke {
     position: absolute;
     left: 50%;
-    top: 16px;
+    top: 14px;
     transform: translate(-50%, -50%);
-    width: 220px;
+    width: 190px;
     pointer-events: none;
     z-index: 1;
 }
@@ -754,19 +781,28 @@
 }
 
 @media (max-width: 900px) {
+    .hero-avatar-wrap {
+        width: 136px;
+        height: 136px;
+    }
+
     .avatar-smoke {
-        top: 14px;
-        width: 190px;
+        top: 12px;
+        width: 170px;
     }
 
     .avatar-badge {
-        width: 156px;
-        height: 156px;
+        width: 136px;
+        height: 136px;
+    }
+
+    .avatar-badge-text {
+        transform-origin: 88px 88px;
     }
 
     .avatar-badge-text text {
-        font-size: 8.6px;
-        letter-spacing: 1px;
+        font-size: 7.4px;
+        letter-spacing: 0.8px;
     }
 }
 
@@ -839,12 +875,12 @@
 .hero-info-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, max-content));
-    gap: 4px 18px;
+    gap: 2px 14px;
     align-items: center;
     color: var(--text-2);
     font-family: var(--font-sans);
-    font-size: 0.88rem;
-    line-height: 1.35;
+    font-size: 0.82rem;
+    line-height: 1.3;
 }
 
 .hero-info-item {
@@ -886,8 +922,8 @@
 
 .hero-quote-text {
     margin: 0;
-    font-size: 1rem;
-    line-height: 1.65;
+    font-size: 0.92rem;
+    line-height: 1.6;
     letter-spacing: 0.02em;
     word-break: break-word;
     overflow-wrap: anywhere;
@@ -895,8 +931,8 @@
 }
 
 .hero-quote-source {
-    margin: 8px 0 0;
-    font-size: 0.72rem;
+    margin: 6px 0 0;
+    font-size: 0.7rem;
     color: var(--text-3);
     font-family: var(--font-sans);
 }
@@ -912,49 +948,14 @@
     opacity: 0;
 }
 
-/* 寰幆鍒锋柊鎸夐挳锛堝渾褰紝鍗曞嚮闅忔満鎹竴鍙ワ級 */
-.hero-quote-refresh {
+/* 單撳嚮鍒囨崲锛氭枃妗堟贰鍑烘贰鍏?*/
+.hero-quote.is-clickable {
     pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    margin-top: 10px;
-    padding: 0;
-    border: 1px solid rgba(30, 41, 59, 0.18);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    color: var(--accent);
     cursor: pointer;
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.hero-quote-refresh svg {
-    width: 16px;
-    height: 16px;
-}
-
-.hero-quote-refresh:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.28);
-}
-
-.hero-quote-refresh:active {
-    transform: scale(0.92);
-}
-
-.hero-quote-refresh.is-spinning svg {
-    animation: hero-quote-spin 0.5s ease;
-}
-
-@keyframes hero-quote-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.hero-quote.is-clickable:hover .hero-quote-text {
+    color: var(--text);
 }
 
 @media (max-width: 900px) {
@@ -970,8 +971,8 @@
     .hero-inner {
         max-width: calc(100% - 28px);
         grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 16px 16px 18px;
+        gap: 10px;
+        padding: 14px 14px 16px;
     }
 
     .hero-info-grid {
@@ -988,22 +989,45 @@
 
 /* ---------- Home navigation refinement ---------- */
 body:has(#home-bento) .main {
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: safe center;
     gap: 10px;
-    padding: 24px 0 52px;
+    padding: 26px 0;
+    overflow: hidden;
 }
 
 body:has(#home-bento) .hero {
+    flex: 0 0 auto;
     padding-top: 0;
     padding-bottom: 0;
 }
 
 body:has(#home-bento) #home-bento {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+body:has(#home-bento) #home-bento .container {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body:has(#home-bento) .github-card,
+body:has(#home-bento) .nav-cards {
+    flex: 0 0 auto;
+}
+
+body:has(#home-bento) .hero-inner {
+    padding-bottom: 8px;
 }
 
 #home-bento .info-card {
@@ -1033,8 +1057,8 @@ body:has(#home-bento) .hero-inner,
     position: relative;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 10px;
-    padding: 56px 10px 10px;
+    gap: 8px;
+    padding: 38px 8px 8px;
     border-radius: 5px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
@@ -1047,14 +1071,14 @@ body:has(#home-bento) .hero-inner,
 
 #home-bento .nav-cards-title {
     position: absolute;
-    top: 10px;
-    left: 14px;
+    top: 8px;
+    left: 12px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     color: var(--text);
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 0.88rem;
     font-weight: 600;
     letter-spacing: 0;
 }
@@ -1081,13 +1105,31 @@ body:has(#home-bento) .hero-inner,
 #home-bento .music-embed {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 4px;
+    min-height: 0;
+    overflow: hidden;
+    background: transparent;
+    border: 1px solid var(--border);
+    box-shadow: none;
+    padding: 10px 12px;
+}
+
+#home-bento .now-card .info-title,
+#home-bento .gallery-card .info-title,
+#home-bento .music-embed .info-title {
+    margin-bottom: 0;
 }
 
 #home-bento .now-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.28) transparent;
+    padding-right: 2px;
 }
 
 #home-bento .now-item {
@@ -1096,30 +1138,38 @@ body:has(#home-bento) .hero-inner,
     gap: 9px;
 }
 
-#home-bento .now-dot {
+#home-bento .now-num {
     flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    margin-top: 6px;
-    border-radius: 50%;
-    background: var(--text-3);
-}
-
-#home-bento .now-dot.now-doing {
-    background: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-dim);
-}
-
-#home-bento .now-dot.now-plan {
-    background: var(--text-3);
-}
-
-#home-bento .now-dot.now-done {
-    background: #34d399;
+    min-width: 18px;
+    margin-top: 1px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-3);
+    line-height: 1.5;
 }
 
 #home-bento .now-body {
     min-width: 0;
+    flex: 1 1 auto;
+}
+
+#home-bento .now-status {
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    color: var(--text-3);
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+#home-bento .now-status.now-status-doing {
+    color: var(--accent);
+}
+
+#home-bento .now-status.now-status-done {
+    color: #34d399;
 }
 
 #home-bento .now-title {
@@ -1140,6 +1190,12 @@ body:has(#home-bento) .hero-inner,
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.28) transparent;
+    align-content: start;
 }
 
 #home-bento .gallery-cell {
@@ -1158,6 +1214,60 @@ body:has(#home-bento) .hero-inner,
     background:
         repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04) 0 8px, transparent 8px 16px),
         var(--bg-elevated);
+}
+
+#home-bento .gallery-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+#home-bento .gallery-head .info-title {
+    margin-bottom: 0;
+}
+
+#home-bento .gallery-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+#home-bento .gallery-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-3);
+    font-size: 0.92rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#home-bento .gallery-arrow:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+}
+
+#home-bento .gallery-counter {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-3);
+    line-height: 1.4;
+    min-width: 30px;
+    text-align: center;
+}
+
+#home-bento .gallery-counter span {
+    color: var(--text-2);
+    font-weight: 600;
 }
 
 #home-bento .timeline-card {
@@ -1237,8 +1347,8 @@ body:has(#home-bento) .hero-inner,
 
 #home-bento .nav-card {
     align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
+    gap: 8px;
+    padding: 8px 10px;
     border-radius: 6px;
     background: color-mix(in srgb, var(--bg-elevated) 82%, rgba(15, 23, 42, 0.28));
     border: 1px solid var(--border);
@@ -1253,17 +1363,18 @@ body:has(#home-bento) .hero-inner,
 }
 
 #home-bento .nav-card-body {
-    gap: 7px;
+    gap: 2px;
+    min-width: 0;
 }
 
 #home-bento .nav-card-title {
     color: var(--text);
-    font-size: 0.875rem;
+    font-size: 0.82rem;
 }
 
 #home-bento .nav-card-desc {
     color: var(--text-2);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1272,11 +1383,16 @@ body:has(#home-bento) .hero-inner,
 #home-bento .nav-card-icon {
     order: 2;
     margin-left: auto;
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
     border-radius: 0;
     background: transparent;
     color: var(--text);
+}
+
+#home-bento .nav-card-icon .svg-icon {
+    width: 22px;
+    height: 22px;
 }
 
 #home-bento .nav-card-arrow {
@@ -1376,3 +1492,31 @@ body:has(#home-bento) .hero-inner,
     }
 }
 
+
+/* ---------- 小屏回退：解除视口锁定，恢复自然滚动 ---------- */
+@media (max-width: 900px) {
+    body:has(#home-bento) .main {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+        padding: 18px 0 52px;
+    }
+
+    body:has(#home-bento) #home-bento,
+    body:has(#home-bento) #home-bento .container,
+    body:has(#home-bento) .bento-stack {
+        display: block;
+    }
+
+    #home-bento .now-card,
+    #home-bento .gallery-card,
+    #home-bento .music-embed {
+        overflow: visible;
+    }
+
+    #home-bento .now-list,
+    #home-bento .gallery-grid,
+    .music-embed .music-playlist {
+        overflow: visible;
+    }
+}
