@@ -981,9 +981,9 @@ body:has(#home-bento) .main {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
-    padding: 42px 0 52px;
+    padding: 24px 0 52px;
 }
 
 body:has(#home-bento) .hero {
