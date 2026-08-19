@@ -9,7 +9,15 @@
     {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
 {{ end -}}
 <link rel="icon" href="{{ "img/avatar-sakuragi-tight.jpg" | relURL }}">
-{{ $css := resources.Get "css/main.css" | minify | fingerprint }}
+{{ $styles := slice
+    (resources.Get "css/_tokens.css")
+    (resources.Get "css/_base.css")
+    (resources.Get "css/_post.css")
+    (resources.Get "css/_home.css")
+    (resources.Get "css/_components.css")
+    (resources.Get "css/_learning.css")
+    (resources.Get "css/_chat.css") }}
+{{ $css := $styles | resources.Concat "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
 {{ $util := resources.Get "js/util.js" | fingerprint }}
 <script src="{{ $util.RelPermalink }}" defer></script>
