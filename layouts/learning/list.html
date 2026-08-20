@@ -18,14 +18,10 @@
         </div>
     </header>
 
-    <div class="resource-layout">
-        <aside class="resource-sidebar resource-panel" id="resource-sidebar">
-            <div class="resource-panel-title">
-                {{ partial "svg-icon.html" "tag" }}
-                <span>多级分类</span>
-            </div>
-            <div class="resource-category-list" id="resource-categories">
-                <button type="button" class="resource-category is-active" data-category="全部" data-path="ALL">
+    <div class="resource-filterbar" id="resource-categories">
+        <div class="resource-filter-main">
+            <div class="filter-chips" id="filter-chips-level1">
+                <button type="button" class="resource-category is-active" data-category="全部" data-path="ALL" data-level="1">
                     <span>全部</span>
                     <b>{{ len $items }}</b>
                 </button>
@@ -35,66 +31,19 @@
                     {{ range $items }}
                         {{ if eq (index .path 0) $top }}{{ $topCount = add $topCount 1 }}{{ end }}
                     {{ end }}
-                    <div class="resource-category-group is-open" data-group-path="{{ $top }}">
-                        <div class="resource-category-row">
-                            <button type="button" class="resource-category resource-category-level-1" data-category="{{ $top }}" data-path="{{ $top }}">
-                                <span>{{ $top }}</span>
-                                <b>{{ $topCount }}</b>
-                            </button>
-                            <button type="button" class="resource-category-toggle" data-toggle-path="{{ $top }}" aria-expanded="true" aria-label="展开或收起 {{ $top }}">
-                                <span aria-hidden="true"></span>
-                            </button>
-                        </div>
-                        <div class="resource-category-children">
-                        {{ range .children }}
-                            {{ $second := .name }}
-                            {{ $secondPath := printf "%s / %s" $top $second }}
-                            {{ $secondCount := 0 }}
-                            {{ range $items }}
-                                {{ if and (ge (len .path) 2) (eq (index .path 0) $top) (eq (index .path 1) $second) }}{{ $secondCount = add $secondCount 1 }}{{ end }}
-                            {{ end }}
-                            <div class="resource-category-group is-open resource-category-subgroup" data-group-path="{{ $secondPath }}">
-                                <div class="resource-category-row">
-                                    <button type="button" class="resource-category resource-category-level-2" data-category="{{ $second }}" data-path="{{ $secondPath }}">
-                                        <span>{{ $second }}</span>
-                                        <b>{{ $secondCount }}</b>
-                                    </button>
-                                    <button type="button" class="resource-category-toggle" data-toggle-path="{{ $secondPath }}" aria-expanded="true" aria-label="展开或收起 {{ $second }}">
-                                        <span aria-hidden="true"></span>
-                                    </button>
-                                </div>
-                                <div class="resource-category-children">
-                                    {{ range .children }}
-                                        {{ $third := . }}
-                                        {{ $thirdPath := printf "%s / %s" $secondPath $third }}
-                                        {{ $thirdCount := 0 }}
-                                        {{ range $items }}
-                                            {{ if and (ge (len .path) 3) (eq (index .path 0) $top) (eq (index .path 1) $second) (eq (index .path 2) $third) }}{{ $thirdCount = add $thirdCount 1 }}{{ end }}
-                                        {{ end }}
-                                        <button type="button" class="resource-category resource-category-level-3" data-category="{{ $third }}" data-path="{{ $thirdPath }}">
-                                            <span>{{ $third }}</span>
-                                            <b>{{ $thirdCount }}</b>
-                                        </button>
-                                    {{ end }}
-                                </div>
-                            </div>
-                        {{ end }}
-                        </div>
-                    </div>
+                    <button type="button" class="resource-category" data-category="{{ $top }}" data-path="{{ $top }}" data-level="1">
+                        <span>{{ $top }}</span>
+                        <b>{{ $topCount }}</b>
+                    </button>
                 {{ end }}
             </div>
-        </aside>
+            <button class="resource-stat-toggle" id="resource-stat-toggle" type="button" aria-label="知识库统计" aria-expanded="false" title="知识库统计">
+                {{ partial "svg-icon.html" "count" }}
+            </button>
+        </div>
+        <div class="filter-cascade" id="filter-cascade" aria-live="polite"></div>
 
-        <main class="resource-feed" aria-label="Knowledge cards">
-            <div class="resource-card-grid" id="resource-card-grid">
-                <div class="resource-empty-state" id="resource-empty-state" hidden>
-                    <p class="resource-empty-title">暂无资源</p>
-                    <p class="resource-empty-hint">点击右上角「新增资源」，验证邮箱登录后即可添加并管理你的知识卡片。</p>
-                </div>
-            </div>
-        </main>
-
-        <aside class="resource-insights">
+        <div class="resource-stat-popover" id="resource-stat-popover" hidden>
             <section class="resource-panel">
                 <div class="resource-panel-title">
                     {{ partial "svg-icon.html" "count" }}
@@ -147,8 +96,17 @@
                     {{ end }}
                 </div>
             </section>
-        </aside>
+        </div>
     </div>
+
+    <main class="resource-feed" aria-label="Knowledge cards">
+        <div class="resource-card-grid" id="resource-card-grid">
+            <div class="resource-empty-state" id="resource-empty-state" hidden>
+                <p class="resource-empty-title">暂无资源</p>
+                <p class="resource-empty-hint">点击右上角「新增资源」，验证邮箱登录后即可添加并管理你的知识卡片。</p>
+            </div>
+        </div>
+    </main>
 
     <div class="knowledge-drawer" id="knowledge-drawer" aria-hidden="true">
         <div class="knowledge-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="knowledge-drawer-title">
