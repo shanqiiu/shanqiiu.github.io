@@ -321,7 +321,7 @@
 .resource-card {
     display: flex;
     flex-direction: column;
-    padding: 14px 14px 11px;
+    padding: 14px 14px 8px;
     border-radius: 14px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06)),
@@ -395,7 +395,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .resource-tag {
@@ -414,7 +414,7 @@
     justify-content: space-between;
     gap: 10px;
     margin-top: auto;
-    padding-top: 6px;
+    padding-top: 4px;
     border-top: 1px solid var(--border);
 }
 
@@ -456,8 +456,8 @@
 
 .knowledge-edit-btn,
 .knowledge-delete-btn {
-    min-height: 28px;
-    padding: 0 10px;
+    min-height: 24px;
+    padding: 0 9px;
     border-radius: 8px;
     border: 1px solid var(--border-strong);
     background: rgba(255, 255, 255, 0.5);
