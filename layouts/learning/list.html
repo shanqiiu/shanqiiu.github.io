@@ -10,12 +10,6 @@
             {{ partial "svg-icon.html" "search" }}
             <input id="resource-search" type="search" placeholder="搜索标题、内容、分类或标签..." autocomplete="off">
         </label>
-        <div class="knowledge-actions">
-            <button class="knowledge-action-btn knowledge-primary-btn" id="knowledge-new-btn" type="button">
-                {{ partial "svg-icon.html" "docs" }}
-                <span>新增资源</span>
-            </button>
-        </div>
     </header>
 
     <div class="resource-filterbar" id="resource-categories">
@@ -37,9 +31,15 @@
                     </button>
                 {{ end }}
             </div>
-            <button class="resource-stat-toggle" id="resource-stat-toggle" type="button" aria-label="知识库统计" aria-expanded="false" title="知识库统计">
-                {{ partial "svg-icon.html" "count" }}
-            </button>
+            <div class="filter-actions">
+                <button class="knowledge-action-btn knowledge-primary-btn" id="knowledge-new-btn" type="button">
+                    {{ partial "svg-icon.html" "docs" }}
+                    <span>新增资源</span>
+                </button>
+                <button class="resource-stat-toggle" id="resource-stat-toggle" type="button" aria-label="知识库统计" aria-expanded="false" title="知识库统计">
+                    {{ partial "svg-icon.html" "count" }}
+                </button>
+            </div>
         </div>
         <div class="filter-cascade" id="filter-cascade" aria-live="polite"></div>
 

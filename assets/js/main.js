@@ -470,18 +470,29 @@
       card.setAttribute('data-category', item.category_1 || '');
       card.setAttribute('data-path', path);
       card.setAttribute('data-search', searchText);
+      var typeMap = { external: '外部', article: '文章', tool: '工具', book: '图书' };
+      var typeKey = (item.item_type || 'external');
+      var typeLabel = typeMap[typeKey] || '资源';
+      var isDraft = item.status === 'draft';
       card.innerHTML =
-        '<div class="resource-card-inner">' +
-          '<div class="resource-path">' + escapeHtml(path) + '</div>' +
-          '<h2>' + escapeHtml(item.title) + '</h2>' +
-          '<p>' + escapeHtml(item.description || '') + '</p>' +
-          '<div class="resource-card-tags">' + tags.map(function (tag) {
-            return '<span class="resource-tag">' + escapeHtml(tag) + '</span>';
-          }).join('') + '</div>' +
-          '<div class="resource-meta"><span>' + escapeHtml(item.item_type || 'resource') + '</span></div>' +
-          '<div class="resource-date"><span>' + escapeHtml(item.status === 'draft' ? '草稿' : '云端资源') + '</span></div>' +
-          '<button class="knowledge-edit-btn" type="button" data-edit-id="' + escapeHtml(item.id || '') + '">编辑</button>' +
-          '<button class="knowledge-delete-btn" type="button" data-delete-id="' + escapeHtml(item.id || '') + '">删除</button>' +
+        '<div class="resource-card-head">' +
+          '<span class="resource-path">' + escapeHtml(path) + '</span>' +
+          '<span class="resource-type type-' + escapeHtml(typeKey) + '">' + typeLabel + '</span>' +
+        '</div>' +
+        '<h2>' + escapeHtml(item.title) + '</h2>' +
+        '<p class="resource-desc">' + escapeHtml(item.description || '') + '</p>' +
+        (tags.length ? '<div class="resource-card-tags">' + tags.map(function (tag) {
+          return '<span class="resource-tag">' + escapeHtml(tag) + '</span>';
+        }).join('') + '</div>' : '') +
+        '<div class="resource-card-foot">' +
+          '<span class="resource-status">' +
+            '<span class="status-dot' + (isDraft ? ' is-draft' : '') + '"></span>' +
+            escapeHtml(isDraft ? '草稿' : '已发布') +
+          '</span>' +
+          '<span class="resource-tools">' +
+            '<button class="knowledge-edit-btn" type="button" data-edit-id="' + escapeHtml(item.id || '') + '">编辑</button>' +
+            '<button class="knowledge-delete-btn" type="button" data-delete-id="' + escapeHtml(item.id || '') + '">删除</button>' +
+          '</span>' +
         '</div>';
       card._knowledgeItem = item;
       grid.prepend(card);
