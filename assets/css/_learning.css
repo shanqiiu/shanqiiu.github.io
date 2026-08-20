@@ -321,7 +321,7 @@
 .resource-card {
     display: flex;
     flex-direction: column;
-    padding: 18px 18px 14px;
+    padding: 14px 14px 11px;
     border-radius: 14px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06)),
@@ -347,7 +347,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
 .resource-path {
@@ -374,14 +374,14 @@
 .resource-type.type-book { color: #f59e0b; background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.28); }
 
 .resource-card h2 {
-    margin: 0 0 6px;
+    margin: 0 0 4px;
     color: var(--text);
     font-size: 1.1rem;
     line-height: 1.35;
 }
 
 .resource-desc {
-    margin: 0 0 12px;
+    margin: 0 0 8px;
     color: var(--text-2);
     font-size: 0.9rem;
     line-height: 1.55;
@@ -395,7 +395,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .resource-tag {
@@ -414,7 +414,7 @@
     justify-content: space-between;
     gap: 10px;
     margin-top: auto;
-    padding-top: 10px;
+    padding-top: 6px;
     border-top: 1px solid var(--border);
 }
 
