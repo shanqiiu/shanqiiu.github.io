@@ -1109,10 +1109,26 @@ body:has(#home-bento) .hero-inner,
     gap: 4px;
     min-height: 0;
     overflow: hidden;
+    padding: 10px 12px;
+}
+
+#home-bento .gallery-card {
     background: transparent;
     border: 1px solid var(--border);
     box-shadow: none;
-    padding: 10px 12px;
+}
+
+#home-bento .now-card,
+#home-bento .music-embed {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
+        var(--bg-card);
+    border: 1px solid var(--border-strong);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 14px 34px rgba(15, 23, 42, 0.14);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
 }
 
 #home-bento .now-card .info-title,
