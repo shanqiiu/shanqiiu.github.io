@@ -1110,16 +1110,6 @@ body:has(#home-bento) .hero-inner,
     min-height: 0;
     overflow: hidden;
     padding: 10px 12px;
-}
-
-#home-bento .gallery-card {
-    background: transparent;
-    border: 1px solid var(--border);
-    box-shadow: none;
-}
-
-#home-bento .now-card,
-#home-bento .music-embed {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045)),
         var(--bg-card);
