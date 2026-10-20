@@ -83,6 +83,10 @@ since       = 2026
 
     # 首页底部「最近在做的事」卡片数据（status: doing=进行中 / done=已完成 / plan=计划中）
     [[hero.now]]
+        title = "具身智能与机械臂学习"
+        desc  = "基于 LeRobot 探索 MuJoCo、Isaac Lab 仿真、数据采集与策略训练"
+        status = "doing"
+    [[hero.now]]
         title = "gui-agent-evaluation 项目"
         desc  = "研究 GUI Agent 执行轨迹验证与异常检测（循环跳转、重复点击等）"
         status = "doing"
