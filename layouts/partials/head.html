@@ -16,7 +16,8 @@
     (resources.Get "css/_home.css")
     (resources.Get "css/_components.css")
     (resources.Get "css/_learning.css")
-    (resources.Get "css/_chat.css") }}
+    (resources.Get "css/_chat.css")
+    (resources.Get "css/_responsive.css") }}
 {{ $css := $styles | resources.Concat "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
 {{ $util := resources.Get "js/util.js" | fingerprint }}

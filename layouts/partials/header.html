@@ -36,11 +36,11 @@
     <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme"></button>
 
     <nav class="page-nav-fab" aria-label="Quick navigation">
-        <button class="page-nav-main" type="button" aria-label="当前页面：{{ $currentLabel }}">
+        <button class="page-nav-main" type="button" aria-label="当前页面：{{ $currentLabel }}，切换导航" aria-controls="page-nav-menu" aria-expanded="false">
             {{ partial "svg-icon.html" $currentIcon }}
             <span>{{ $currentLabel }}</span>
         </button>
-        <div class="page-nav-menu">
+        <div class="page-nav-menu" id="page-nav-menu" hidden>
             <a href="{{ site.Home.RelPermalink }}">{{ partial "svg-icon.html" "home" }}<span>首页</span></a>
             <a href="{{ "projects/" | relURL }}">{{ partial "svg-icon.html" "zuopin" }}<span>项目</span></a>
             <a href="{{ "post/" | relURL }}">{{ partial "svg-icon.html" "docs" }}<span>文章</span></a>

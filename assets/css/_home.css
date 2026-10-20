@@ -269,6 +269,7 @@
 }
 
 .hero-content {
+    min-width: 0;
     position: relative;
     z-index: 1;
     display: flex;
@@ -278,6 +279,7 @@
 }
 
 .hero-main {
+    min-width: 0;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1449,17 +1451,19 @@ body:has(#home-bento) .hero-inner,
     flex-direction: column;
     align-items: flex-end;
     gap: 7px;
-    opacity: 0;
-    transform: translateY(8px);
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    max-height: calc(100vh - 100px);
+    max-height: calc(100dvh - 100px - env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 4px;
 }
 
-.page-nav-fab:hover .page-nav-menu,
-.page-nav-fab:focus-within .page-nav-menu {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
+.page-nav-menu[hidden] {
+    display: none;
+}
+
+.page-nav-menu a {
+    flex-shrink: 0;
 }
 
 .page-nav-menu a:hover,

@@ -111,6 +111,23 @@ static/img/gallery/          个人图库图片
 static/audio/                音乐文件
 ```
 
+## 移动端检查
+
+在仓库根目录安装浏览器检查工具，使用本机 Chrome：
+
+```powershell
+npm install --prefix .vb_mobile --no-package-lock --no-audit --no-fund playwright
+hugo server --port 8788
+```
+
+保持预览服务运行，在另一个终端执行：
+
+```powershell
+node scripts/check-mobile-layout.cjs
+```
+
+检查覆盖首页、项目列表、具身智能详情页，包含 320、375、390、430、768、844、1024 和 1440px 宽度，验证横向溢出、触控尺寸、导航开关与键盘操作、图库、歌曲切换及深浅主题。热力图使用固定测试数据，截图保存在已忽略的 `.vb_mobile/` 目录。可通过环境变量 `MOBILE_BASE_URL` 指向其他预览地址。这些检查使用 Chrome 模拟视口，真机 Safari 的浏览器行为仍需真机验收。
+
 ## 鸣谢
 
 本网站的页面结构与个人空间设计参考了 [Alxian](https://www.alxian.cn/)，感谢其公开作品带来的设计启发。

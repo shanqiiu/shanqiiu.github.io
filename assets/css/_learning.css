@@ -909,12 +909,6 @@
 
 /* ---------- Touch device optimization ---------- */
 @media (hover: none) and (pointer: coarse) {
-    .page-nav-fab .page-nav-menu {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-    }
-
     .nav-card:hover,
     .project-card:hover,
     .post-card:hover {
