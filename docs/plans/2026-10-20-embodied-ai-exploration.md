@@ -36,7 +36,7 @@ Expected: 构建成功，输出包含 `/projects/embodied-ai-robot-arm/`。
 **Step 2: 重建并检查生成页面**
 
 Run: `hugo --minify`
-Expected: 构建成功，首页生成具身智能事项与精选项目卡片。
+Expected: 构建成功，首页生成具身智能事项；项目列表生成精选项目卡片。
 
 ### Task 3: 检查最终差异
 
