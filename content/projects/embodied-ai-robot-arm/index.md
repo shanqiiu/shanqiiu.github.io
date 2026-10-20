@@ -25,4 +25,4 @@ tags: ["具身智能", "机械臂", "LeRobot", "MuJoCo", "Isaac Lab"]
 ## 项目资料
 
 - [代码仓库](https://github.com/muye26lab/lerobot)
-- [项目框架与进度概览](https://github.com/muye26lab/lerobot/blob/main/docs/project-overview.html)
+- [项目框架与进度概览](/projects/embodied-ai-robot-arm/overview/)

@@ -21,6 +21,12 @@
 - **关于与友链**（`content/about/`）：个人介绍及其他网站链接。
 - **聊天室**：用于实时交流的独立页面。
 
+## 部署与正式地址
+
+正式站点：<https://shanqiiu-github-io-64ye.vercel.app/>。Hugo 页面由 Vercel 托管，Supabase 支撑聊天室与知识库，`api/today-visitor.js` 提供访客统计接口。GitHub Pages（<https://shanqiiu.github.io/>）保留为静态备份。
+
+具身智能的框架与进度概览直接发布在 `/projects/embodied-ai-robot-arm/overview/`，对应 `static/projects/embodied-ai-robot-arm/overview/index.html`，随 Hugo 构建原样输出，无需单独服务或数据库迁移。页面与图片来源于 LeRobot 仓库的 `docs/project-overview.html` 和 `media/readme/robots_control_video.webp`。更新时同步这两个文件，保留本站返回入口，并将图片路径设为 `robots-control.webp`、仓库资料路径设为 GitHub 完整地址；项目页入口使用站内路径，兼容正式站点与静态备份。
+
 ## 日常更新指南
 
 ### 更新个人资料和技术栈
