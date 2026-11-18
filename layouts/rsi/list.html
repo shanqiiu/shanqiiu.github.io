@@ -1,0 +1,49 @@
+{{ define "main" }}
+<div class="frss-page">
+    <header class="frss-hero">
+        <p class="frss-eyebrow">Follow RSI · 每日同步</p>
+        <h1>{{ .Title }}<i class="frss-caret" aria-hidden="true"></i></h1>
+        {{ with .Description }}<p class="frss-lede">{{ . }}</p>{{ end }}
+        <p class="frss-status" id="frss-status" data-state="loading">正在同步数据…</p>
+    </header>
+
+    <div class="frss-bar">
+        <label class="frss-search">
+            <span class="frss-sr">搜索标题或摘要</span>
+            <input id="frss-q" type="search" placeholder="搜索标题或摘要…" autocomplete="off">
+        </label>
+        <button class="frss-btn frss-btn--ghost" id="frss-refresh" type="button">强制刷新</button>
+        <a class="frss-btn frss-btn--ghost" href="https://adongwanai.github.io/follow-rsi/" target="_blank" rel="noopener">原站 ↗</a>
+    </div>
+
+    <div class="frss-tabs" role="tablist" aria-label="视图切换">
+        <button role="tab" type="button" data-view="papers" class="is-active" aria-selected="true">
+            论文 <b id="frss-n-papers">–</b>
+        </button>
+        <button role="tab" type="button" data-view="daily" aria-selected="false">
+            每日简报 <b id="frss-n-daily">–</b>
+        </button>
+    </div>
+
+    <div class="frss-chips" id="frss-chips" role="group" aria-label="按方向筛选"></div>
+
+    <div id="frss-papers" class="frss-grid" aria-live="polite">
+        <div class="frss-skeleton"></div>
+        <div class="frss-skeleton"></div>
+        <div class="frss-skeleton"></div>
+        <div class="frss-skeleton"></div>
+    </div>
+
+    <div id="frss-daily" class="frss-timeline" aria-live="polite" hidden></div>
+
+    <p class="frss-empty" id="frss-empty" hidden></p>
+    <p class="frss-more-wrap" id="frss-more-wrap" hidden>
+        <button class="frss-btn" id="frss-more" type="button">加载更多</button>
+    </p>
+
+    <p class="frss-foot">
+        数据来自 <a href="https://github.com/adongwanai/follow-rsi" target="_blank" rel="noopener">adongwanai/follow-rsi</a>
+        的公开 JSON 快照，本站只做展示、不转载正文。条目每 3 小时缓存一次，也可点「强制刷新」拉最新。
+    </p>
+</div>
+{{ end }}

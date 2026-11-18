@@ -16,6 +16,7 @@
     (resources.Get "css/_home.css")
     (resources.Get "css/_components.css")
     (resources.Get "css/_learning.css")
+    (resources.Get "css/_rsi.css")
     (resources.Get "css/_chat.css")
     (resources.Get "css/_responsive.css") }}
 {{ $css := $styles | resources.Concat "css/main.css" | minify | fingerprint }}
@@ -33,4 +34,8 @@
 {{ if eq .Section "chat" -}}
 {{ $chatJs := resources.Get "js/chat.js" | fingerprint }}
 <script src="{{ $chatJs.RelPermalink }}" defer></script>
+{{ end -}}
+{{ if eq .Section "rsi" -}}
+{{ $rsiJs := resources.Get "js/rsi.js" | fingerprint }}
+<script src="{{ $rsiJs.RelPermalink }}" defer></script>
 {{ end -}}

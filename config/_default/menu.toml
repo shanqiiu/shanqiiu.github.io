@@ -23,16 +23,22 @@
     weight     = 4
 
 [[main]]
+    identifier = "rsi"
+    name       = "前沿"
+    url        = "/rsi/"
+    weight     = 5
+
+[[main]]
     identifier = "archives"
     name       = "归档"
     url        = "/archives/"
-    weight     = 5
+    weight     = 6
 
 [[main]]
     identifier = "about"
     name       = "关于"
     url        = "/about/"
-    weight     = 6
+    weight     = 7
 
 [[social]]
     identifier = "github"

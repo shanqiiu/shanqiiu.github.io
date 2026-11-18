@@ -15,6 +15,9 @@
 {{- else if eq .Section "chat" -}}
     {{- $currentLabel = "聊天" -}}
     {{- $currentIcon = "comment" -}}
+{{- else if eq .Section "rsi" -}}
+    {{- $currentLabel = "前沿" -}}
+    {{- $currentIcon = "tag" -}}
 {{- else if or (eq .Section "about") (eq .Type "about") -}}
     {{- $currentLabel = "友链" -}}
     {{- $currentIcon = "site" -}}
@@ -46,6 +49,7 @@
             <a href="{{ "post/" | relURL }}">{{ partial "svg-icon.html" "docs" }}<span>文章</span></a>
             <a href="{{ "learning/" | relURL }}">{{ partial "svg-icon.html" "tag" }}<span>资源</span></a>
             <a href="{{ "chat/" | relURL }}">{{ partial "svg-icon.html" "comment" }}<span>聊天</span></a>
+            <a href="{{ "rsi/" | relURL }}">{{ partial "svg-icon.html" "tag" }}<span>前沿</span></a>
             <a href="{{ "archives/" | relURL }}">{{ partial "svg-icon.html" "docs" }}<span>归档</span></a>
             <a href="{{ "about/" | relURL }}">{{ partial "svg-icon.html" "site" }}<span>友链</span></a>
         </div>
